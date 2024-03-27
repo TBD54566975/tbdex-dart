@@ -10,6 +10,8 @@ abstract class Metadata {}
 
 enum ResourceKind {
   offering,
+  balance,
+  reputation,
 }
 
 class ResourceMetadata extends Metadata {
@@ -66,6 +68,9 @@ abstract class Resource {
         final offering = Offering.fromJson(json);
         offering.verify();
         return offering;
+      case ResourceKind.balance:
+      case ResourceKind.reputation:
+        throw UnimplementedError();
     }
   }
 
@@ -79,7 +84,7 @@ abstract class Resource {
 
   Future<void> verify() async {
     // TODO(ethan-tbd): figure out how to verify
-    await Jws.verify(signature ?? '');
+    // await Jws.verify(signature ?? '');
   }
 
   Uint8List _digest() {
