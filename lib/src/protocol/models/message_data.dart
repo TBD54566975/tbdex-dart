@@ -4,25 +4,22 @@ abstract class MessageData extends Data {}
 
 class RfqData extends MessageData {
   final String offeringId;
-  final String payinAmount;
-  final SelectedPaymentMethod payinMethod;
-  final SelectedPaymentMethod payoutMethod;
+  final SelectedPayinMethod payin;
+  final SelectedPayoutMethod payout;
   final List<String> claims;
 
   RfqData({
     required this.offeringId,
-    required this.payinAmount,
-    required this.payinMethod,
-    required this.payoutMethod,
+    required this.payin,
+    required this.payout,
     required this.claims,
   });
 
   factory RfqData.fromJson(Map<String, dynamic> json) {
     return RfqData(
       offeringId: json['offeringId'],
-      payinAmount: json['payinAmount'],
-      payinMethod: SelectedPaymentMethod.fromJson(json['payinMethod']),
-      payoutMethod: SelectedPaymentMethod.fromJson(json['payoutMethod']),
+      payin: SelectedPayinMethod.fromJson(json['payin']),
+      payout: SelectedPayoutMethod.fromJson(json['payout']),
       claims: (json['claims'] as List).map((e) => e as String).toList(),
     );
   }
@@ -30,22 +27,49 @@ class RfqData extends MessageData {
   Map<String, dynamic> toJson() {
     return {
       'offeringId': offeringId,
-      'payinAmount': payinAmount,
-      'payinMethod': payinMethod.toJson(),
-      'payoutMethod': payoutMethod.toJson(),
+      'payin': payin.toJson(),
+      'payout': payout.toJson(),
       'claims': claims,
     };
   }
 }
 
-class SelectedPaymentMethod {
+class SelectedPayinMethod {
+  final String amount;
   final String kind;
   final Map<String, dynamic>? paymentDetails;
 
-  SelectedPaymentMethod({required this.kind, this.paymentDetails});
+  SelectedPayinMethod({
+    required this.amount,
+    required this.kind,
+    this.paymentDetails,
+  });
 
-  factory SelectedPaymentMethod.fromJson(Map<String, dynamic> json) {
-    return SelectedPaymentMethod(
+  factory SelectedPayinMethod.fromJson(Map<String, dynamic> json) {
+    return SelectedPayinMethod(
+      amount: json['amount'],
+      kind: json['kind'],
+      paymentDetails: json['paymentDetails'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'amount': amount,
+      'kind': kind,
+      'paymentDetails': paymentDetails,
+    };
+  }
+}
+
+class SelectedPayoutMethod {
+  final String kind;
+  final Map<String, dynamic>? paymentDetails;
+
+  SelectedPayoutMethod({required this.kind, this.paymentDetails});
+
+  factory SelectedPayoutMethod.fromJson(Map<String, dynamic> json) {
+    return SelectedPayoutMethod(
       kind: json['kind'],
       paymentDetails: json['paymentDetails'],
     );
@@ -64,8 +88,11 @@ class QuoteData extends MessageData {
   final QuoteDetails payin;
   final QuoteDetails payout;
 
-  QuoteData(
-      {required this.expiresAt, required this.payin, required this.payout});
+  QuoteData({
+    required this.expiresAt,
+    required this.payin,
+    required this.payout,
+  });
 
   factory QuoteData.fromJson(Map<String, dynamic> json) {
     return QuoteData(
@@ -140,18 +167,24 @@ class PaymentInstruction {
 }
 
 class CloseData extends MessageData {
-  final String reason;
+  final bool? success;
+  final String? reason;
 
-  CloseData({required this.reason});
+  CloseData({
+    this.success,
+    this.reason,
+  });
 
   factory CloseData.fromJson(Map<String, dynamic> json) {
     return CloseData(
+      success: json['success'],
       reason: json['reason'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'success': success,
       'reason': reason,
     };
   }
