@@ -5,19 +5,15 @@ abstract class ResourceData extends Data {}
 class OfferingData extends ResourceData {
   final String description;
   final String payoutUnitsPerPayinUnit;
-  final CurrencyDetails payoutCurrency;
-  final CurrencyDetails payinCurrency;
-  final List<PaymentMethod> payinMethods;
-  final List<PaymentMethod> payoutMethods;
+  final PayinDetails payin;
+  final PayoutDetails payout;
   // final PresentationDefinitionV2? requiredClaims;
 
   OfferingData({
     required this.description,
     required this.payoutUnitsPerPayinUnit,
-    required this.payoutCurrency,
-    required this.payinCurrency,
-    required this.payinMethods,
-    required this.payoutMethods,
+    required this.payin,
+    required this.payout,
     // this.requiredClaims,
   });
 
@@ -25,14 +21,8 @@ class OfferingData extends ResourceData {
     return OfferingData(
       description: json['description'],
       payoutUnitsPerPayinUnit: json['payoutUnitsPerPayinUnit'],
-      payoutCurrency: CurrencyDetails.fromJson(json['payoutCurrency']),
-      payinCurrency: CurrencyDetails.fromJson(json['payinCurrency']),
-      payinMethods: (json['payinMethods'] as List)
-          .map((e) => PaymentMethod.fromJson(e))
-          .toList(),
-      payoutMethods: (json['payoutMethods'] as List)
-          .map((e) => PaymentMethod.fromJson(e))
-          .toList(),
+      payin: PayinDetails.fromJson(json['payin']),
+      payout: PayoutDetails.fromJson(json['payout']),
       // requiredClaims: json['requiredClaims'] != null ? PresentationDefinitionV2.fromJson(json['requiredClaims']) : null,
     );
   }
@@ -41,45 +31,101 @@ class OfferingData extends ResourceData {
     return {
       'description': description,
       'payoutUnitsPerPayinUnit': payoutUnitsPerPayinUnit,
-      'payoutCurrency': payoutCurrency.toJson(),
-      'payinCurrency': payinCurrency.toJson(),
-      'payinMethods': payinMethods.map((e) => e.toJson()).toList(),
-      'payoutMethods': payoutMethods.map((e) => e.toJson()).toList(),
+      'payin': payin.toJson(),
+      'payout': payout.toJson(),
       // 'requiredClaims': requiredClaims?.toJson(),
     };
   }
 }
 
-class CurrencyDetails {
+class PayinDetails {
   final String currencyCode;
-  final String? minAmount;
-  final String? maxAmount;
+  final List<PayinMethod> methods;
+  final String? min;
+  final String? max;
 
-  CurrencyDetails({required this.currencyCode, this.minAmount, this.maxAmount});
+  PayinDetails({
+    required this.currencyCode,
+    required this.methods,
+    this.min,
+    this.max,
+  });
 
-  factory CurrencyDetails.fromJson(Map<String, dynamic> json) {
-    return CurrencyDetails(
+  factory PayinDetails.fromJson(Map<String, dynamic> json) {
+    return PayinDetails(
       currencyCode: json['currencyCode'],
-      minAmount: json['minAmount'],
-      maxAmount: json['maxAmount'],
+      methods: (json['methods'] as List)
+          .map((e) => PayinMethod.fromJson(e))
+          .toList(),
+      min: json['min'],
+      max: json['max'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'currencyCode': currencyCode,
-      'minAmount': minAmount,
-      'maxAmount': maxAmount,
+      'methods': methods.map((e) => e.toJson()).toList(),
+      'min': min,
+      'max': max,
     };
   }
 }
 
-class PaymentMethod {
+class PayoutDetails {
+  final String currencyCode;
+  final List<PayoutMethod> methods;
+  final String? min;
+  final String? max;
+
+  PayoutDetails({
+    required this.currencyCode,
+    required this.methods,
+    this.min,
+    this.max,
+  });
+
+  factory PayoutDetails.fromJson(Map<String, dynamic> json) {
+    return PayoutDetails(
+      currencyCode: json['currencyCode'],
+      methods: (json['methods'] as List)
+          .map((e) => PayoutMethod.fromJson(e))
+          .toList(),
+      min: json['min'],
+      max: json['max'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'currencyCode': currencyCode,
+      'methods': methods.map((e) => e.toJson()).toList(),
+      'min': min,
+      'max': max,
+    };
+  }
+}
+
+class PayinMethod {
   final String kind;
+  final String? name;
+  final String? description;
+  final String? group;
   final dynamic requiredPaymentDetails;
   final String? fee;
+  final String? min;
+  final String? max;
 
-  PaymentMethod({required this.kind, this.requiredPaymentDetails, this.fee});
+  PayinMethod({
+    required this.kind,
+    this.name,
+    this.description,
+    this.group,
+    this.requiredPaymentDetails,
+    this.fee,
+    this.min,
+    this.max,
+  });
 
   dynamic getRequiredPaymentDetailsSchema() {
     if (requiredPaymentDetails == null) return null;
@@ -87,19 +133,87 @@ class PaymentMethod {
     return requiredPaymentDetails;
   }
 
-  factory PaymentMethod.fromJson(Map<String, dynamic> json) {
-    return PaymentMethod(
+  factory PayinMethod.fromJson(Map<String, dynamic> json) {
+    return PayinMethod(
       kind: json['kind'],
+      name: json['name'],
+      description: json['description'],
+      group: json['group'],
       requiredPaymentDetails: json['requiredPaymentDetails'],
       fee: json['fee'],
+      min: json['min'],
+      max: json['max'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'kind': kind,
+      'name': name,
+      'description': description,
+      'group': group,
       'requiredPaymentDetails': requiredPaymentDetails,
       'fee': fee,
+      'min': min,
+      'max': max,
+    };
+  }
+}
+
+class PayoutMethod {
+  final int estimatedSettlementTime;
+  final String kind;
+  final String? name;
+  final String? description;
+  final String? group;
+  final dynamic requiredPaymentDetails;
+  final String? fee;
+  final String? min;
+  final String? max;
+
+  PayoutMethod({
+    required this.estimatedSettlementTime,
+    required this.kind,
+    this.name,
+    this.description,
+    this.group,
+    this.requiredPaymentDetails,
+    this.fee,
+    this.min,
+    this.max,
+  });
+
+  dynamic getRequiredPaymentDetailsSchema() {
+    if (requiredPaymentDetails == null) return null;
+
+    return requiredPaymentDetails;
+  }
+
+  factory PayoutMethod.fromJson(Map<String, dynamic> json) {
+    return PayoutMethod(
+      kind: json['kind'],
+      estimatedSettlementTime: json['estimatedSettlementTime'],
+      name: json['name'],
+      description: json['description'],
+      group: json['group'],
+      requiredPaymentDetails: json['requiredPaymentDetails'],
+      fee: json['fee'],
+      min: json['min'],
+      max: json['max'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'kind': kind,
+      'estimatedSettlementTime': estimatedSettlementTime,
+      'name': name,
+      'description': description,
+      'group': group,
+      'requiredPaymentDetails': requiredPaymentDetails,
+      'fee': fee,
+      'min': min,
+      'max': max,
     };
   }
 }

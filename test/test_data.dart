@@ -25,24 +25,26 @@ class TestData {
       OfferingData(
         description: 'A sample offering',
         payoutUnitsPerPayinUnit: '1',
-        payinCurrency: CurrencyDetails(
+        payin: PayinDetails(
           currencyCode: 'AUD',
-          minAmount: '0.01',
-          maxAmount: '100.00',
+          min: '0.01',
+          max: '100.00',
+          methods: [
+            PayinMethod(
+              kind: 'BTC_ADDRESS',
+              requiredPaymentDetails: requiredPaymentDetailsSchema(),
+            ),
+          ],
         ),
-        payoutCurrency: CurrencyDetails(currencyCode: 'USDC'),
-        payinMethods: [
-          PaymentMethod(
-            kind: 'BTC_ADDRESS',
-            requiredPaymentDetails: requiredPaymentDetailsSchema(),
-          ),
-        ],
-        payoutMethods: [
-          PaymentMethod(
-            kind: 'MOMO',
-            requiredPaymentDetails: requiredPaymentDetailsSchema(),
-          ),
-        ],
+        payout: PayoutDetails(
+          currencyCode: 'USDC',
+          methods: [
+            PayoutMethod(
+                estimatedSettlementTime: 0,
+                kind: 'BANK',
+                requiredPaymentDetails: requiredPaymentDetailsSchema()),
+          ],
+        ),
       ),
     );
   }

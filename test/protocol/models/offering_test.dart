@@ -17,10 +17,8 @@ void main() async {
         OfferingData(
           description: 'my fake offering',
           payoutUnitsPerPayinUnit: '1',
-          payinCurrency: CurrencyDetails(currencyCode: 'AUD'),
-          payoutCurrency: CurrencyDetails(currencyCode: 'BTC'),
-          payinMethods: [],
-          payoutMethods: [],
+          payin: PayinDetails(currencyCode: 'AUD', methods: []),
+          payout: PayoutDetails(currencyCode: 'BTC', methods: []),
         ),
       );
 
