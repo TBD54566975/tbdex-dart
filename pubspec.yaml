@@ -1,0 +1,20 @@
+name: tbdex
+description: Dart library for tbDEX.
+version: 1.0.0
+repository: https://github.com/TBD54566975/tbdex-dart
+
+environment:
+  sdk: ^3.1.4
+
+dependencies:
+  crypto: ^3.0.3
+  typeid: ^1.0.1
+  web5:
+    git:
+      url: https://github.com/TBD54566975/web5-dart.git
+      path: packages/web5
+      ref: main
+
+dev_dependencies:
+  lints: ^2.1.0
+  test: ^1.24.0
