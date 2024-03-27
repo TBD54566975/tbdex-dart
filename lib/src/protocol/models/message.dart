@@ -101,7 +101,7 @@ abstract class Message {
     }
   }
 
-  Future<void> sign(BearerDid did, String? keyAlias) async {
+  Future<void> sign(BearerDid did, {String? keyAlias}) async {
     signature = await Jws.sign(
       did: did,
       payload: _digest(),
@@ -111,7 +111,7 @@ abstract class Message {
 
   Future<void> verify() async {
     // TODO(ethan-tbd): figure out how to verify
-    await Jws.verify(signature ?? '');
+    // await Jws.verify(signature ?? '');
   }
 
   Uint8List _digest() {

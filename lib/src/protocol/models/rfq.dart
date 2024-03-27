@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
@@ -21,8 +19,8 @@ class Rfq extends Message {
   static Rfq create(
     String to,
     String from,
-    RfqData data,
-    String? externalId, {
+    RfqData data, {
+    String? externalId,
     String protocol = '1.0',
   }) {
     final now = DateTime.now().toIso8601String();
