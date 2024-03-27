@@ -1,7 +1,11 @@
 import 'dart:convert';
 
+import 'package:tbdex/src/protocol/models/message_data.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
+import 'package:tbdex/src/protocol/models/resource.dart';
 import 'package:tbdex/src/protocol/models/resource_data.dart';
+import 'package:tbdex/src/protocol/models/rfq.dart';
+import 'package:typeid/typeid.dart';
 import 'package:web5/web5.dart';
 
 class TestData {
@@ -46,6 +50,25 @@ class TestData {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  static Rfq getRfq() {
+    return Rfq.create(
+      TestData
+          .pfiDid.uri, // Adjust based on how you manage test data or constants
+      TestData.aliceDid.uri,
+      RfqData(
+        offeringId: TypeId.generate(ResourceKind.offering.name),
+        payin: SelectedPayinMethod(
+          amount: '100',
+          kind: 'BTC_ADDRESS',
+        ),
+        payout: SelectedPayoutMethod(
+          kind: 'BANK',
+        ),
+        claims: [],
       ),
     );
   }
