@@ -40,9 +40,10 @@ class TestData {
           currencyCode: 'USDC',
           methods: [
             PayoutMethod(
-                estimatedSettlementTime: 0,
-                kind: 'BANK',
-                requiredPaymentDetails: requiredPaymentDetailsSchema()),
+              estimatedSettlementTime: 0,
+              kind: 'BANK',
+              requiredPaymentDetails: requiredPaymentDetailsSchema(),
+            ),
           ],
         ),
       ),
