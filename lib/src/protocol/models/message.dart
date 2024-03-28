@@ -133,7 +133,7 @@ abstract class Message {
       );
     }
 
-    await Jws.verify(signature ?? '', detachedPayload: _digest());
+    await decodedJws.verify();
   }
 
   Uint8List _digest() {
