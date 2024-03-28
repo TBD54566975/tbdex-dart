@@ -15,7 +15,7 @@ void main() async {
       final rfq = TestData.getRfq();
       await rfq.sign(TestData.aliceDid);
       final order = TestData.getOrder();
-      await order.sign(TestData.aliceDid);
+      await order.sign(TestData.pfiDid);
 
       final messages = await Future.wait(
         [
@@ -54,7 +54,7 @@ void main() async {
             (e) => e.toString(),
             'message',
             contains(
-              'Signature verification failed: Was not signed by the expected DID',
+              'signature verification failed: was not signed by the expected DID',
             ),
           ),
         ),

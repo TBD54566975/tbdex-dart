@@ -39,7 +39,7 @@ void main() async {
             (e) => e.toString(),
             'message',
             contains(
-              'Signature verification failed: Was not signed by the expected DID',
+              'signature verification failed: was not signed by the expected DID',
             ),
           ),
         ),
