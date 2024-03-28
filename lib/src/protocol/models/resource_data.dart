@@ -56,7 +56,9 @@ class PayinDetails {
       currencyCode: json['currencyCode'],
       methods: (json['methods'] as List)
           .map(
-            (method) => PayinMethod.fromJson(method as Map<String, dynamic>),
+            (method) => PayinMethod.fromJson(
+              method as Map<String, dynamic>,
+            ),
           )
           .toList(),
       min: json['min'],
@@ -92,7 +94,9 @@ class PayoutDetails {
       currencyCode: json['currencyCode'],
       methods: (json['methods'] as List)
           .map(
-            (method) => PayoutMethod.fromJson(method as Map<String, dynamic>),
+            (method) => PayoutMethod.fromJson(
+              method as Map<String, dynamic>,
+            ),
           )
           .toList(),
       min: json['min'],
