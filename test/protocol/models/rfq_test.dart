@@ -2,9 +2,7 @@ import 'dart:convert';
 
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
-import 'package:tbdex/src/protocol/models/offering.dart';
 import 'package:tbdex/src/protocol/models/resource.dart';
-import 'package:tbdex/src/protocol/models/resource_data.dart';
 import 'package:tbdex/src/protocol/models/rfq.dart';
 import 'package:test/test.dart';
 import 'package:typeid/typeid.dart';
@@ -34,21 +32,14 @@ void main() async {
       expect(rfq.metadata.externalId, equals('rfq_id'));
     });
 
-    // test('can parse rfq from a json string', () async {
-    //   final rfq = TestData.getRfq();
-    //   await rfq.sign(TestData.pfiDid);
-    //   final jsonResource = jsonEncode(rfq.toJson());
-    //   final parsed = Message.parse(jsonResource);
+    test('can parse rfq from a json string', () async {
+      final rfq = TestData.getRfq();
+      await rfq.sign(TestData.aliceDid);
+      final jsonResource = jsonEncode(rfq.toJson());
+      final parsed = await Message.parse(jsonResource);
 
-    //   expect(parsed, isA<Rfq>());
-    //   expect(parsed.toString(), equals(jsonResource));
-    // });
-
-    // test('can validate a rfq', () async {
-    //   final rfq = TestData.getRfq();
-    //   await rfq.sign(TestData.pfiDid);
-
-    //   //TODO(ethan-tbd): Implement this test
-    // });
+      expect(parsed, isA<Rfq>());
+      expect(parsed.toString(), equals(jsonResource));
+    });
   });
 }

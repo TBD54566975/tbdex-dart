@@ -31,26 +31,17 @@ void main() async {
       final offering = TestData.getOffering();
       await offering.sign(TestData.pfiDid);
       final jsonResource = jsonEncode(offering.toJson());
-      final parsed = Resource.parse(jsonResource);
+      final parsed = await Resource.parse(jsonResource);
 
       expect(parsed, isA<Offering>());
       expect(parsed.toString(), equals(jsonResource));
-    });
-
-    test('can parse an offering', () async {
-      final offering = TestData.getOffering();
-      await offering.sign(TestData.pfiDid);
-      final jsonResource = jsonEncode(offering.toJson());
-      final parsedOffering = Resource.parse(jsonResource) as Offering;
-
-      expect(parsedOffering, isA<Offering>());
     });
 
     test('can parse an offering explicitly', () async {
       final offering = TestData.getOffering();
       await offering.sign(TestData.pfiDid);
       final jsonResource = jsonEncode(offering.toJson());
-      final parsedOffering = Offering.parse(jsonResource);
+      final parsedOffering = await Offering.parse(jsonResource);
 
       expect(parsedOffering, isA<Offering>());
     });

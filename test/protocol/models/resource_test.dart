@@ -20,8 +20,11 @@ void main() async {
       expect(jws.header.kid, contains(TestData.pfiDid.uri));
     });
 
-    test('parse throws error if json string is not valid', () {
-      expect(() => Resource.parse(';;;;'), throwsA(isA<FormatException>()));
+    test('parse throws error if json string is not valid', () async {
+      await expectLater(
+        Resource.parse(';;;;'),
+        throwsA(isA<FormatException>()),
+      );
     });
 
     test('resources must be signed by the sender', () async {
@@ -29,11 +32,11 @@ void main() async {
       // Sign it with the wrong DID
       await offeringFromPfi.sign(TestData.aliceDid);
 
-      expect(
-        () => Resource.parse(jsonEncode(offeringFromPfi.toJson())),
+      await expectLater(
+        Resource.parse(jsonEncode(offeringFromPfi.toJson())),
         throwsA(
           isA<Exception>().having(
-            (e) => e,
+            (e) => e.toString(),
             'message',
             contains(
               'Signature verification failed: Was not signed by the expected DID',
