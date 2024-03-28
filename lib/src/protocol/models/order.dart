@@ -13,14 +13,16 @@ class Order extends Message {
   Order._({
     required this.metadata,
     required this.data,
-  });
+    String? signature,
+  }) : super() {
+    this.signature = signature;
+  }
 
   static Order create(
     String to,
     String from,
-    String exchangeId,
-    OrderData data,
-    String? externalId, {
+    String exchangeId, {
+    String? externalId,
     String protocol = '1.0',
   }) {
     final now = DateTime.now().toIso8601String();
@@ -37,7 +39,7 @@ class Order extends Message {
 
     return Order._(
       metadata: metadata,
-      data: data,
+      data: OrderData(),
     );
   }
 
@@ -45,13 +47,15 @@ class Order extends Message {
     return Order._(
       metadata: MessageMetadata.fromJson(json['metadata']),
       data: OrderData(),
+      signature: json['signature'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'metadata': metadata.toJson(),
-      'data': '',
+      'data': data.toJson(),
+      'signature': signature,
     };
   }
 }

@@ -1,5 +1,6 @@
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
+import 'package:typeid/typeid.dart';
 
 class Quote extends Message {
   @override
@@ -13,14 +14,17 @@ class Quote extends Message {
   Quote._({
     required this.metadata,
     required this.data,
-  });
+    String? signature,
+  }) : super() {
+    this.signature = signature;
+  }
 
   static Quote create(
     String to,
     String from,
     String exchangeId,
-    QuoteData data,
-    String? externalId, {
+    QuoteData data, {
+    String? externalId,
     String protocol = '1.0',
   }) {
     final now = DateTime.now().toIso8601String();
@@ -28,7 +32,7 @@ class Quote extends Message {
       kind: MessageKind.quote,
       to: to,
       from: from,
-      id: 'quote_id',
+      id: TypeId.generate(MessageKind.quote.name),
       exchangeId: exchangeId,
       createdAt: now,
       protocol: protocol,
@@ -45,6 +49,7 @@ class Quote extends Message {
     return Quote._(
       metadata: MessageMetadata.fromJson(json['metadata']),
       data: QuoteData.fromJson(json['data']),
+      signature: json['signature'],
     );
   }
 
@@ -52,6 +57,7 @@ class Quote extends Message {
     return {
       'metadata': metadata.toJson(),
       'data': data.toJson(),
+      'signature': signature,
     };
   }
 }

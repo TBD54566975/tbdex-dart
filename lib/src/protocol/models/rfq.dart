@@ -14,7 +14,10 @@ class Rfq extends Message {
   Rfq._({
     required this.metadata,
     required this.data,
-  });
+    String? signature,
+  }) : super() {
+    this.signature = signature;
+  }
 
   static Rfq create(
     String to,
@@ -84,6 +87,7 @@ class Rfq extends Message {
     return Rfq._(
       metadata: MessageMetadata.fromJson(json['metadata']),
       data: RfqData.fromJson(json['data']),
+      signature: json['signature'],
     );
   }
 
@@ -91,6 +95,7 @@ class Rfq extends Message {
     return {
       'metadata': metadata.toJson(),
       'data': data.toJson(),
+      'signature': signature,
     };
   }
 }

@@ -11,7 +11,10 @@ class Offering extends Resource {
   Offering._({
     required this.metadata,
     required this.data,
-  });
+    String? signature,
+  }) : super() {
+    this.signature = signature;
+  }
 
   static Offering create(
     String from,
@@ -35,13 +38,20 @@ class Offering extends Resource {
     );
   }
 
-  static Offering parse(String toString) =>
-      Resource.parse(toString) as Offering;
+  static Future<Offering> parse(String toString) async {
+    final resource = await Resource.parse(toString);
+    if (resource is Offering) {
+      return resource;
+    } else {
+      throw Exception('Parsed resource is not an Offering');
+    }
+  }
 
   factory Offering.fromJson(Map<String, dynamic> json) {
     return Offering._(
       metadata: ResourceMetadata.fromJson(json['metadata']),
       data: OfferingData.fromJson(json['data']),
+      signature: json['signature'],
     );
   }
 
@@ -49,6 +59,7 @@ class Offering extends Resource {
     return {
       'metadata': metadata.toJson(),
       'data': data.toJson(),
+      'signature': signature,
     };
   }
 }

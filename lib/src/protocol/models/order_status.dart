@@ -1,5 +1,6 @@
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
+import 'package:typeid/typeid.dart';
 
 class OrderStatus extends Message {
   @override
@@ -14,22 +15,25 @@ class OrderStatus extends Message {
   OrderStatus._({
     required this.metadata,
     required this.data,
-  });
+    String? signature,
+  }) : super() {
+    this.signature = signature;
+  }
 
   static OrderStatus create(
     String to,
     String from,
     String exchangeId,
-    OrderStatusData data,
-    String? externalId, {
+    OrderStatusData data, {
+    String? externalId,
     String protocol = '1.0',
   }) {
     final now = DateTime.now().toIso8601String();
     final metadata = MessageMetadata(
-      kind: MessageKind.quote,
+      kind: MessageKind.orderstatus,
       to: to,
       from: from,
-      id: 'order_status_id',
+      id: TypeId.generate(MessageKind.orderstatus.name),
       exchangeId: exchangeId,
       createdAt: now,
       protocol: protocol,
@@ -46,6 +50,7 @@ class OrderStatus extends Message {
     return OrderStatus._(
       metadata: MessageMetadata.fromJson(json['metadata']),
       data: OrderStatusData.fromJson(json['data']),
+      signature: json['signature'],
     );
   }
 
@@ -53,6 +58,7 @@ class OrderStatus extends Message {
     return {
       'metadata': metadata.toJson(),
       'data': data.toJson(),
+      'signature': signature,
     };
   }
 }
