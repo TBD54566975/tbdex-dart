@@ -20,7 +20,8 @@ void main() async {
         CloseData(reason: 'my reason'),
       );
 
-      expect(close.metadata.id, startsWith('close'));
+      expect(close.metadata.id, startsWith(MessageKind.close.name));
+      expect(close.metadata.kind, equals(MessageKind.close));
       expect(close.metadata.protocol, equals('1.0'));
       expect(close.data.reason, equals('my reason'));
     });

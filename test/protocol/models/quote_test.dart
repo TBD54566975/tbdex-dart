@@ -32,7 +32,8 @@ void main() async {
         ),
       );
 
-      expect(quote.metadata.id, startsWith('quote'));
+      expect(quote.metadata.id, startsWith(MessageKind.quote.name));
+      expect(quote.metadata.kind, equals(MessageKind.quote));
       expect(quote.metadata.protocol, equals('1.0'));
       expect(quote.data.payin.amount, equals('100'));
     });

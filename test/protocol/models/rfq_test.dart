@@ -26,10 +26,11 @@ void main() async {
         externalId: 'rfq_id',
       );
 
-      expect(rfq.metadata.id, startsWith('rfq'));
+      expect(rfq.metadata.id, startsWith(MessageKind.rfq.name));
+      expect(rfq.metadata.kind, equals(MessageKind.rfq));
       expect(rfq.metadata.protocol, equals('1.0'));
-      expect(rfq.data.payin.amount, equals('100'));
       expect(rfq.metadata.externalId, equals('rfq_id'));
+      expect(rfq.data.payin.amount, equals('100'));
     });
 
     test('can parse rfq from a json string', () async {

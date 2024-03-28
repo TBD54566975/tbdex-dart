@@ -20,7 +20,8 @@ void main() async {
         OrderStatusData(orderStatus: 'my status'),
       );
 
-      expect(orderStatus.metadata.id, startsWith('orderstatus'));
+      expect(orderStatus.metadata.id, startsWith(MessageKind.orderstatus.name));
+      expect(orderStatus.metadata.kind, equals(MessageKind.orderstatus));
       expect(orderStatus.metadata.protocol, equals('1.0'));
       expect(orderStatus.data.orderStatus, equals('my status'));
     });

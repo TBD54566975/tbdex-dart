@@ -22,9 +22,10 @@ void main() async {
         ),
       );
 
-      expect(offering.data.description, equals('my fake offering'));
-      expect(offering.metadata.id, startsWith('offering'));
+      expect(offering.metadata.id, startsWith(ResourceKind.offering.name));
+      expect(offering.metadata.kind, equals(ResourceKind.offering));
       expect(offering.metadata.protocol, equals('1.0'));
+      expect(offering.data.description, equals('my fake offering'));
     });
 
     test('can parse offering from a json string', () async {

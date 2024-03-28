@@ -12,14 +12,15 @@ void main() async {
 
   group('OrderTest', () {
     test('can create a new order', () {
-      final close = Order.create(
+      final order = Order.create(
         TestData.pfi,
         TestData.alice,
         TypeId.generate(MessageKind.rfq.name),
       );
 
-      expect(close.metadata.id, startsWith('order'));
-      expect(close.metadata.protocol, equals('1.0'));
+      expect(order.metadata.id, startsWith(MessageKind.order.name));
+      expect(order.metadata.kind, equals(MessageKind.order));
+      expect(order.metadata.protocol, equals('1.0'));
     });
 
     test('can parse order from a json string', () async {
