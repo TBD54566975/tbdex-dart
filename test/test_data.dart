@@ -1,7 +1,12 @@
 import 'dart:convert';
 
+import 'package:tbdex/src/protocol/models/close.dart';
+import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
+import 'package:tbdex/src/protocol/models/order.dart';
+import 'package:tbdex/src/protocol/models/order_status.dart';
+import 'package:tbdex/src/protocol/models/quote.dart';
 import 'package:tbdex/src/protocol/models/resource.dart';
 import 'package:tbdex/src/protocol/models/resource_data.dart';
 import 'package:tbdex/src/protocol/models/rfq.dart';
@@ -56,9 +61,8 @@ class TestData {
 
   static Rfq getRfq() {
     return Rfq.create(
-      TestData
-          .pfiDid.uri, // Adjust based on how you manage test data or constants
-      TestData.aliceDid.uri,
+      pfiDid.uri,
+      aliceDid.uri,
       RfqData(
         offeringId: TypeId.generate(ResourceKind.offering.name),
         payin: SelectedPayinMethod(
@@ -70,6 +74,61 @@ class TestData {
         ),
         claims: [],
       ),
+    );
+  }
+
+  static Quote getQuote() {
+    return Quote.create(
+      aliceDid.uri,
+      pfiDid.uri,
+      TypeId.generate(MessageKind.rfq.name),
+      QuoteData(
+        expiresAt: '2022-01-01T00:00:00Z',
+        payin: QuoteDetails(
+          currencyCode: 'AUD',
+          amount: '100',
+          fee: '0.01',
+          paymentInstruction: PaymentInstruction(
+            link: 'https://block.xyz',
+            instruction: 'payin instruction',
+          ),
+        ),
+        payout: QuoteDetails(
+          currencyCode: 'BTC',
+          amount: '0.12',
+          fee: '0.02',
+          paymentInstruction: PaymentInstruction(
+            link: 'https://block.xyz',
+            instruction: 'payout instruction',
+          ),
+        ),
+      ),
+    );
+  }
+
+  static Order getOrder() {
+    return Order.create(
+      aliceDid.uri,
+      pfiDid.uri,
+      TypeId.generate(MessageKind.rfq.name),
+    );
+  }
+
+  static OrderStatus getOrderStatus() {
+    return OrderStatus.create(
+      aliceDid.uri,
+      pfiDid.uri,
+      TypeId.generate(MessageKind.rfq.name),
+      OrderStatusData(orderStatus: 'my status'),
+    );
+  }
+
+  static Close getClose() {
+    return Close.create(
+      aliceDid.uri,
+      pfiDid.uri,
+      TypeId.generate(MessageKind.rfq.name),
+      CloseData(reason: 'test reason'),
     );
   }
 
