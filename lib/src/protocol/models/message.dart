@@ -42,7 +42,8 @@ class MessageMetadata extends Metadata {
 
   factory MessageMetadata.fromJson(Map<String, dynamic> json) {
     return MessageMetadata(
-      kind: MessageKind.values.firstWhere((e) => e.toString() == json['kind']),
+      kind: MessageKind.values
+          .firstWhere((kind) => kind.toString() == json['kind']),
       to: json['to'],
       from: json['from'],
       id: json['id'],
@@ -73,31 +74,36 @@ abstract class Message {
   MessageData get data;
   String? signature;
 
-  static Message parse(String payload) {
-    final json = jsonDecode(payload);
-    // final dataJson = json['data'];
-    final kind = json['metadata']['kind'].toString();
-    switch (MessageKind.values.firstWhere((e) => e.toString() == kind)) {
+  static Future<Message> parse(String payload) async {
+    final jsonMessage = jsonDecode(payload);
+    // TODO(ethan-tbd): validate jsonMessage against message
+
+    // final jsonMessageData = jsonMessage['data'];
+    final messageKind = jsonMessage['metadata']['kind'].toString();
+    // TODO(ethan-tbd): validate jsonMessageData against messageKind
+
+    switch (MessageKind.values
+        .firstWhere((kind) => kind.toString() == messageKind)) {
       case MessageKind.rfq:
-        final rfq = Rfq.fromJson(json);
-        rfq.verify();
-        return Rfq.fromJson(json);
+        final rfq = Rfq.fromJson(jsonMessage);
+        await rfq.verify();
+        return Rfq.fromJson(jsonMessage);
       case MessageKind.quote:
-        final quote = Quote.fromJson(json);
-        quote.verify();
-        return Quote.fromJson(json);
+        final quote = Quote.fromJson(jsonMessage);
+        await quote.verify();
+        return Quote.fromJson(jsonMessage);
       case MessageKind.close:
-        final close = Close.fromJson(json);
-        close.verify();
-        return Close.fromJson(json);
+        final close = Close.fromJson(jsonMessage);
+        await close.verify();
+        return Close.fromJson(jsonMessage);
       case MessageKind.order:
-        final order = Order.fromJson(json);
-        order.verify();
-        return Order.fromJson(json);
+        final order = Order.fromJson(jsonMessage);
+        await order.verify();
+        return Order.fromJson(jsonMessage);
       case MessageKind.orderstatus:
-        final orderStatus = OrderStatus.fromJson(json);
-        orderStatus.verify();
-        return OrderStatus.fromJson(json);
+        final orderStatus = OrderStatus.fromJson(jsonMessage);
+        await orderStatus.verify();
+        return OrderStatus.fromJson(jsonMessage);
     }
   }
 
@@ -110,8 +116,19 @@ abstract class Message {
   }
 
   Future<void> verify() async {
-    // TODO(ethan-tbd): figure out how to verify
-    // await Jws.verify(signature ?? '');
+    final decodedJws = Jws.decode(signature ?? '', detachedPayload: _digest());
+
+    final verificationMethodId = decodedJws.header.kid;
+    final parsedDidUrl = Did.parse(verificationMethodId ?? '');
+
+    final signingDid = parsedDidUrl.uri;
+    if (signingDid != metadata.from) {
+      throw Exception(
+        'Signature verification failed: Was not signed by the expected DID',
+      );
+    }
+
+    await Jws.verify(signature ?? '', detachedPayload: _digest());
   }
 
   Uint8List _digest() {

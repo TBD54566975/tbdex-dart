@@ -33,7 +33,8 @@ class ResourceMetadata extends Metadata {
 
   factory ResourceMetadata.fromJson(Map<String, dynamic> json) {
     return ResourceMetadata(
-      kind: ResourceKind.values.firstWhere((e) => e.toString() == json['kind']),
+      kind: ResourceKind.values
+          .firstWhere((kind) => kind.toString() == json['kind']),
       from: json['from'],
       id: json['id'],
       protocol: json['protocol'],
@@ -59,14 +60,19 @@ abstract class Resource {
   ResourceData get data;
   String? signature;
 
-  static Resource parse(String payload) {
-    final json = jsonDecode(payload);
-    // final dataJson = json['data'];
-    final kind = json['metadata']['kind'].toString();
-    switch (ResourceKind.values.firstWhere((e) => e.toString() == kind)) {
+  static Future<Resource> parse(String payload) async {
+    final jsonMessage = jsonDecode(payload);
+    // TODO(ethan-tbd): validate jsonMessage against resource
+
+    // final jsonMessageData = jsonMessage['data'];
+    final resourceKind = jsonMessage['metadata']['kind'].toString();
+    // TODO(ethan-tbd): validate jsonMessageData against resourceKind
+
+    switch (ResourceKind.values
+        .firstWhere((kind) => kind.toString() == resourceKind)) {
       case ResourceKind.offering:
-        final offering = Offering.fromJson(json);
-        offering.verify();
+        final offering = Offering.fromJson(jsonMessage);
+        await offering.verify();
         return offering;
       case ResourceKind.balance:
       case ResourceKind.reputation:
@@ -83,8 +89,19 @@ abstract class Resource {
   }
 
   Future<void> verify() async {
-    // TODO(ethan-tbd): figure out how to verify
-    // await Jws.verify(signature ?? '');
+    final decodedJws = Jws.decode(signature ?? '', detachedPayload: _digest());
+
+    final verificationMethodId = decodedJws.header.kid;
+    final parsedDidUrl = Did.parse(verificationMethodId ?? '');
+
+    final signingDid = parsedDidUrl.uri;
+    if (signingDid != metadata.from) {
+      throw Exception(
+        'Signature verification failed: Was not signed by the expected DID',
+      );
+    }
+
+    await Jws.verify(signature ?? '', detachedPayload: _digest());
   }
 
   Uint8List _digest() {
