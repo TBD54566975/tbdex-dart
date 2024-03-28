@@ -55,7 +55,9 @@ class PayinDetails {
     return PayinDetails(
       currencyCode: json['currencyCode'],
       methods: (json['methods'] as List)
-          .map((e) => PayinMethod.fromJson(e))
+          .map(
+            (method) => PayinMethod.fromJson(method as Map<String, dynamic>),
+          )
           .toList(),
       min: json['min'],
       max: json['max'],
@@ -65,7 +67,7 @@ class PayinDetails {
   Map<String, dynamic> toJson() {
     return {
       'currencyCode': currencyCode,
-      'methods': methods.map((e) => e.toJson()).toList(),
+      'methods': methods.map((method) => method.toJson()).toList(),
       'min': min,
       'max': max,
     };
@@ -89,7 +91,9 @@ class PayoutDetails {
     return PayoutDetails(
       currencyCode: json['currencyCode'],
       methods: (json['methods'] as List)
-          .map((e) => PayoutMethod.fromJson(e))
+          .map(
+            (method) => PayoutMethod.fromJson(method as Map<String, dynamic>),
+          )
           .toList(),
       min: json['min'],
       max: json['max'],
@@ -99,7 +103,7 @@ class PayoutDetails {
   Map<String, dynamic> toJson() {
     return {
       'currencyCode': currencyCode,
-      'methods': methods.map((e) => e.toJson()).toList(),
+      'methods': methods.map((method) => method.toJson()).toList(),
       'min': min,
       'max': max,
     };

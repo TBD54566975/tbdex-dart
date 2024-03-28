@@ -20,7 +20,7 @@ class RfqData extends MessageData {
       offeringId: json['offeringId'],
       payin: SelectedPayinMethod.fromJson(json['payin']),
       payout: SelectedPayoutMethod.fromJson(json['payout']),
-      claims: (json['claims'] as List).map((e) => e as String).toList(),
+      claims: (json['claims'] as List).map((claim) => claim as String).toList(),
     );
   }
 
@@ -190,7 +190,11 @@ class CloseData extends MessageData {
   }
 }
 
-class OrderData extends MessageData {}
+class OrderData extends MessageData {
+  Map<String, dynamic> toJson() {
+    return {};
+  }
+}
 
 class OrderStatusData extends MessageData {
   final String orderStatus;
