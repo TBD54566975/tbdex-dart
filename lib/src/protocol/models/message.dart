@@ -116,6 +116,11 @@ abstract class Message {
   }
 
   Future<void> verify() async {
+    if (signature == null) {
+      throw Exception(
+        'signature verification failed: expected signature property to exist',
+      );
+    }
     final decodedJws = Jws.decode(signature ?? '', detachedPayload: _digest());
 
     final verificationMethodId = decodedJws.header.kid;
@@ -124,7 +129,7 @@ abstract class Message {
     final signingDid = parsedDidUrl.uri;
     if (signingDid != metadata.from) {
       throw Exception(
-        'Signature verification failed: Was not signed by the expected DID',
+        'signature verification failed: was not signed by the expected DID',
       );
     }
 
