@@ -119,7 +119,7 @@ class TestData {
       aliceDid.uri,
       pfiDid.uri,
       TypeId.generate(MessageKind.rfq.name),
-      OrderStatusData(orderStatus: 'my status'),
+      OrderStatusData(orderStatus: 'order status'),
     );
   }
 
@@ -128,7 +128,7 @@ class TestData {
       aliceDid.uri,
       pfiDid.uri,
       TypeId.generate(MessageKind.rfq.name),
-      CloseData(reason: 'test reason'),
+      CloseData(reason: 'reason'),
     );
   }
 
