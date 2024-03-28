@@ -43,7 +43,7 @@ class Offering extends Resource {
     if (resource is Offering) {
       return resource;
     } else {
-      throw Exception('Parsed resource is not an Offering');
+      throw Exception('parsed resource is not an offering');
     }
   }
 
