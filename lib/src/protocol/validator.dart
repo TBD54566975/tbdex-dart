@@ -11,7 +11,7 @@ class Validator {
     final schemasPath = p.join('tbdex', 'hosted', 'json-schemas');
     final refProvider = await _createRefProvider(schemasPath);
 
-    var schemaFiles = {
+    final schemaFiles = {
       'close': 'close.schema.json',
       'definitions': 'definitions.json',
       'offering': 'offering.schema.json',
@@ -24,14 +24,11 @@ class Validator {
     };
 
     for (final entry in schemaFiles.entries) {
-      var schemaName = entry.key;
-      var filename = entry.value;
-      final filePath = p.join(schemasPath, filename);
+      final filePath = p.join(schemasPath, entry.value);
+      final schemaJsonString = await File(filePath).readAsString();
+      final schemaJson = json.decode(schemaJsonString);
 
-      var schemaJsonString = await File(filePath).readAsString();
-      var schemaJson = json.decode(schemaJsonString);
-
-      _schemaMap[schemaName] =
+      _schemaMap[entry.key] =
           JsonSchema.create(schemaJson, refProvider: refProvider);
     }
   }
