@@ -5,11 +5,40 @@ import 'package:json_schema/json_schema.dart';
 import 'package:path/path.dart' as p;
 
 class Validator {
-  static final Map<String, JsonSchema> _schemaMap = {};
+  factory Validator._internal() {
+    _initialize();
+    return Validator._();
+  }
 
-  static Future<void> initialize() async {
+  static final Map<String, JsonSchema> _schemaMap = {};
+  static final Validator _instance = Validator._internal();
+
+  static void validate(Map<String, dynamic> json, String schemaName) {
+    _instance.validateJson(json, schemaName);
+  }
+
+  Validator._();
+
+  void validateJson(Map<String, dynamic> json, String schemaName) {
+    final schema = _schemaMap[schemaName];
+    if (schema == null) {
+      throw Exception('no schema with name $schemaName exists');
+    }
+    final validationResult = schema.validate(json);
+    if (validationResult.isValid == false) {
+      _handleValidationError(validationResult.errors);
+    }
+  }
+
+  void _handleValidationError(List<ValidationError> errors) {
+    if (errors.isNotEmpty) {
+      throw Exception(errors.join(', '));
+    }
+  }
+
+  static void _initialize() {
     final schemasPath = p.join('tbdex', 'hosted', 'json-schemas');
-    final refProvider = await _createRefProvider(schemasPath);
+    final refProvider = _createRefProvider(schemasPath);
 
     final schemaFiles = {
       'close': 'close.schema.json',
@@ -25,7 +54,7 @@ class Validator {
 
     for (final entry in schemaFiles.entries) {
       final filePath = p.join(schemasPath, entry.value);
-      final schemaJsonString = await File(filePath).readAsString();
+      final schemaJsonString = File(filePath).readAsStringSync();
       final schemaJson = json.decode(schemaJsonString);
 
       _schemaMap[entry.key] =
@@ -33,30 +62,13 @@ class Validator {
     }
   }
 
-  static void validate(Map<String, dynamic> json, String schemaName) {
-    final schema = _schemaMap[schemaName];
-    if (schema == null) {
-      throw Exception('no schema with name $schemaName exists');
-    }
-    final validationResult = schema.validate(json);
-    if (validationResult.isValid == false) {
-      _handleValidationError(validationResult.errors);
-    }
-  }
-
-  static Future<RefProvider> _createRefProvider(String schemasPath) async {
+  static RefProvider _createRefProvider(String schemasPath) {
     final schemaJson = json.decode(
-      await File(p.join(schemasPath, 'definitions.json')).readAsString(),
+      File(p.join(schemasPath, 'definitions.json')).readAsStringSync(),
     );
 
     return RefProvider.sync(
       (ref) => ref == 'https://tbdex.dev/definitions.json' ? schemaJson : null,
     );
-  }
-
-  static void _handleValidationError(List<ValidationError> errors) {
-    if (errors.isNotEmpty) {
-      throw Exception(errors.join(', '));
-    }
   }
 }
