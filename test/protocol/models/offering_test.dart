@@ -38,6 +38,7 @@ void main() async {
       expect(parsed.toString(), equals(jsonResource));
     });
 
+    // TODO(ethan-tbd): do we want explicit parsing?
     test('can parse an offering explicitly', () async {
       final offering = TestData.getOffering();
       await offering.sign(TestData.pfiDid);
