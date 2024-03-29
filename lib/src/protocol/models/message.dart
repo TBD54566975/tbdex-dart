@@ -87,7 +87,7 @@ abstract class Message {
 
     final matchedKind = MessageKind.values.firstWhere(
       (kind) => kind.name == messageKind,
-      orElse: () => throw Exception('unknown resource kind: $messageKind'),
+      orElse: () => throw Exception('unknown message kind: $messageKind'),
     );
 
     switch (matchedKind) {
