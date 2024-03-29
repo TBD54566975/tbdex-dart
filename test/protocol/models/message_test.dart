@@ -52,7 +52,7 @@ void main() async {
         throwsA(
           isA<Exception>().having(
             (e) => e.toString(),
-            'message',
+            'signature verification',
             contains(
               'signature verification failed: was not signed by the expected DID',
             ),
