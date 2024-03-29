@@ -79,7 +79,6 @@ abstract class Message {
     await Validator.initialize();
 
     final jsonMessage = jsonDecode(payload);
-    print(jsonMessage);
     Validator.validate(jsonMessage, 'message');
 
     final jsonMessageData = jsonMessage['data'];
