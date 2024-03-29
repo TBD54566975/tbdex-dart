@@ -1,3 +1,4 @@
+import 'package:decimal/decimal.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
@@ -46,32 +47,52 @@ class Rfq extends Message {
   }
 
   void verifyOfferingRequirements(Offering offering) {
-    if (data.offeringId != offering.metadata.id) {
-      throw ArgumentError('offering id does not match');
+    if (metadata.protocol != offering.metadata.protocol) {
+      throw Exception(
+        'protocol version mismatch: ${offering.metadata.protocol} != ${metadata.protocol}',
+      );
     }
 
-    // if (offering.data.payinCurrency.minAmount != null) {
-    //   if (offering.data.payinCurrency.minAmount > data.payinAmount) {
-    //     throw Exception('The payin amount is less than the minimum required amount.');
-    //   }
-    // }
+    if (data.offeringId != offering.metadata.id) {
+      throw Exception(
+        'offering id mismatch: ${offering.metadata.id} != ${data.offeringId}',
+      );
+    }
 
-    // if (offering.data.payinCurrency.maxAmount != null) {
-    //   if (data.payinAmount > offering.data.payinCurrency.maxAmount!) {
-    //     throw Exception('The payin amount exceeds the maximum allowed amount.');
-    //   }
-    // }
+    if (offering.data.payin.min != null) {
+      if (Decimal.parse(data.payin.amount) <
+          Decimal.parse(offering.data.payin.min ?? '')) {
+        throw Exception(
+          'payin amount is less than the minimum required amount',
+        );
+      }
+    }
 
-    final payinMethod = offering.data.payin.methods
-        .firstWhere((method) => method.kind == data.payin.kind);
+    if (offering.data.payin.max != null) {
+      if (Decimal.parse(data.payin.amount) >
+          Decimal.parse(offering.data.payin.max ?? '')) {
+        throw Exception(
+          'payin amount is greater than the maximum allowed amount',
+        );
+      }
+    }
+
+    final payinMethod = offering.data.payin.methods.firstWhere(
+      (method) => method.kind == data.payin.kind,
+      orElse: () =>
+          throw Exception('unknown offering kind: ${data.payin.kind}'),
+    );
 
     final payinSchema = payinMethod.getRequiredPaymentDetailsSchema();
     if (payinSchema != null) {
       payinSchema.validate(data.payin.paymentDetails);
     }
 
-    final payoutMethod = offering.data.payout.methods
-        .firstWhere((method) => method.kind == data.payout.kind);
+    final payoutMethod = offering.data.payout.methods.firstWhere(
+      (method) => method.kind == data.payout.kind,
+      orElse: () =>
+          throw Exception('unknown offering kind: ${data.payout.kind}'),
+    );
 
     final payoutSchema = payoutMethod.getRequiredPaymentDetailsSchema();
     if (payoutSchema != null) {
