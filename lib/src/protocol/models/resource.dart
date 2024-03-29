@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
 import 'package:tbdex/src/protocol/models/resource_data.dart';
+import 'package:tbdex/src/protocol/validator.dart';
 import 'package:web5/web5.dart';
 
 abstract class Metadata {}
@@ -33,8 +34,7 @@ class ResourceMetadata extends Metadata {
 
   factory ResourceMetadata.fromJson(Map<String, dynamic> json) {
     return ResourceMetadata(
-      kind: ResourceKind.values
-          .firstWhere((kind) => kind.toString() == json['kind']),
+      kind: ResourceKind.values.firstWhere((kind) => kind.name == json['kind']),
       from: json['from'],
       id: json['id'],
       protocol: json['protocol'],
@@ -45,7 +45,7 @@ class ResourceMetadata extends Metadata {
 
   Map<String, dynamic> toJson() {
     return {
-      'kind': kind.toString(),
+      'kind': kind.name,
       'from': from,
       'id': id,
       'protocol': protocol,
@@ -61,15 +61,18 @@ abstract class Resource {
   String? signature;
 
   static Future<Resource> parse(String payload) async {
+    // TODO: how to initialize properly?
+    await Validator.initialize();
+
     final jsonMessage = jsonDecode(payload);
-    // TODO(ethan-tbd): validate jsonMessage against resource
+    Validator.validate(jsonMessage, 'resource');
 
-    // final jsonMessageData = jsonMessage['data'];
+    final jsonResourceData = jsonMessage['data'];
     final resourceKind = jsonMessage['metadata']['kind'].toString();
-    // TODO(ethan-tbd): validate jsonMessageData against resourceKind
+    Validator.validate(jsonResourceData, resourceKind);
 
-    switch (ResourceKind.values
-        .firstWhere((kind) => kind.toString() == resourceKind)) {
+    switch (
+        ResourceKind.values.firstWhere((kind) => kind.name == resourceKind)) {
       case ResourceKind.offering:
         final offering = Offering.fromJson(jsonMessage);
         await offering.verify();

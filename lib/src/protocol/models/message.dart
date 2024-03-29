@@ -9,6 +9,7 @@ import 'package:tbdex/src/protocol/models/order_status.dart';
 import 'package:tbdex/src/protocol/models/quote.dart';
 import 'package:tbdex/src/protocol/models/resource.dart';
 import 'package:tbdex/src/protocol/models/rfq.dart';
+import 'package:tbdex/src/protocol/validator.dart';
 import 'package:web5/web5.dart';
 
 enum MessageKind {
@@ -42,8 +43,7 @@ class MessageMetadata extends Metadata {
 
   factory MessageMetadata.fromJson(Map<String, dynamic> json) {
     return MessageMetadata(
-      kind: MessageKind.values
-          .firstWhere((kind) => kind.toString() == json['kind']),
+      kind: MessageKind.values.firstWhere((kind) => kind.name == json['kind']),
       to: json['to'],
       from: json['from'],
       id: json['id'],
@@ -56,14 +56,14 @@ class MessageMetadata extends Metadata {
 
   Map<String, dynamic> toJson() {
     return {
-      'kind': kind.toString(),
+      'kind': kind.name,
       'to': to,
       'from': from,
       'id': id,
       'exchangeId': exchangeId,
       'createdAt': createdAt,
       'protocol': protocol,
-      'externalId': externalId,
+      if (externalId != null) 'externalId': externalId,
     };
   }
 }
@@ -75,15 +75,18 @@ abstract class Message {
   String? signature;
 
   static Future<Message> parse(String payload) async {
+    // TODO: how to initialize properly?
+    await Validator.initialize();
+
     final jsonMessage = jsonDecode(payload);
-    // TODO(ethan-tbd): validate jsonMessage against message
+    print(jsonMessage);
+    Validator.validate(jsonMessage, 'message');
 
-    // final jsonMessageData = jsonMessage['data'];
+    final jsonMessageData = jsonMessage['data'];
     final messageKind = jsonMessage['metadata']['kind'].toString();
-    // TODO(ethan-tbd): validate jsonMessageData against messageKind
+    Validator.validate(jsonMessageData, messageKind);
 
-    switch (MessageKind.values
-        .firstWhere((kind) => kind.toString() == messageKind)) {
+    switch (MessageKind.values.firstWhere((kind) => kind.name == messageKind)) {
       case MessageKind.rfq:
         final rfq = Rfq.fromJson(jsonMessage);
         await rfq.verify();

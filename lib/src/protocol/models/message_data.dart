@@ -57,7 +57,7 @@ class SelectedPayinMethod {
     return {
       'amount': amount,
       'kind': kind,
-      'paymentDetails': paymentDetails,
+      if (paymentDetails != null) 'paymentDetails': paymentDetails,
     };
   }
 }
@@ -78,7 +78,7 @@ class SelectedPayoutMethod {
   Map<String, dynamic> toJson() {
     return {
       'kind': kind,
-      'paymentDetails': paymentDetails,
+      if (paymentDetails != null) 'paymentDetails': paymentDetails,
     };
   }
 }
@@ -139,8 +139,9 @@ class QuoteDetails {
     return {
       'currencyCode': currencyCode,
       'amount': amount,
-      'fee': fee,
-      'paymentInstruction': paymentInstruction?.toJson(),
+      if (fee != null) 'fee': fee,
+      if (paymentInstruction != null)
+        'paymentInstruction': paymentInstruction?.toJson(),
     };
   }
 }
@@ -149,7 +150,10 @@ class PaymentInstruction {
   final String? link;
   final String? instruction;
 
-  PaymentInstruction({this.link, this.instruction});
+  PaymentInstruction({
+    this.link,
+    this.instruction,
+  });
 
   factory PaymentInstruction.fromJson(Map<String, dynamic> json) {
     return PaymentInstruction(
@@ -160,8 +164,8 @@ class PaymentInstruction {
 
   Map<String, dynamic> toJson() {
     return {
-      'link': link,
-      'instruction': instruction,
+      if (link != null) 'link': link,
+      if (instruction != null) 'instruction': instruction,
     };
   }
 }
@@ -184,13 +188,15 @@ class CloseData extends MessageData {
 
   Map<String, dynamic> toJson() {
     return {
-      'success': success,
-      'reason': reason,
+      if (success != null) 'success': success,
+      if (reason != null) 'reason': reason,
     };
   }
 }
 
 class OrderData extends MessageData {
+  OrderData();
+
   Map<String, dynamic> toJson() {
     return {};
   }
