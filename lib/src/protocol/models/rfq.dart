@@ -1,6 +1,7 @@
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
+import 'package:typeid/typeid.dart';
 
 class Rfq extends Message {
   @override
@@ -31,8 +32,8 @@ class Rfq extends Message {
       kind: MessageKind.rfq,
       to: to,
       from: from,
-      id: 'rfq_id',
-      exchangeId: 'rfq_id',
+      id: TypeId.generate(MessageKind.rfq.name),
+      exchangeId: TypeId.generate(MessageKind.rfq.name),
       createdAt: now,
       protocol: protocol,
       externalId: externalId,
