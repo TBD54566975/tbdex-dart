@@ -26,11 +26,11 @@ void main() async {
     test('can parse order from a json string', () async {
       final order = TestData.getOrder();
       await order.sign(TestData.pfiDid);
-      final jsonResource = jsonEncode(order.toJson());
-      final parsed = await Message.parse(jsonResource);
+      final json = jsonEncode(order.toJson());
+      final parsed = await Message.parse(json);
 
       expect(parsed, isA<Order>());
-      expect(parsed.toString(), equals(jsonResource));
+      expect(parsed.toString(), equals(json));
     });
   });
 }

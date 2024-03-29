@@ -31,19 +31,19 @@ void main() async {
     test('can parse offering from a json string', () async {
       final offering = TestData.getOffering();
       await offering.sign(TestData.pfiDid);
-      final jsonResource = jsonEncode(offering.toJson());
-      final parsed = await Resource.parse(jsonResource);
+      final json = jsonEncode(offering.toJson());
+      final parsed = await Resource.parse(json);
 
       expect(parsed, isA<Offering>());
-      expect(parsed.toString(), equals(jsonResource));
+      expect(parsed.toString(), equals(json));
     });
 
     // TODO(ethan-tbd): do we want explicit parsing?
     test('can parse an offering explicitly', () async {
       final offering = TestData.getOffering();
       await offering.sign(TestData.pfiDid);
-      final jsonResource = jsonEncode(offering.toJson());
-      final parsedOffering = await Offering.parse(jsonResource);
+      final json = jsonEncode(offering.toJson());
+      final parsedOffering = await Offering.parse(json);
 
       expect(parsedOffering, isA<Offering>());
     });
