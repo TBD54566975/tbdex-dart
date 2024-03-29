@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:json_schema/json_schema.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
@@ -132,25 +133,26 @@ class TestData {
     );
   }
 
-  static Map<String, dynamic> requiredPaymentDetailsSchema() {
-    return jsonDecode(r'''
-  {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "additionalProperties": false,
-    "type": "object",
-    "properties": {
-      "phoneNumber": {
-        "minLength": 12,
-        "description": "Mobile Money account number of the Recipient",
-        "type": "string",
-        "title": "Phone Number",
-        "maxLength": 12
+  static JsonSchema requiredPaymentDetailsSchema() {
+    return JsonSchema.create(
+      jsonDecode(r'''
+      {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+          "phoneNumber": {
+            "minLength": 12,
+            "description": "Mobile Money account number of the Recipient",
+            "type": "string",
+            "title": "Phone Number",
+            "maxLength": 12
+          }
+        },
+        "required": [
+          "phoneNumber"
+        ]
       }
-    },
-    "required": [
-      "accountNumber"
-    ]
-  }
-  ''');
+      '''),
+    );
   }
 }
