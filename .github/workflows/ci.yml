@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Init Hermit
+        uses: cashapp/activate-hermit@v1
+        with:
+          cache: true
+
+      - name: Get tbdex test vectors
+        run: git submodule update --init --recursive
+
+      - name: Install Dependencies
+        run: just get
+
+      - name: Run Dart Analyze
+        run: just analyze
+
+      - name: Run Dart Test
+        run: just test
