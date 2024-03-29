@@ -64,9 +64,6 @@ abstract class Resource {
   String? signature;
 
   static Future<Resource> parse(String payload) async {
-    // TODO: how to initialize properly?
-    await Validator.initialize();
-
     final jsonMessage = jsonDecode(payload);
     Validator.validate(jsonMessage, 'resource');
 

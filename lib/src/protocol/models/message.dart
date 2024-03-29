@@ -78,9 +78,6 @@ abstract class Message {
   String? signature;
 
   static Future<Message> parse(String payload) async {
-    // TODO: how to initialize properly?
-    await Validator.initialize();
-
     final jsonMessage = jsonDecode(payload);
     Validator.validate(jsonMessage, 'message');
 
