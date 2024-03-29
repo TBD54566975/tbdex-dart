@@ -37,7 +37,7 @@ class Validator {
   }
 
   static void _initialize() {
-    final schemasPath = p.join('tbdex', 'hosted', 'json-schemas');
+    final schemasPath = p.join('lib', 'src', 'protocol', 'json-schemas');
     final refProvider = _createRefProvider(schemasPath);
 
     final schemaFiles = {
