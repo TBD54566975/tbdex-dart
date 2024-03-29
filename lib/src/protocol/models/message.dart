@@ -43,7 +43,10 @@ class MessageMetadata extends Metadata {
 
   factory MessageMetadata.fromJson(Map<String, dynamic> json) {
     return MessageMetadata(
-      kind: MessageKind.values.firstWhere((kind) => kind.name == json['kind']),
+      kind: MessageKind.values.firstWhere(
+        (kind) => kind.name == json['kind'],
+        orElse: () => throw Exception('unknown message kind: ${json['kind']}'),
+      ),
       to: json['to'],
       from: json['from'],
       id: json['id'],
@@ -85,7 +88,12 @@ abstract class Message {
     final messageKind = jsonMessage['metadata']['kind'].toString();
     Validator.validate(jsonMessageData, messageKind);
 
-    switch (MessageKind.values.firstWhere((kind) => kind.name == messageKind)) {
+    final matchedKind = MessageKind.values.firstWhere(
+      (kind) => kind.name == messageKind,
+      orElse: () => throw Exception('unknown resource kind: $messageKind'),
+    );
+
+    switch (matchedKind) {
       case MessageKind.rfq:
         final rfq = Rfq.fromJson(jsonMessage);
         await rfq.verify();

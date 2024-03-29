@@ -34,7 +34,10 @@ class ResourceMetadata extends Metadata {
 
   factory ResourceMetadata.fromJson(Map<String, dynamic> json) {
     return ResourceMetadata(
-      kind: ResourceKind.values.firstWhere((kind) => kind.name == json['kind']),
+      kind: ResourceKind.values.firstWhere(
+        (kind) => kind.name == json['kind'],
+        orElse: () => throw Exception('unknown resource kind: ${json['kind']}'),
+      ),
       from: json['from'],
       id: json['id'],
       protocol: json['protocol'],
@@ -71,8 +74,12 @@ abstract class Resource {
     final resourceKind = jsonMessage['metadata']['kind'].toString();
     Validator.validate(jsonResourceData, resourceKind);
 
-    switch (
-        ResourceKind.values.firstWhere((kind) => kind.name == resourceKind)) {
+    final matchedKind = ResourceKind.values.firstWhere(
+      (kind) => kind.name == resourceKind,
+      orElse: () => throw Exception('unknown resource kind: $resourceKind'),
+    );
+
+    switch (matchedKind) {
       case ResourceKind.offering:
         final offering = Offering.fromJson(jsonMessage);
         await offering.verify();
