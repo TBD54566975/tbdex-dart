@@ -47,7 +47,7 @@ class Rfq extends Message {
 
   void verifyOfferingRequirements(Offering offering) {
     if (data.offeringId != offering.metadata.id) {
-      throw ArgumentError('The offering ID does not match.');
+      throw ArgumentError('offering id does not match');
     }
 
     // if (offering.data.payinCurrency.minAmount != null) {
@@ -62,27 +62,25 @@ class Rfq extends Message {
     //   }
     // }
 
-    // validatePaymentMethod(data.payinMethod, offering.data.payin.methods);
-    // validatePaymentMethod(data.payoutMethod, offering.data.payout.methods);
+    final payinMethod = offering.data.payin.methods
+        .firstWhere((method) => method.kind == data.payin.kind);
+
+    final payinSchema = payinMethod.getRequiredPaymentDetailsSchema();
+    if (payinSchema != null) {
+      payinSchema.validate(data.payin.paymentDetails);
+    }
+
+    final payoutMethod = offering.data.payout.methods
+        .firstWhere((method) => method.kind == data.payout.kind);
+
+    final payoutSchema = payoutMethod.getRequiredPaymentDetailsSchema();
+    if (payoutSchema != null) {
+      payoutSchema.validate(data.payout.paymentDetails);
+    }
 
     // TODO(ethan-tbd): verify claims
     // offering.data.requiredClaims?.forEach(verifyClaims);
   }
-
-  // void validatePaymentMethod(
-  //   SelectedPaymentMethod selectedMethod,
-  //   List<PaymentMethod> offeringMethods,
-  // ) {
-  //   final matchedOfferingMethod = offeringMethods
-  //       .firstWhere((method) => method.kind == selectedMethod.kind);
-
-  //   var schema = matchedOfferingMethod.getRequiredPaymentDetailsSchema();
-  //   if (matchedOfferingMethod.requiredPaymentDetails != null &&
-  //       schema != null) {
-  //     var jsonNodePaymentDetails = jsonEncode(selectedMethod.paymentDetails);
-  //     schema.validate(jsonNodePaymentDetails);
-  //   }
-  // }
 
   factory Rfq.fromJson(Map<String, dynamic> json) {
     return Rfq._(
