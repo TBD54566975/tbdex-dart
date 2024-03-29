@@ -42,5 +42,56 @@ void main() async {
       expect(parsed, isA<Rfq>());
       expect(parsed.toString(), equals(jsonResource));
     });
+
+    test('can verify rfq with offering', () {
+      final offering = TestData.getOffering();
+      final rfq = TestData.getRfq(offeringId: offering.metadata.id);
+      expect(() => rfq.verifyOfferingRequirements(offering), returnsNormally);
+    });
+
+    test('should throw exception if rfq offeringId differs from offering id',
+        () {
+      final offering = TestData.getOffering();
+      final rfq = TestData.getRfq(offeringId: 'fake_offeringId');
+      expect(() => rfq.verifyOfferingRequirements(offering), throwsException);
+    });
+
+    test(
+        'should throw exception if rfq payin amount is greater than offering payin max',
+        () {
+      final offering = TestData.getOffering();
+      final rfq = TestData.getRfq(amount: '100.91');
+      expect(() => rfq.verifyOfferingRequirements(offering), throwsException);
+    });
+
+    test(
+        'should throw exception if rfq payin amount is less than offering payin min',
+        () {
+      final offering = TestData.getOffering();
+      final rfq = TestData.getRfq(amount: '0.00');
+      expect(() => rfq.verifyOfferingRequirements(offering), throwsException);
+    });
+
+    test(
+        'should throw exception if rfq payin kind is not a valid offering payin kind',
+        () {
+      final offering = TestData.getOffering();
+      final rfq = TestData.getRfq(
+        offeringId: offering.metadata.id,
+        payinKind: 'fake_payinKind',
+      );
+      expect(() => rfq.verifyOfferingRequirements(offering), throwsException);
+    });
+
+    test(
+        'should throw exception if rfq payout kind is not a valid offering payin kind',
+        () {
+      final offering = TestData.getOffering();
+      final rfq = TestData.getRfq(
+        offeringId: offering.metadata.id,
+        payoutKind: 'fake_payoutKind',
+      );
+      expect(() => rfq.verifyOfferingRequirements(offering), throwsException);
+    });
   });
 }
