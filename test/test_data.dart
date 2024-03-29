@@ -141,7 +141,6 @@ class TestData {
     "properties": {
       "phoneNumber": {
         "minLength": 12,
-        "pattern": "^+2547[0-9]{8}$",
         "description": "Mobile Money account number of the Recipient",
         "type": "string",
         "title": "Phone Number",
