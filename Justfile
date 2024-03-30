@@ -3,13 +3,10 @@ schemas:
   @cp -r tbdex/hosted/json-schemas lib/src/protocol
 
 get:
-  #!/bin/bash
-  dart pub get
+  @dart pub get
 
 test:
-  #!/bin/bash
-  dart test
+  @dart test
 
 analyze:
-  #!/bin/bash
-  dart analyze
+  @dart analyze
