@@ -12,20 +12,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Init Hermit
         uses: cashapp/activate-hermit@v1
         with:
           cache: true
 
-      - name: Get tbdex test vectors
-        run: git submodule update --init --recursive
-
       - name: Install Dependencies
         run: just get
 
-      - name: Run Dart Analyze
+      - name: Run Static Analysis
         run: just analyze
 
-      - name: Run Dart Test
+      - name: Run Tests
         run: just test
