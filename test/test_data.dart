@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:json_schema/json_schema.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
@@ -40,7 +41,7 @@ class TestData {
           max: '100.00',
           methods: [
             PayinMethod(
-              kind: 'BTC_ADDRESS',
+              kind: 'DEBIT_CARD',
               requiredPaymentDetails: requiredPaymentDetailsSchema(),
             ),
           ],
@@ -50,7 +51,7 @@ class TestData {
           methods: [
             PayoutMethod(
               estimatedSettlementTime: 0,
-              kind: 'BANK',
+              kind: 'DEBIT_CARD',
               requiredPaymentDetails: requiredPaymentDetailsSchema(),
             ),
           ],
@@ -59,18 +60,23 @@ class TestData {
     );
   }
 
-  static Rfq getRfq() {
+  static Rfq getRfq({
+    String? offeringId,
+    String? amount,
+    String? payinKind,
+    String? payoutKind,
+  }) {
     return Rfq.create(
       pfiDid.uri,
       aliceDid.uri,
       RfqData(
-        offeringId: TypeId.generate(ResourceKind.offering.name),
+        offeringId: offeringId ?? TypeId.generate(ResourceKind.offering.name),
         payin: SelectedPayinMethod(
-          amount: '100',
-          kind: 'BTC_ADDRESS',
+          amount: amount ?? '100',
+          kind: payinKind ?? 'DEBIT_CARD',
         ),
         payout: SelectedPayoutMethod(
-          kind: 'BANK',
+          kind: payoutKind ?? 'DEBIT_CARD',
         ),
         claims: [],
       ),
@@ -132,26 +138,39 @@ class TestData {
     );
   }
 
-  static Map<String, dynamic> requiredPaymentDetailsSchema() {
-    return jsonDecode(r'''
-  {
-    "$schema": "http://json-schema.org/draft-07/schema",
-    "additionalProperties": false,
-    "type": "object",
-    "properties": {
-      "phoneNumber": {
-        "minLength": 12,
-        "pattern": "^+2547[0-9]{8}$",
-        "description": "Mobile Money account number of the Recipient",
-        "type": "string",
-        "title": "Phone Number",
-        "maxLength": 12
-      }
-    },
-    "required": [
-      "accountNumber"
-    ]
-  }
-  ''');
+  static JsonSchema requiredPaymentDetailsSchema() {
+    return JsonSchema.create(
+      jsonDecode(r'''
+        {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "cardNumber": {
+              "type": "string",
+              "description": "The 16-digit debit card number",
+              "minLength": 16,
+              "maxLength": 16
+            },
+            "expiryDate": {
+              "type": "string",
+              "description": "The expiry date of the card in MM/YY format",
+              "pattern": "^(0[1-9]|1[0-2])\\/([0-9]{2})$"
+            },
+            "cardHolderName": {
+              "type": "string",
+              "description": "Name of the cardholder as it appears on the card"
+            },
+            "cvv": {
+              "type": "string",
+              "description": "The 3-digit CVV code",
+              "minLength": 3,
+              "maxLength": 3
+            }
+          },
+          "required": ["cardNumber", "expiryDate", "cardHolderName", "cvv"],
+          "additionalProperties": false
+        }
+    '''),
+    );
   }
 }

@@ -9,6 +9,7 @@ import 'package:tbdex/src/protocol/models/order_status.dart';
 import 'package:tbdex/src/protocol/models/quote.dart';
 import 'package:tbdex/src/protocol/models/resource.dart';
 import 'package:tbdex/src/protocol/models/rfq.dart';
+import 'package:tbdex/src/protocol/validator.dart';
 import 'package:web5/web5.dart';
 
 enum MessageKind {
@@ -42,8 +43,10 @@ class MessageMetadata extends Metadata {
 
   factory MessageMetadata.fromJson(Map<String, dynamic> json) {
     return MessageMetadata(
-      kind: MessageKind.values
-          .firstWhere((kind) => kind.toString() == json['kind']),
+      kind: MessageKind.values.firstWhere(
+        (kind) => kind.name == json['kind'],
+        orElse: () => throw Exception('unknown message kind: ${json['kind']}'),
+      ),
       to: json['to'],
       from: json['from'],
       id: json['id'],
@@ -56,14 +59,14 @@ class MessageMetadata extends Metadata {
 
   Map<String, dynamic> toJson() {
     return {
-      'kind': kind.toString(),
+      'kind': kind.name,
       'to': to,
       'from': from,
       'id': id,
       'exchangeId': exchangeId,
       'createdAt': createdAt,
       'protocol': protocol,
-      'externalId': externalId,
+      if (externalId != null) 'externalId': externalId,
     };
   }
 }
@@ -75,15 +78,26 @@ abstract class Message {
   String? signature;
 
   static Future<Message> parse(String payload) async {
-    final jsonMessage = jsonDecode(payload);
-    // TODO(ethan-tbd): validate jsonMessage against message
+    final jsonMessage = jsonDecode(payload) as Map<String, dynamic>?;
+    if (jsonMessage == null) {
+      throw Exception('payload is not a valid JSON object');
+    }
+    Validator.validate(jsonMessage, 'message');
 
-    // final jsonMessageData = jsonMessage['data'];
-    final messageKind = jsonMessage['metadata']['kind'].toString();
-    // TODO(ethan-tbd): validate jsonMessageData against messageKind
+    final jsonMessageData = jsonMessage['data'];
+    final messageMetadata = jsonMessage['metadata'] as Map<String, dynamic>?;
+    if (messageMetadata == null) {
+      throw Exception('metadata property is required');
+    }
+    final messageKind = messageMetadata['kind'] as String? ?? '';
+    Validator.validate(jsonMessageData, messageKind);
 
-    switch (MessageKind.values
-        .firstWhere((kind) => kind.toString() == messageKind)) {
+    final matchedKind = MessageKind.values.firstWhere(
+      (kind) => kind.name == messageKind,
+      orElse: () => throw Exception('unknown message kind: $messageKind'),
+    );
+
+    switch (matchedKind) {
       case MessageKind.rfq:
         final rfq = Rfq.fromJson(jsonMessage);
         await rfq.verify();

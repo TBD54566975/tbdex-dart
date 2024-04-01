@@ -41,11 +41,11 @@ void main() async {
     test('can parse quote from a json string', () async {
       final quote = TestData.getQuote();
       await quote.sign(TestData.pfiDid);
-      final jsonResource = jsonEncode(quote.toJson());
-      final parsed = await Message.parse(jsonResource);
+      final json = jsonEncode(quote.toJson());
+      final parsed = await Message.parse(json);
 
       expect(parsed, isA<Quote>());
-      expect(parsed.toString(), equals(jsonResource));
+      expect(parsed.toString(), equals(json));
     });
   });
 }

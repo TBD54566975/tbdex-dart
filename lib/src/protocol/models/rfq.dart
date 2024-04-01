@@ -1,6 +1,8 @@
+import 'package:decimal/decimal.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
+import 'package:typeid/typeid.dart';
 
 class Rfq extends Message {
   @override
@@ -31,8 +33,8 @@ class Rfq extends Message {
       kind: MessageKind.rfq,
       to: to,
       from: from,
-      id: 'rfq_id',
-      exchangeId: 'rfq_id',
+      id: TypeId.generate(MessageKind.rfq.name),
+      exchangeId: TypeId.generate(MessageKind.rfq.name),
       createdAt: now,
       protocol: protocol,
       externalId: externalId,
@@ -45,43 +47,61 @@ class Rfq extends Message {
   }
 
   void verifyOfferingRequirements(Offering offering) {
-    if (data.offeringId != offering.metadata.id) {
-      throw ArgumentError('The offering ID does not match.');
+    if (metadata.protocol != offering.metadata.protocol) {
+      throw Exception(
+        'protocol version mismatch: ${offering.metadata.protocol} != ${metadata.protocol}',
+      );
     }
 
-    // if (offering.data.payinCurrency.minAmount != null) {
-    //   if (offering.data.payinCurrency.minAmount > data.payinAmount) {
-    //     throw Exception('The payin amount is less than the minimum required amount.');
-    //   }
-    // }
+    if (data.offeringId != offering.metadata.id) {
+      throw Exception(
+        'offering id mismatch: ${offering.metadata.id} != ${data.offeringId}',
+      );
+    }
 
-    // if (offering.data.payinCurrency.maxAmount != null) {
-    //   if (data.payinAmount > offering.data.payinCurrency.maxAmount!) {
-    //     throw Exception('The payin amount exceeds the maximum allowed amount.');
-    //   }
-    // }
+    if (offering.data.payin.min != null) {
+      if (Decimal.parse(data.payin.amount) <
+          Decimal.parse(offering.data.payin.min ?? '')) {
+        throw Exception(
+          'payin amount is less than the minimum required amount',
+        );
+      }
+    }
 
-    // validatePaymentMethod(data.payinMethod, offering.data.payin.methods);
-    // validatePaymentMethod(data.payoutMethod, offering.data.payout.methods);
+    if (offering.data.payin.max != null) {
+      if (Decimal.parse(data.payin.amount) >
+          Decimal.parse(offering.data.payin.max ?? '')) {
+        throw Exception(
+          'payin amount is greater than the maximum allowed amount',
+        );
+      }
+    }
+
+    final payinMethod = offering.data.payin.methods.firstWhere(
+      (method) => method.kind == data.payin.kind,
+      orElse: () =>
+          throw Exception('unknown offering kind: ${data.payin.kind}'),
+    );
+
+    final payinSchema = payinMethod.getRequiredPaymentDetailsSchema();
+    if (payinSchema != null) {
+      payinSchema.validate(data.payin.paymentDetails);
+    }
+
+    final payoutMethod = offering.data.payout.methods.firstWhere(
+      (method) => method.kind == data.payout.kind,
+      orElse: () =>
+          throw Exception('unknown offering kind: ${data.payout.kind}'),
+    );
+
+    final payoutSchema = payoutMethod.getRequiredPaymentDetailsSchema();
+    if (payoutSchema != null) {
+      payoutSchema.validate(data.payout.paymentDetails);
+    }
 
     // TODO(ethan-tbd): verify claims
     // offering.data.requiredClaims?.forEach(verifyClaims);
   }
-
-  // void validatePaymentMethod(
-  //   SelectedPaymentMethod selectedMethod,
-  //   List<PaymentMethod> offeringMethods,
-  // ) {
-  //   final matchedOfferingMethod = offeringMethods
-  //       .firstWhere((method) => method.kind == selectedMethod.kind);
-
-  //   var schema = matchedOfferingMethod.getRequiredPaymentDetailsSchema();
-  //   if (matchedOfferingMethod.requiredPaymentDetails != null &&
-  //       schema != null) {
-  //     var jsonNodePaymentDetails = jsonEncode(selectedMethod.paymentDetails);
-  //     schema.validate(jsonNodePaymentDetails);
-  //   }
-  // }
 
   factory Rfq.fromJson(Map<String, dynamic> json) {
     return Rfq._(

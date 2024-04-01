@@ -1,3 +1,5 @@
+import 'package:json_schema/json_schema.dart';
+
 abstract class Data {}
 
 abstract class ResourceData extends Data {}
@@ -70,8 +72,8 @@ class PayinDetails {
     return {
       'currencyCode': currencyCode,
       'methods': methods.map((method) => method.toJson()).toList(),
-      'min': min,
-      'max': max,
+      if (min != null) 'min': min,
+      if (max != null) 'max': max,
     };
   }
 }
@@ -108,8 +110,8 @@ class PayoutDetails {
     return {
       'currencyCode': currencyCode,
       'methods': methods.map((method) => method.toJson()).toList(),
-      'min': min,
-      'max': max,
+      if (min != null) 'min': min,
+      if (max != null) 'max': max,
     };
   }
 }
@@ -119,7 +121,7 @@ class PayinMethod {
   final String? name;
   final String? description;
   final String? group;
-  final dynamic requiredPaymentDetails;
+  final JsonSchema? requiredPaymentDetails;
   final String? fee;
   final String? min;
   final String? max;
@@ -135,11 +137,7 @@ class PayinMethod {
     this.max,
   });
 
-  dynamic getRequiredPaymentDetailsSchema() {
-    if (requiredPaymentDetails == null) return null;
-
-    return requiredPaymentDetails;
-  }
+  JsonSchema? getRequiredPaymentDetailsSchema() => requiredPaymentDetails;
 
   factory PayinMethod.fromJson(Map<String, dynamic> json) {
     return PayinMethod(
@@ -147,7 +145,7 @@ class PayinMethod {
       name: json['name'],
       description: json['description'],
       group: json['group'],
-      requiredPaymentDetails: json['requiredPaymentDetails'],
+      requiredPaymentDetails: JsonSchema.create(json['requiredPaymentDetails']),
       fee: json['fee'],
       min: json['min'],
       max: json['max'],
@@ -157,13 +155,14 @@ class PayinMethod {
   Map<String, dynamic> toJson() {
     return {
       'kind': kind,
-      'name': name,
-      'description': description,
-      'group': group,
-      'requiredPaymentDetails': requiredPaymentDetails,
-      'fee': fee,
-      'min': min,
-      'max': max,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (group != null) 'group': group,
+      if (requiredPaymentDetails != null)
+        'requiredPaymentDetails': requiredPaymentDetails?.schemaMap,
+      if (fee != null) 'fee': fee,
+      if (min != null) 'min': min,
+      if (max != null) 'max': max,
     };
   }
 }
@@ -174,7 +173,7 @@ class PayoutMethod {
   final String? name;
   final String? description;
   final String? group;
-  final dynamic requiredPaymentDetails;
+  final JsonSchema? requiredPaymentDetails;
   final String? fee;
   final String? min;
   final String? max;
@@ -191,11 +190,7 @@ class PayoutMethod {
     this.max,
   });
 
-  dynamic getRequiredPaymentDetailsSchema() {
-    if (requiredPaymentDetails == null) return null;
-
-    return requiredPaymentDetails;
-  }
+  JsonSchema? getRequiredPaymentDetailsSchema() => requiredPaymentDetails;
 
   factory PayoutMethod.fromJson(Map<String, dynamic> json) {
     return PayoutMethod(
@@ -204,7 +199,7 @@ class PayoutMethod {
       name: json['name'],
       description: json['description'],
       group: json['group'],
-      requiredPaymentDetails: json['requiredPaymentDetails'],
+      requiredPaymentDetails: JsonSchema.create(json['requiredPaymentDetails']),
       fee: json['fee'],
       min: json['min'],
       max: json['max'],
@@ -215,13 +210,14 @@ class PayoutMethod {
     return {
       'kind': kind,
       'estimatedSettlementTime': estimatedSettlementTime,
-      'name': name,
-      'description': description,
-      'group': group,
-      'requiredPaymentDetails': requiredPaymentDetails,
-      'fee': fee,
-      'min': min,
-      'max': max,
+      if (name != null) 'name': name,
+      if (description != null) 'description': description,
+      if (group != null) 'group': group,
+      if (requiredPaymentDetails != null)
+        'requiredPaymentDetails': requiredPaymentDetails?.schemaMap,
+      if (fee != null) 'fee': fee,
+      if (min != null) 'min': min,
+      if (max != null) 'max': max,
     };
   }
 }

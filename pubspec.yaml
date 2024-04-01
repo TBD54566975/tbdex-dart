@@ -3,11 +3,16 @@ description: Dart library for tbDEX.
 version: 1.0.0
 repository: https://github.com/TBD54566975/tbdex-dart
 
+publish_to: none
+
 environment:
   sdk: ^3.1.4
 
 dependencies:
   crypto: ^3.0.3
+  decimal: ^2.3.3
+  json_schema: ^5.1.3
+  path: ^1.9.0
   typeid: ^1.0.1
   web5:
     git:

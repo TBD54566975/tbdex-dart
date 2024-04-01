@@ -1,5 +1,6 @@
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
+import 'package:typeid/typeid.dart';
 
 class Order extends Message {
   @override
@@ -30,7 +31,7 @@ class Order extends Message {
       kind: MessageKind.order,
       to: to,
       from: from,
-      id: 'order_id',
+      id: TypeId.generate(MessageKind.order.name),
       exchangeId: exchangeId,
       createdAt: now,
       protocol: protocol,

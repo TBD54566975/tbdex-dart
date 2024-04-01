@@ -29,11 +29,11 @@ void main() async {
     test('can parse close from a json string', () async {
       final close = TestData.getClose();
       await close.sign(TestData.pfiDid);
-      final jsonResource = jsonEncode(close.toJson());
-      final parsed = await Message.parse(jsonResource);
+      final json = jsonEncode(close.toJson());
+      final parsed = await Message.parse(json);
 
       expect(parsed, isA<Close>());
-      expect(parsed.toString(), equals(jsonResource));
+      expect(parsed.toString(), equals(json));
     });
   });
 }

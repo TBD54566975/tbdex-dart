@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
 import 'package:tbdex/src/protocol/models/resource_data.dart';
+import 'package:tbdex/src/protocol/validator.dart';
 import 'package:web5/web5.dart';
 
 abstract class Metadata {}
@@ -33,8 +34,10 @@ class ResourceMetadata extends Metadata {
 
   factory ResourceMetadata.fromJson(Map<String, dynamic> json) {
     return ResourceMetadata(
-      kind: ResourceKind.values
-          .firstWhere((kind) => kind.toString() == json['kind']),
+      kind: ResourceKind.values.firstWhere(
+        (kind) => kind.name == json['kind'],
+        orElse: () => throw Exception('unknown resource kind: ${json['kind']}'),
+      ),
       from: json['from'],
       id: json['id'],
       protocol: json['protocol'],
@@ -45,7 +48,7 @@ class ResourceMetadata extends Metadata {
 
   Map<String, dynamic> toJson() {
     return {
-      'kind': kind.toString(),
+      'kind': kind.name,
       'from': from,
       'id': id,
       'protocol': protocol,
@@ -61,17 +64,28 @@ abstract class Resource {
   String? signature;
 
   static Future<Resource> parse(String payload) async {
-    final jsonMessage = jsonDecode(payload);
-    // TODO(ethan-tbd): validate jsonMessage against resource
+    final jsonResource = jsonDecode(payload) as Map<String, dynamic>?;
+    if (jsonResource == null) {
+      throw Exception('payload is not a valid JSON object');
+    }
+    Validator.validate(jsonResource, 'resource');
 
-    // final jsonMessageData = jsonMessage['data'];
-    final resourceKind = jsonMessage['metadata']['kind'].toString();
-    // TODO(ethan-tbd): validate jsonMessageData against resourceKind
+    final jsonResourceData = jsonResource['data'];
+    final resourceMetadata = jsonResource['metadata'] as Map<String, dynamic>?;
+    if (resourceMetadata == null) {
+      throw Exception('metadata property is required');
+    }
+    final resourceKind = resourceMetadata['kind'] as String? ?? '';
+    Validator.validate(jsonResourceData, resourceKind);
 
-    switch (ResourceKind.values
-        .firstWhere((kind) => kind.toString() == resourceKind)) {
+    final matchedKind = ResourceKind.values.firstWhere(
+      (kind) => kind.name == resourceKind,
+      orElse: () => throw Exception('unknown resource kind: $resourceKind'),
+    );
+
+    switch (matchedKind) {
       case ResourceKind.offering:
-        final offering = Offering.fromJson(jsonMessage);
+        final offering = Offering.fromJson(jsonResource);
         await offering.verify();
         return offering;
       case ResourceKind.balance:
