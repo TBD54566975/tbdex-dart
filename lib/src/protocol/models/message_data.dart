@@ -195,8 +195,6 @@ class CloseData extends MessageData {
 }
 
 class OrderData extends MessageData {
-  OrderData();
-
   Map<String, dynamic> toJson() {
     return {};
   }
