@@ -71,11 +71,11 @@ abstract class Resource {
     Validator.validate(jsonResource, 'resource');
 
     final jsonResourceData = jsonResource['data'];
-    final resourceMetadata = jsonResource['metadata'] as ResourceMetadata?;
+    final resourceMetadata = jsonResource['metadata'] as Map<String, dynamic>?;
     if (resourceMetadata == null) {
       throw Exception('metadata property is required');
     }
-    final resourceKind = resourceMetadata.kind.name;
+    final resourceKind = resourceMetadata['kind'] as String? ?? '';
     Validator.validate(jsonResourceData, resourceKind);
 
     final matchedKind = ResourceKind.values.firstWhere(

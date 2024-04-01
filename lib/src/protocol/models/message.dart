@@ -85,11 +85,11 @@ abstract class Message {
     Validator.validate(jsonMessage, 'message');
 
     final jsonMessageData = jsonMessage['data'];
-    final messageMetadata = jsonMessage['metadata'] as MessageMetadata?;
+    final messageMetadata = jsonMessage['metadata'] as Map<String, dynamic>?;
     if (messageMetadata == null) {
       throw Exception('metadata property is required');
     }
-    final messageKind = messageMetadata.kind.name;
+    final messageKind = messageMetadata['kind'] as String? ?? '';
     Validator.validate(jsonMessageData, messageKind);
 
     final matchedKind = MessageKind.values.firstWhere(
