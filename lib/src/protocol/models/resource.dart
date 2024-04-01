@@ -64,11 +64,18 @@ abstract class Resource {
   String? signature;
 
   static Future<Resource> parse(String payload) async {
-    final jsonMessage = jsonDecode(payload);
-    Validator.validate(jsonMessage, 'resource');
+    final jsonResource = jsonDecode(payload) as Map<String, dynamic>?;
+    if (jsonResource == null) {
+      throw Exception('payload is not a valid JSON object');
+    }
+    Validator.validate(jsonResource, 'resource');
 
-    final jsonResourceData = jsonMessage['data'];
-    final resourceKind = jsonMessage['metadata']['kind'].toString();
+    final jsonResourceData = jsonResource['data'];
+    final resourceMetadata = jsonResource['metadata'] as ResourceMetadata?;
+    if (resourceMetadata == null) {
+      throw Exception('metadata property is required');
+    }
+    final resourceKind = resourceMetadata.kind.name;
     Validator.validate(jsonResourceData, resourceKind);
 
     final matchedKind = ResourceKind.values.firstWhere(
@@ -78,7 +85,7 @@ abstract class Resource {
 
     switch (matchedKind) {
       case ResourceKind.offering:
-        final offering = Offering.fromJson(jsonMessage);
+        final offering = Offering.fromJson(jsonResource);
         await offering.verify();
         return offering;
       case ResourceKind.balance:

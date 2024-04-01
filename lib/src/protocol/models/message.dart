@@ -78,11 +78,18 @@ abstract class Message {
   String? signature;
 
   static Future<Message> parse(String payload) async {
-    final jsonMessage = jsonDecode(payload);
+    final jsonMessage = jsonDecode(payload) as Map<String, dynamic>?;
+    if (jsonMessage == null) {
+      throw Exception('payload is not a valid JSON object');
+    }
     Validator.validate(jsonMessage, 'message');
 
     final jsonMessageData = jsonMessage['data'];
-    final messageKind = jsonMessage['metadata']['kind'].toString();
+    final messageMetadata = jsonMessage['metadata'] as MessageMetadata?;
+    if (messageMetadata == null) {
+      throw Exception('metadata property is required');
+    }
+    final messageKind = messageMetadata.kind.name;
     Validator.validate(jsonMessageData, messageKind);
 
     final matchedKind = MessageKind.values.firstWhere(
