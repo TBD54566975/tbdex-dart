@@ -13,11 +13,11 @@ class Validator {
   static final Map<String, JsonSchema> _schemaMap = {};
   static final Validator _instance = Validator._internal();
 
+  Validator._();
+
   static void validate(Map<String, dynamic> json, String schemaName) {
     _instance.validateJson(json, schemaName);
   }
-
-  Validator._();
 
   void validateJson(Map<String, dynamic> json, String schemaName) {
     final schema = _schemaMap[schemaName];
