@@ -3,6 +3,14 @@ import 'dart:io';
 
 import 'package:json_schema/json_schema.dart';
 import 'package:path/path.dart' as p;
+import 'package:tbdex/src/protocol/models/close.dart';
+import 'package:tbdex/src/protocol/models/message.dart';
+import 'package:tbdex/src/protocol/models/offering.dart';
+import 'package:tbdex/src/protocol/models/order.dart';
+import 'package:tbdex/src/protocol/models/order_status.dart';
+import 'package:tbdex/src/protocol/models/quote.dart';
+import 'package:tbdex/src/protocol/models/resource.dart';
+import 'package:tbdex/src/protocol/models/rfq.dart';
 
 class Validator {
   factory Validator._internal() {
@@ -15,18 +23,79 @@ class Validator {
 
   Validator._();
 
-  static void validate(Map<String, dynamic> json, String schemaName) {
-    _instance.validateJson(json, schemaName);
+  static void validateMessage(Message message) {
+    _instance._validateMessage(message);
   }
 
-  void validateJson(Map<String, dynamic> json, String schemaName) {
-    final schema = _schemaMap[schemaName];
-    if (schema == null) {
-      throw Exception('no schema with name $schemaName exists');
-    }
+  static void validateResource(Resource resource) {
+    _instance._validateResource(resource);
+  }
+
+  void _validate(Map<String, dynamic> json, String schemaName) {
+    final schema = _schemaMap[schemaName] ??
+        (throw Exception('no schema with name $schemaName exists'));
     final validationResult = schema.validate(json);
-    if (validationResult.isValid == false) {
+
+    if (!validationResult.isValid) {
       _handleValidationError(validationResult.errors);
+    }
+  }
+
+  void _validateMessage(Message message) {
+    final matchedKind = MessageKind.values.firstWhere(
+      (kind) => kind == message.metadata.kind,
+      orElse: () =>
+          throw Exception('unknown message kind: ${message.metadata.kind}'),
+    );
+
+    switch (matchedKind) {
+      case MessageKind.rfq:
+        final rfq = message as Rfq;
+        _validate(rfq.toJson(), 'message');
+        _validate(rfq.data.toJson(), rfq.metadata.kind.name);
+        break;
+      case MessageKind.quote:
+        final quote = message as Quote;
+        _validate(quote.toJson(), 'message');
+        _validate(quote.data.toJson(), quote.metadata.kind.name);
+        break;
+      case MessageKind.close:
+        final close = message as Close;
+        _validate(close.toJson(), 'message');
+        _validate(close.data.toJson(), close.metadata.kind.name);
+        break;
+      case MessageKind.order:
+        final order = message as Order;
+        _validate(order.toJson(), 'message');
+        _validate(order.data.toJson(), order.metadata.kind.name);
+        break;
+      case MessageKind.orderstatus:
+        final orderStatus = message as OrderStatus;
+        _validate(orderStatus.toJson(), 'message');
+        _validate(
+          orderStatus.data.toJson(),
+          orderStatus.metadata.kind.name,
+        );
+        break;
+    }
+  }
+
+  void _validateResource(Resource resource) {
+    final matchedKind = ResourceKind.values.firstWhere(
+      (kind) => kind == resource.metadata.kind,
+      orElse: () =>
+          throw Exception('unknown resource kind: ${resource.metadata.kind}'),
+    );
+
+    switch (matchedKind) {
+      case ResourceKind.offering:
+        final offering = resource as Offering;
+        _validate(offering.toJson(), 'resource');
+        _validate(offering.data.toJson(), offering.metadata.kind.name);
+        break;
+      case ResourceKind.balance:
+      case ResourceKind.reputation:
+        throw UnimplementedError();
     }
   }
 

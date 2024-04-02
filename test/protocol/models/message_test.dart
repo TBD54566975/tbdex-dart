@@ -1,8 +1,4 @@
-import 'dart:convert';
-
 import 'package:tbdex/src/protocol/models/message.dart';
-import 'package:tbdex/src/protocol/models/order.dart';
-import 'package:tbdex/src/protocol/models/rfq.dart';
 import 'package:test/test.dart';
 
 import '../../test_data.dart';
@@ -10,22 +6,22 @@ import '../../test_data.dart';
 void main() async {
   await TestData.initializeDids();
 
-  group('Message Test', () {
-    test('can parse a list of messages', () async {
-      final rfq = TestData.getRfq();
-      await rfq.sign(TestData.aliceDid);
-      final order = TestData.getOrder();
-      await order.sign(TestData.pfiDid);
+  group('Message', () {
+    test('can generate message type ids', () {
+      final rfqId = Message.generateId(MessageKind.rfq);
+      expect(rfqId, startsWith(MessageKind.rfq.name));
 
-      final messages = await Future.wait(
-        [
-          jsonEncode(rfq.toJson()),
-          jsonEncode(order.toJson()),
-        ].map((jsonString) async => Message.parse(jsonString)),
-      );
+      final quoteId = Message.generateId(MessageKind.quote);
+      expect(quoteId, startsWith(MessageKind.quote.name));
 
-      expect(messages.first, isA<Rfq>());
-      expect(messages.last, isA<Order>());
+      final orderId = Message.generateId(MessageKind.order);
+      expect(orderId, startsWith(MessageKind.order.name));
+
+      final orderStatusId = Message.generateId(MessageKind.orderstatus);
+      expect(orderStatusId, startsWith(MessageKind.orderstatus.name));
+
+      final closeId = Message.generateId(MessageKind.close);
+      expect(closeId, startsWith(MessageKind.close.name));
     });
 
     test('sign populates message signature', () async {
@@ -35,20 +31,13 @@ void main() async {
       expect(rfq.signature, isNotNull);
     });
 
-    test('parse throws error if json string is not valid', () async {
-      await expectLater(
-        Message.parse(';;;;'),
-        throwsA(isA<FormatException>()),
-      );
-    });
-
     test('messages must be signed by the sender', () async {
       final rfqFromAlice = TestData.getRfq();
       // Sign it with the wrong DID
       await rfqFromAlice.sign(TestData.pfiDid);
 
       await expectLater(
-        Message.parse(jsonEncode(rfqFromAlice.toJson())),
+        rfqFromAlice.verify(),
         throwsA(
           isA<Exception>().having(
             (e) => e.toString(),

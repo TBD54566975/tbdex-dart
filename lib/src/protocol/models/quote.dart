@@ -1,6 +1,6 @@
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
-import 'package:typeid/typeid.dart';
+import 'package:tbdex/src/protocol/parser.dart';
 
 class Quote extends Message {
   @override
@@ -32,7 +32,7 @@ class Quote extends Message {
       kind: MessageKind.quote,
       to: to,
       from: from,
-      id: TypeId.generate(MessageKind.quote.name),
+      id: Message.generateId(MessageKind.quote),
       exchangeId: exchangeId,
       createdAt: now,
       protocol: protocol,
@@ -43,6 +43,12 @@ class Quote extends Message {
       metadata: metadata,
       data: data,
     );
+  }
+
+  static Future<Quote> parse(String rawMessage) async {
+    final quote = Parser.parseMessage(rawMessage) as Quote;
+    await quote.verify();
+    return quote;
   }
 
   factory Quote.fromJson(Map<String, dynamic> json) {

@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:tbdex/src/protocol/models/offering.dart';
 import 'package:tbdex/src/protocol/models/resource_data.dart';
 import 'package:tbdex/src/protocol/validator.dart';
+import 'package:typeid/typeid.dart';
 import 'package:web5/web5.dart';
 
 abstract class Metadata {}
@@ -63,35 +63,12 @@ abstract class Resource {
   ResourceData get data;
   String? signature;
 
-  static Future<Resource> parse(String payload) async {
-    final jsonResource = jsonDecode(payload) as Map<String, dynamic>?;
-    if (jsonResource == null) {
-      throw Exception('payload is not a valid JSON object');
-    }
-    Validator.validate(jsonResource, 'resource');
+  static String generateId(ResourceKind kind) {
+    return TypeId.generate(kind.name);
+  }
 
-    final jsonResourceData = jsonResource['data'];
-    final resourceMetadata = jsonResource['metadata'] as Map<String, dynamic>?;
-    if (resourceMetadata == null) {
-      throw Exception('metadata property is required');
-    }
-    final resourceKind = resourceMetadata['kind'] as String? ?? '';
-    Validator.validate(jsonResourceData, resourceKind);
-
-    final matchedKind = ResourceKind.values.firstWhere(
-      (kind) => kind.name == resourceKind,
-      orElse: () => throw Exception('unknown resource kind: $resourceKind'),
-    );
-
-    switch (matchedKind) {
-      case ResourceKind.offering:
-        final offering = Offering.fromJson(jsonResource);
-        await offering.verify();
-        return offering;
-      case ResourceKind.balance:
-      case ResourceKind.reputation:
-        throw UnimplementedError();
-    }
+  void validate() {
+    Validator.validateResource(this);
   }
 
   Future<void> sign(BearerDid did, {String? keyAlias}) async {
@@ -108,12 +85,12 @@ abstract class Resource {
         'signature verification failed: expected signature property to exist',
       );
     }
-    final decodedJws = Jws.decode(signature ?? '', detachedPayload: _digest());
 
+    final decodedJws = Jws.decode(signature ?? '', detachedPayload: _digest());
     final verificationMethodId = decodedJws.header.kid;
     final parsedDidUrl = Did.parse(verificationMethodId ?? '');
-
     final signingDid = parsedDidUrl.uri;
+
     if (signingDid != metadata.from) {
       throw Exception(
         'signature verification failed: was not signed by the expected DID',

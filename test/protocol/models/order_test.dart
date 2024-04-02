@@ -10,7 +10,7 @@ import '../../test_data.dart';
 void main() async {
   await TestData.initializeDids();
 
-  group('OrderTest', () {
+  group('Order', () {
     test('can create a new order', () {
       final order = Order.create(
         TestData.pfi,
@@ -27,7 +27,7 @@ void main() async {
       final order = TestData.getOrder();
       await order.sign(TestData.pfiDid);
       final json = jsonEncode(order.toJson());
-      final parsed = await Message.parse(json);
+      final parsed = await Order.parse(json);
 
       expect(parsed, isA<Order>());
       expect(parsed.toString(), equals(json));

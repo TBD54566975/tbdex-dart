@@ -11,7 +11,7 @@ import '../../test_data.dart';
 void main() async {
   await TestData.initializeDids();
 
-  group('CloseTest', () {
+  group('Close', () {
     test('can create a new close', () {
       final close = Close.create(
         TestData.pfi,
@@ -30,7 +30,7 @@ void main() async {
       final close = TestData.getClose();
       await close.sign(TestData.pfiDid);
       final json = jsonEncode(close.toJson());
-      final parsed = await Message.parse(json);
+      final parsed = await Close.parse(json);
 
       expect(parsed, isA<Close>());
       expect(parsed.toString(), equals(json));

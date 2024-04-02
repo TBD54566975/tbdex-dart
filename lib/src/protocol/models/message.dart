@@ -2,14 +2,10 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
-import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
-import 'package:tbdex/src/protocol/models/order.dart';
-import 'package:tbdex/src/protocol/models/order_status.dart';
-import 'package:tbdex/src/protocol/models/quote.dart';
 import 'package:tbdex/src/protocol/models/resource.dart';
-import 'package:tbdex/src/protocol/models/rfq.dart';
 import 'package:tbdex/src/protocol/validator.dart';
+import 'package:typeid/typeid.dart';
 import 'package:web5/web5.dart';
 
 enum MessageKind {
@@ -77,48 +73,12 @@ abstract class Message {
   MessageData get data;
   String? signature;
 
-  static Future<Message> parse(String payload) async {
-    final jsonMessage = jsonDecode(payload) as Map<String, dynamic>?;
-    if (jsonMessage == null) {
-      throw Exception('payload is not a valid JSON object');
-    }
-    Validator.validate(jsonMessage, 'message');
+  static String generateId(MessageKind kind) {
+    return TypeId.generate(kind.name);
+  }
 
-    final jsonMessageData = jsonMessage['data'];
-    final messageMetadata = jsonMessage['metadata'] as Map<String, dynamic>?;
-    if (messageMetadata == null) {
-      throw Exception('metadata property is required');
-    }
-    final messageKind = messageMetadata['kind'] as String? ?? '';
-    Validator.validate(jsonMessageData, messageKind);
-
-    final matchedKind = MessageKind.values.firstWhere(
-      (kind) => kind.name == messageKind,
-      orElse: () => throw Exception('unknown message kind: $messageKind'),
-    );
-
-    switch (matchedKind) {
-      case MessageKind.rfq:
-        final rfq = Rfq.fromJson(jsonMessage);
-        await rfq.verify();
-        return Rfq.fromJson(jsonMessage);
-      case MessageKind.quote:
-        final quote = Quote.fromJson(jsonMessage);
-        await quote.verify();
-        return Quote.fromJson(jsonMessage);
-      case MessageKind.close:
-        final close = Close.fromJson(jsonMessage);
-        await close.verify();
-        return Close.fromJson(jsonMessage);
-      case MessageKind.order:
-        final order = Order.fromJson(jsonMessage);
-        await order.verify();
-        return Order.fromJson(jsonMessage);
-      case MessageKind.orderstatus:
-        final orderStatus = OrderStatus.fromJson(jsonMessage);
-        await orderStatus.verify();
-        return OrderStatus.fromJson(jsonMessage);
-    }
+  void validate() {
+    Validator.validateMessage(this);
   }
 
   Future<void> sign(BearerDid did, {String? keyAlias}) async {
@@ -135,12 +95,12 @@ abstract class Message {
         'signature verification failed: expected signature property to exist',
       );
     }
-    final decodedJws = Jws.decode(signature ?? '', detachedPayload: _digest());
 
+    final decodedJws = Jws.decode(signature ?? '', detachedPayload: _digest());
     final verificationMethodId = decodedJws.header.kid;
     final parsedDidUrl = Did.parse(verificationMethodId ?? '');
-
     final signingDid = parsedDidUrl.uri;
+
     if (signingDid != metadata.from) {
       throw Exception(
         'signature verification failed: was not signed by the expected DID',
