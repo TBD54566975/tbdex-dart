@@ -30,7 +30,7 @@ void main() async {
       final close = TestData.getClose();
       await close.sign(TestData.pfiDid);
       final json = jsonEncode(close.toJson());
-      final parsed = await Message.parse(json);
+      final parsed = await Close.parse(json);
 
       expect(parsed, isA<Close>());
       expect(parsed.toString(), equals(json));

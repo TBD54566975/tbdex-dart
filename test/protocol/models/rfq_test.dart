@@ -37,7 +37,7 @@ void main() async {
       final rfq = TestData.getRfq();
       await rfq.sign(TestData.aliceDid);
       final json = jsonEncode(rfq.toJson());
-      final parsed = await Message.parse(json);
+      final parsed = await Rfq.parse(json);
 
       expect(parsed, isA<Rfq>());
       expect(parsed.toString(), equals(json));

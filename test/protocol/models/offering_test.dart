@@ -32,13 +32,12 @@ void main() async {
       final offering = TestData.getOffering();
       await offering.sign(TestData.pfiDid);
       final json = jsonEncode(offering.toJson());
-      final parsed = await Resource.parse(json);
+      final parsed = await Offering.parse(json);
 
       expect(parsed, isA<Offering>());
       expect(parsed.toString(), equals(json));
     });
 
-    // TODO(ethan-tbd): do we want explicit parsing?
     test('can parse an offering explicitly', () async {
       final offering = TestData.getOffering();
       await offering.sign(TestData.pfiDid);

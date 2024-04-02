@@ -30,7 +30,7 @@ void main() async {
       final orderStatus = TestData.getOrderStatus();
       await orderStatus.sign(TestData.pfiDid);
       final json = jsonEncode(orderStatus.toJson());
-      final parsed = await Message.parse(json);
+      final parsed = await OrderStatus.parse(json);
 
       expect(parsed, isA<OrderStatus>());
       expect(parsed.toString(), equals(json));

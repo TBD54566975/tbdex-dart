@@ -42,7 +42,7 @@ void main() async {
       final quote = TestData.getQuote();
       await quote.sign(TestData.pfiDid);
       final json = jsonEncode(quote.toJson());
-      final parsed = await Message.parse(json);
+      final parsed = await Quote.parse(json);
 
       expect(parsed, isA<Quote>());
       expect(parsed.toString(), equals(json));
