@@ -11,7 +11,7 @@ import '../../test_data.dart';
 void main() async {
   await TestData.initializeDids();
 
-  group('QuoteTest', () {
+  group('Quote', () {
     test('can create a new quote', () {
       final quote = Quote.create(
         TestData.pfi,

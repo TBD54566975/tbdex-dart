@@ -10,7 +10,7 @@ import '../test_data.dart';
 void main() async {
   await TestData.initializeDids();
 
-  group('ParserTest', () {
+  group('Parser', () {
     test('can parse a list of messages', () async {
       final rfq = TestData.getRfq();
       final order = TestData.getOrder();

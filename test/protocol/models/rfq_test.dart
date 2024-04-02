@@ -12,7 +12,7 @@ import '../../test_data.dart';
 void main() async {
   await TestData.initializeDids();
 
-  group('RfqTest', () {
+  group('Rfq', () {
     test('can create a new rfq', () {
       final rfq = Rfq.create(
         TestData.pfi,

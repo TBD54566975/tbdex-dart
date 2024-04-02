@@ -11,7 +11,7 @@ import '../../test_data.dart';
 void main() async {
   await TestData.initializeDids();
 
-  group('OrderStatusTest', () {
+  group('OrderStatus', () {
     test('can create a new order status', () {
       final orderStatus = OrderStatus.create(
         TestData.pfi,

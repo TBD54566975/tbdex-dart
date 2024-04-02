@@ -7,7 +7,7 @@ import '../../test_data.dart';
 void main() async {
   await TestData.initializeDids();
 
-  group('ResourceTest', () {
+  group('Resource', () {
     test('can generate resource type ids', () {
       final offeringId = Resource.generateId(ResourceKind.offering);
       expect(offeringId, startsWith(ResourceKind.offering.name));

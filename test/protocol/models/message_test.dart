@@ -6,7 +6,7 @@ import '../../test_data.dart';
 void main() async {
   await TestData.initializeDids();
 
-  group('MessageTest', () {
+  group('Message', () {
     test('can generate message type ids', () {
       final rfqId = Message.generateId(MessageKind.rfq);
       expect(rfqId, startsWith(MessageKind.rfq.name));

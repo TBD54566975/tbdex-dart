@@ -11,7 +11,7 @@ import '../../test_data.dart';
 void main() async {
   await TestData.initializeDids();
 
-  group('CloseTest', () {
+  group('Close', () {
     test('can create a new close', () {
       final close = Close.create(
         TestData.pfi,

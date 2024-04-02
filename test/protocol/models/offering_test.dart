@@ -10,7 +10,7 @@ import '../../test_data.dart';
 void main() async {
   await TestData.initializeDids();
 
-  group('OfferingTest', () {
+  group('Offering', () {
     test('can create a new offering', () {
       final offering = Offering.create(
         TestData.pfi,
