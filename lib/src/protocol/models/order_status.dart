@@ -47,7 +47,7 @@ class OrderStatus extends Message {
   }
 
   static Future<OrderStatus> parse(String rawMessage) async {
-    final orderStatus = Parser.parseRawMessage(rawMessage) as OrderStatus;
+    final orderStatus = Parser.parseMessage(rawMessage) as OrderStatus;
     await orderStatus.verify();
     return orderStatus;
   }

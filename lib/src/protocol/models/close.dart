@@ -46,7 +46,7 @@ class Close extends Message {
   }
 
   static Future<Close> parse(String rawMessage) async {
-    final close = Parser.parseRawMessage(rawMessage) as Close;
+    final close = Parser.parseMessage(rawMessage) as Close;
     await close.verify();
     return close;
   }

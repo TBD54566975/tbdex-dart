@@ -39,7 +39,7 @@ class Offering extends Resource {
   }
 
   static Future<Offering> parse(String rawResource) async {
-    final offering = Parser.parseRawResource(rawResource) as Offering;
+    final offering = Parser.parseResource(rawResource) as Offering;
     await offering.verify();
     return offering;
   }

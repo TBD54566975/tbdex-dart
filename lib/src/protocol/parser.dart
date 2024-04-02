@@ -10,7 +10,7 @@ import 'package:tbdex/src/protocol/models/resource.dart';
 import 'package:tbdex/src/protocol/models/rfq.dart';
 
 abstract class Parser {
-  static Message parseRawMessage(String rawMessage) {
+  static Message parseMessage(String rawMessage) {
     final jsonObject = jsonDecode(rawMessage) as Map<String, dynamic>?;
     final messageKind = _getKindFromJson(jsonObject);
     final matchedKind = MessageKind.values.firstWhere(
@@ -32,7 +32,7 @@ abstract class Parser {
     }
   }
 
-  static Resource parseRawResource(String rawResource) {
+  static Resource parseResource(String rawResource) {
     final jsonObject = jsonDecode(rawResource) as Map<String, dynamic>?;
     final resourceKind = _getKindFromJson(jsonObject);
     final matchedKind = ResourceKind.values.firstWhere(

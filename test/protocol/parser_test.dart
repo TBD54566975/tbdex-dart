@@ -19,7 +19,7 @@ void main() async {
         [
           jsonEncode(rfq.toJson()),
           jsonEncode(order.toJson()),
-        ].map((jsonString) async => Parser.parseRawMessage(jsonString)),
+        ].map((jsonString) async => Parser.parseMessage(jsonString)),
       );
 
       expect(messages.first, isA<Rfq>());
@@ -28,7 +28,7 @@ void main() async {
 
     test('parse throws error if json string is not valid', () {
       expect(
-        () => Parser.parseRawMessage(';;;;'),
+        () => Parser.parseMessage(';;;;'),
         throwsA(isA<FormatException>()),
       );
     });

@@ -48,7 +48,7 @@ class Rfq extends Message {
   }
 
   static Future<Rfq> parse(String rawMessage) async {
-    final rfq = Parser.parseRawMessage(rawMessage) as Rfq;
+    final rfq = Parser.parseMessage(rawMessage) as Rfq;
     await rfq.verify();
     return rfq;
   }

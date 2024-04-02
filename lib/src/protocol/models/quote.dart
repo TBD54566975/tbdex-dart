@@ -46,7 +46,7 @@ class Quote extends Message {
   }
 
   static Future<Quote> parse(String rawMessage) async {
-    final quote = Parser.parseRawMessage(rawMessage) as Quote;
+    final quote = Parser.parseMessage(rawMessage) as Quote;
     await quote.verify();
     return quote;
   }
