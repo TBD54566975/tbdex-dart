@@ -32,12 +32,11 @@ class Validator {
   }
 
   void _validate(Map<String, dynamic> json, String schemaName) {
-    final schema = _schemaMap[schemaName];
-    if (schema == null) {
-      throw Exception('no schema with name $schemaName exists');
-    }
+    final schema = _schemaMap[schemaName] ??
+        (throw Exception('no schema with name $schemaName exists'));
     final validationResult = schema.validate(json);
-    if (validationResult.isValid == false) {
+
+    if (!validationResult.isValid) {
       _handleValidationError(validationResult.errors);
     }
   }
