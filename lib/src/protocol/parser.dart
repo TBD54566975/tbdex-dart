@@ -43,7 +43,6 @@ abstract class Parser {
     switch (matchedKind) {
       case ResourceKind.offering:
         return Offering.fromJson(jsonObject ?? {});
-
       case ResourceKind.balance:
       case ResourceKind.reputation:
         throw UnimplementedError();
