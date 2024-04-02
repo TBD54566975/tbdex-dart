@@ -1,6 +1,6 @@
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
-import 'package:typeid/typeid.dart';
+import 'package:tbdex/src/protocol/parser.dart';
 
 class Close extends Message {
   @override
@@ -32,7 +32,7 @@ class Close extends Message {
       kind: MessageKind.close,
       to: to,
       from: from,
-      id: TypeId.generate(MessageKind.close.name),
+      id: Message.generateId(MessageKind.close),
       exchangeId: exchangeId,
       createdAt: now,
       protocol: protocol,
@@ -43,6 +43,12 @@ class Close extends Message {
       metadata: metadata,
       data: data,
     );
+  }
+
+  static Future<Close> parse(String rawMessage) async {
+    final close = Parser.parseRawMessage(rawMessage) as Close;
+    await close.verify();
+    return close;
   }
 
   factory Close.fromJson(Map<String, dynamic> json) {

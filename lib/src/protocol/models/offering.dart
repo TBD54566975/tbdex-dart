@@ -1,6 +1,6 @@
 import 'package:tbdex/src/protocol/models/resource.dart';
 import 'package:tbdex/src/protocol/models/resource_data.dart';
-import 'package:typeid/typeid.dart';
+import 'package:tbdex/src/protocol/parser.dart';
 
 class Offering extends Resource {
   @override
@@ -26,7 +26,7 @@ class Offering extends Resource {
     final metadata = ResourceMetadata(
       kind: ResourceKind.offering,
       from: from,
-      id: TypeId.generate(ResourceKind.offering.name),
+      id: Resource.generateId(ResourceKind.offering),
       protocol: protocol,
       createdAt: now,
       updatedAt: now,
@@ -38,13 +38,10 @@ class Offering extends Resource {
     );
   }
 
-  static Future<Offering> parse(String toString) async {
-    final resource = await Resource.parse(toString);
-    if (resource is Offering) {
-      return resource;
-    } else {
-      throw Exception('parsed resource is not an offering');
-    }
+  static Future<Offering> parse(String rawResource) async {
+    final offering = Parser.parseRawResource(rawResource) as Offering;
+    await offering.verify();
+    return offering;
   }
 
   factory Offering.fromJson(Map<String, dynamic> json) {

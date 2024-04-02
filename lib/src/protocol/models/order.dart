@@ -1,6 +1,6 @@
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
-import 'package:typeid/typeid.dart';
+import 'package:tbdex/src/protocol/parser.dart';
 
 class Order extends Message {
   @override
@@ -31,7 +31,7 @@ class Order extends Message {
       kind: MessageKind.order,
       to: to,
       from: from,
-      id: TypeId.generate(MessageKind.order.name),
+      id: Message.generateId(MessageKind.order),
       exchangeId: exchangeId,
       createdAt: now,
       protocol: protocol,
@@ -42,6 +42,12 @@ class Order extends Message {
       metadata: metadata,
       data: OrderData(),
     );
+  }
+
+  static Future<Order> parse(String rawMessage) async {
+    final order = Parser.parseRawMessage(rawMessage) as Order;
+    await order.verify();
+    return order;
   }
 
   factory Order.fromJson(Map<String, dynamic> json) {

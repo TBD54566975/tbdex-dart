@@ -2,7 +2,7 @@ import 'package:decimal/decimal.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
-import 'package:typeid/typeid.dart';
+import 'package:tbdex/src/protocol/parser.dart';
 
 class Rfq extends Message {
   @override
@@ -28,13 +28,14 @@ class Rfq extends Message {
     String? externalId,
     String protocol = '1.0',
   }) {
+    final id = Message.generateId(MessageKind.rfq);
     final now = DateTime.now().toIso8601String();
     final metadata = MessageMetadata(
       kind: MessageKind.rfq,
       to: to,
       from: from,
-      id: TypeId.generate(MessageKind.rfq.name),
-      exchangeId: TypeId.generate(MessageKind.rfq.name),
+      id: id,
+      exchangeId: id,
       createdAt: now,
       protocol: protocol,
       externalId: externalId,
@@ -44,6 +45,12 @@ class Rfq extends Message {
       metadata: metadata,
       data: data,
     );
+  }
+
+  static Future<Rfq> parse(String rawMessage) async {
+    final rfq = Parser.parseRawMessage(rawMessage) as Rfq;
+    await rfq.verify();
+    return rfq;
   }
 
   void verifyOfferingRequirements(Offering offering) {
