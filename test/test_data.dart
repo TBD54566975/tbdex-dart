@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:json_schema/json_schema.dart';
+import 'package:tbdex/src/http_client/models/create_exchange_request.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
@@ -137,6 +138,63 @@ class TestData {
       CloseData(reason: 'reason'),
     );
   }
+
+  static String getOfferingResponse() {
+    final offering = TestData.getOffering();
+    final mockOfferings = [offering];
+    return jsonEncode({'data': mockOfferings.map((e) => e.toJson()).toList()});
+  }
+
+  static String getExchangeResponse() {
+    final offering = TestData.getOffering();
+    final rfq = TestData.getRfq(offeringId: offering.metadata.id);
+    final quote = TestData.getQuote();
+    final mockExchange = [rfq, quote];
+
+    final jsonData = mockExchange.map((message) {
+      if (message is Rfq) {
+        return message.toJson();
+      } else if (message is Quote) {
+        return message.toJson();
+      }
+    }).toList();
+
+    return jsonEncode({'data': jsonData});
+  }
+
+  static String getExchangesResponse() {
+    final offering = TestData.getOffering();
+    final rfq = TestData.getRfq(offeringId: offering.metadata.id);
+    final quote = TestData.getQuote();
+
+    final mockExchanges = [
+      [rfq, quote],
+      [rfq, quote],
+    ];
+
+    final jsonData = mockExchanges
+        .map(
+          (exchangeList) => exchangeList.map((message) {
+            if (message is Rfq) {
+              return message.toJson();
+            } else if (message is Quote) {
+              return message.toJson();
+            }
+          }).toList(),
+        )
+        .toList();
+
+    return jsonEncode({'data': jsonData});
+  }
+
+  static String getCreateExchangeRequest(Rfq rfq, {String? replyTo}) =>
+      jsonEncode(CreateExchangeRequest(rfq: rfq, replyTo: replyTo));
+
+  static String getSubmitOrderRequest(Order order) =>
+      jsonEncode(order.toJson());
+
+  static String getSubmitCloseRequest(Close close) =>
+      jsonEncode(close.toJson());
 
   static JsonSchema requiredPaymentDetailsSchema() {
     return JsonSchema.create(
