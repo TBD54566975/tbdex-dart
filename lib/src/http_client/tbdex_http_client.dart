@@ -14,7 +14,7 @@ import 'package:typeid/typeid.dart';
 import 'package:web5/web5.dart';
 
 class TbdexHttpClient {
-  static const String jsonHeader = 'application/json';
+  static const _jsonHeader = 'application/json';
   static const _expirationDuration = Duration(minutes: 5);
 
   static http.Client _client = http.Client();
@@ -22,28 +22,6 @@ class TbdexHttpClient {
   // ignore: avoid_setters_without_getters
   static set client(http.Client client) {
     _client = client;
-  }
-
-  static Future<List<Offering>> getOfferings(
-    String pfiDid, {
-    GetOfferingsFilter? filter,
-  }) async {
-    final pfiServiceEndpoint = await _getPfiServiceEndpoint(pfiDid);
-    final baseUrl = Uri.parse('$pfiServiceEndpoint/offerings/');
-
-    final url = Uri(
-      scheme: baseUrl.scheme,
-      host: baseUrl.host,
-      path: baseUrl.path,
-      queryParameters: filter?.toJson(),
-    );
-    final response = await _client.get(url);
-
-    if (response.statusCode != 200) {
-      throw Exception(response);
-    }
-
-    return Parser.parseOfferings(response.body);
   }
 
   static Future<Exchange> getExchange(
@@ -91,6 +69,28 @@ class TbdexHttpClient {
     return Parser.parseExchanges(response.body);
   }
 
+  static Future<List<Offering>> getOfferings(
+    String pfiDid, {
+    GetOfferingsFilter? filter,
+  }) async {
+    final pfiServiceEndpoint = await _getPfiServiceEndpoint(pfiDid);
+    final baseUrl = Uri.parse('$pfiServiceEndpoint/offerings/');
+
+    final url = Uri(
+      scheme: baseUrl.scheme,
+      host: baseUrl.host,
+      path: baseUrl.path,
+      queryParameters: filter?.toJson(),
+    );
+    final response = await _client.get(url);
+
+    if (response.statusCode != 200) {
+      throw Exception(response);
+    }
+
+    return Parser.parseOfferings(response.body);
+  }
+
   static Future<void> createExchange(
     Rfq rfq, {
     String? replyTo,
@@ -133,7 +133,7 @@ class TbdexHttpClient {
 
     final response = await _client.post(
       url,
-      headers: {'Content-Type': jsonHeader},
+      headers: {'Content-Type': _jsonHeader},
       body: requestBody,
     );
 
