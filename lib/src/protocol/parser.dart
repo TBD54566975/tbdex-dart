@@ -12,7 +12,7 @@ import 'package:tbdex/src/protocol/models/rfq.dart';
 
 abstract class Parser {
   static Message parseMessage(String rawMessage) {
-    final jsonObject = jsonDecode(rawMessage) as Map<String, dynamic>?;
+    final jsonObject = jsonDecode(rawMessage);
 
     if (jsonObject is! Map<String, dynamic>) {
       throw Exception('message must be a json object');
@@ -22,7 +22,7 @@ abstract class Parser {
   }
 
   static Resource parseResource(String rawResource) {
-    final jsonObject = jsonDecode(rawResource) as Map<String, dynamic>?;
+    final jsonObject = jsonDecode(rawResource);
 
     if (jsonObject is! Map<String, dynamic>) {
       throw Exception('resource must be a json object');
@@ -32,7 +32,7 @@ abstract class Parser {
   }
 
   static Exchange parseExchange(String rawExchange) {
-    final jsonObject = jsonDecode(rawExchange) as Map<String, dynamic>?;
+    final jsonObject = jsonDecode(rawExchange);
 
     if (jsonObject is! Map<String, dynamic>) {
       throw Exception('exchange must be a json object');
@@ -54,7 +54,7 @@ abstract class Parser {
   }
 
   static List<Exchange> parseExchanges(String rawExchanges) {
-    final jsonObject = jsonDecode(rawExchanges) as Map<String, dynamic>?;
+    final jsonObject = jsonDecode(rawExchanges);
 
     if (jsonObject is! Map<String, dynamic>) {
       throw Exception('exchanges must be a json object');
@@ -81,7 +81,7 @@ abstract class Parser {
   }
 
   static List<Offering> parseOfferings(String rawOfferings) {
-    final jsonObject = jsonDecode(rawOfferings) as Map<String, dynamic>?;
+    final jsonObject = jsonDecode(rawOfferings);
 
     if (jsonObject is! Map<String, dynamic>) {
       throw Exception('offerings must be a json object');
@@ -139,8 +139,8 @@ abstract class Parser {
     }
   }
 
-  static String _getKindFromJson(Map<String, dynamic>? jsonObject) {
-    final metadata = jsonObject?['metadata'];
+  static String _getKindFromJson(Map<String, dynamic> jsonObject) {
+    final metadata = jsonObject['metadata'];
 
     if (metadata is! Map<String, dynamic> || metadata.isEmpty) {
       throw Exception('metadata is malformed or empty');
