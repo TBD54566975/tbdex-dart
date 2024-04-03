@@ -108,7 +108,6 @@ class TbdexHttpClient {
     Validator.validateMessage(order);
     final pfiDid = order.metadata.to;
     final exchangeId = order.metadata.exchangeId;
-
     final body = jsonEncode(order.toJson());
 
     await _submitMessage(pfiDid, body, exchangeId: exchangeId);
@@ -118,7 +117,6 @@ class TbdexHttpClient {
     Validator.validateMessage(close);
     final pfiDid = close.metadata.to;
     final exchangeId = close.metadata.exchangeId;
-
     final body = jsonEncode(close.toJson());
 
     await _submitMessage(pfiDid, body, exchangeId: exchangeId);
@@ -131,8 +129,8 @@ class TbdexHttpClient {
   }) async {
     final pfiServiceEndpoint = await _getPfiServiceEndpoint(pfiDid);
     final path = '/exchanges${exchangeId != null ? '/$exchangeId' : ''}';
-
     final url = Uri.parse(pfiServiceEndpoint + path);
+
     final response = await _client.post(
       url,
       headers: {'Content-Type': jsonHeader},
