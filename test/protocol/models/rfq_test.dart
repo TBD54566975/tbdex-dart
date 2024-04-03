@@ -33,7 +33,7 @@ void main() async {
       expect(rfq.data.payin.amount, equals('100'));
     });
 
-    test('can parse rfq from a json string', () async {
+    test('can parse and verify rfq from a json string', () async {
       final rfq = TestData.getRfq();
       await rfq.sign(TestData.aliceDid);
       final json = jsonEncode(rfq.toJson());
@@ -43,7 +43,7 @@ void main() async {
       expect(parsed.toString(), equals(json));
     });
 
-    test('can verify rfq with offering', () {
+    test('can verify offering requirements', () {
       final offering = TestData.getOffering();
       final rfq = TestData.getRfq(offeringId: offering.metadata.id);
       expect(() => rfq.verifyOfferingRequirements(offering), returnsNormally);
