@@ -74,14 +74,10 @@ class TbdexHttpClient {
     GetOfferingsFilter? filter,
   }) async {
     final pfiServiceEndpoint = await _getPfiServiceEndpoint(pfiDid);
-    final baseUrl = Uri.parse('$pfiServiceEndpoint/offerings/');
-
-    final url = Uri(
-      scheme: baseUrl.scheme,
-      host: baseUrl.host,
-      path: baseUrl.path,
+    final url = Uri.parse('$pfiServiceEndpoint/offerings/').replace(
       queryParameters: filter?.toJson(),
     );
+
     final response = await _client.get(url);
 
     if (response.statusCode != 200) {
