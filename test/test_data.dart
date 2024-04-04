@@ -66,9 +66,10 @@ class TestData {
     String? amount,
     String? payinKind,
     String? payoutKind,
+    String? to,
   }) {
     return Rfq.create(
-      pfiDid.uri,
+      to ?? pfiDid.uri,
       aliceDid.uri,
       RfqData(
         offeringId: offeringId ?? TypeId.generate(ResourceKind.offering.name),
@@ -113,10 +114,10 @@ class TestData {
     );
   }
 
-  static Order getOrder() {
+  static Order getOrder({String? to}) {
     return Order.create(
+      to ?? pfiDid.uri,
       aliceDid.uri,
-      pfiDid.uri,
       TypeId.generate(MessageKind.rfq.name),
     );
   }
@@ -130,10 +131,10 @@ class TestData {
     );
   }
 
-  static Close getClose() {
+  static Close getClose({String? to}) {
     return Close.create(
+      to ?? pfiDid.uri,
       aliceDid.uri,
-      pfiDid.uri,
       TypeId.generate(MessageKind.rfq.name),
       CloseData(reason: 'reason'),
     );
