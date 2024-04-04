@@ -23,9 +23,9 @@ void main() async {
       expect(order.metadata.protocol, equals('1.0'));
     });
 
-    test('can parse order from a json string', () async {
+    test('can parse and verify order from a json string', () async {
       final order = TestData.getOrder();
-      await order.sign(TestData.pfiDid);
+      await order.sign(TestData.aliceDid);
       final json = jsonEncode(order.toJson());
       final parsed = await Order.parse(json);
 

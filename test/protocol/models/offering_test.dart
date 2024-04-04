@@ -28,7 +28,7 @@ void main() async {
       expect(offering.data.description, equals('my fake offering'));
     });
 
-    test('can parse offering from a json string', () async {
+    test('can parse and verify offering from a json string', () async {
       final offering = TestData.getOffering();
       await offering.sign(TestData.pfiDid);
       final json = jsonEncode(offering.toJson());
@@ -36,15 +36,6 @@ void main() async {
 
       expect(parsed, isA<Offering>());
       expect(parsed.toString(), equals(json));
-    });
-
-    test('can parse an offering explicitly', () async {
-      final offering = TestData.getOffering();
-      await offering.sign(TestData.pfiDid);
-      final json = jsonEncode(offering.toJson());
-      final parsedOffering = await Offering.parse(json);
-
-      expect(parsedOffering, isA<Offering>());
     });
   });
 }
