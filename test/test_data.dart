@@ -170,7 +170,6 @@ class TestData {
 
     final mockExchanges = [
       [rfq, quote],
-      [rfq, quote],
     ];
 
     final jsonData = mockExchanges
