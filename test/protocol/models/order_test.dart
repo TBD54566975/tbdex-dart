@@ -25,7 +25,7 @@ void main() async {
 
     test('can parse and verify order from a json string', () async {
       final order = TestData.getOrder();
-      await order.sign(TestData.pfiDid);
+      await order.sign(TestData.aliceDid);
       final json = jsonEncode(order.toJson());
       final parsed = await Order.parse(json);
 

@@ -28,7 +28,7 @@ void main() async {
 
     test('can parse and verify close from a json string', () async {
       final close = TestData.getClose();
-      await close.sign(TestData.pfiDid);
+      await close.sign(TestData.aliceDid);
       final json = jsonEncode(close.toJson());
       final parsed = await Close.parse(json);
 
