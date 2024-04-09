@@ -2,17 +2,100 @@ import 'package:tbdex/src/protocol/models/resource_data.dart';
 
 abstract class MessageData extends Data {}
 
+class PrivatePaymentDetails {
+  final Map<String, dynamic> paymentDetails;
+
+  PrivatePaymentDetails({required this.paymentDetails});
+
+  factory PrivatePaymentDetails.fromJson(Map<String, dynamic> json) {
+    return PrivatePaymentDetails(
+      paymentDetails: json['paymentDetails'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'paymentDetails': paymentDetails,
+    };
+  }
+}
+
+class RfqPrivateData {
+  final String salt;
+  final PrivatePaymentDetails? payin;
+  final PrivatePaymentDetails? payout;
+  final List<String>? claims;
+
+  RfqPrivateData({required this.salt, this.payin, this.payout, this.claims});
+
+  factory RfqPrivateData.fromJson(Map<String, dynamic> json) {
+    return RfqPrivateData(
+      salt: json['salt'],
+      payin: json['payin'] != null ? PrivatePaymentDetails.fromJson(json['payin']) : null,
+      payout: json['payout'] != null ? PrivatePaymentDetails.fromJson(json['payout']) : null,
+      claims: json['claims'] != null ?
+        (json['claims'] as List).map((claim) => claim as String).toList() :
+        null,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'salt': salt,
+      if (payin != null) 'payin': payin!.toJson(),
+      if (payout != null) 'payout': payout!.toJson(),
+      if (claims != null) 'claims': claims,
+    };
+  }
+}
+
+class CreateSelectedPayinMethod {
+  final String amount;
+  final String kind;
+  final Map<String, dynamic>? paymentDetails;
+
+  CreateSelectedPayinMethod({
+    required this.amount,
+    required this.kind,
+    this.paymentDetails,
+  });
+}
+
+class CreateSelectedPayoutMethod {
+  final String kind;
+  final Map<String, dynamic>? paymentDetails;
+
+  CreateSelectedPayoutMethod({
+    required this.kind,
+    this.paymentDetails,
+  });
+}
+
+class CreateRfqData {
+  final String offeringId;
+  final CreateSelectedPayinMethod payin;
+  final CreateSelectedPayoutMethod payout;
+  final List<String>? claims;
+
+  CreateRfqData({
+    required this.offeringId,
+    required this.payin,
+    required this.payout,
+    this.claims,
+  });
+}
+
 class RfqData extends MessageData {
   final String offeringId;
   final SelectedPayinMethod payin;
   final SelectedPayoutMethod payout;
-  final List<String> claims;
+  final String? claimsHash;
 
   RfqData({
     required this.offeringId,
     required this.payin,
     required this.payout,
-    required this.claims,
+    required this.claimsHash,
   });
 
   factory RfqData.fromJson(Map<String, dynamic> json) {
@@ -20,7 +103,7 @@ class RfqData extends MessageData {
       offeringId: json['offeringId'],
       payin: SelectedPayinMethod.fromJson(json['payin']),
       payout: SelectedPayoutMethod.fromJson(json['payout']),
-      claims: (json['claims'] as List).map((claim) => claim as String).toList(),
+      claimsHash: json['claimsHash'],
     );
   }
 
@@ -29,7 +112,7 @@ class RfqData extends MessageData {
       'offeringId': offeringId,
       'payin': payin.toJson(),
       'payout': payout.toJson(),
-      'claims': claims,
+      if (claimsHash != null) 'claimsHash': claimsHash,
     };
   }
 }
@@ -37,19 +120,19 @@ class RfqData extends MessageData {
 class SelectedPayinMethod {
   final String amount;
   final String kind;
-  final Map<String, dynamic>? paymentDetails;
+  final String? paymentDetailsHash;
 
   SelectedPayinMethod({
     required this.amount,
     required this.kind,
-    this.paymentDetails,
+    this.paymentDetailsHash,
   });
 
   factory SelectedPayinMethod.fromJson(Map<String, dynamic> json) {
     return SelectedPayinMethod(
       amount: json['amount'],
       kind: json['kind'],
-      paymentDetails: json['paymentDetails'],
+      paymentDetailsHash: json['paymentDetailsHash'],
     );
   }
 
@@ -57,28 +140,28 @@ class SelectedPayinMethod {
     return {
       'amount': amount,
       'kind': kind,
-      if (paymentDetails != null) 'paymentDetails': paymentDetails,
+      if (paymentDetailsHash != null) 'paymentDetailsHash': paymentDetailsHash,
     };
   }
 }
 
 class SelectedPayoutMethod {
   final String kind;
-  final Map<String, dynamic>? paymentDetails;
+  final String? paymentDetailsHash;
 
-  SelectedPayoutMethod({required this.kind, this.paymentDetails});
+  SelectedPayoutMethod({required this.kind, this.paymentDetailsHash});
 
   factory SelectedPayoutMethod.fromJson(Map<String, dynamic> json) {
     return SelectedPayoutMethod(
       kind: json['kind'],
-      paymentDetails: json['paymentDetails'],
+      paymentDetailsHash: json['paymentDetailsHash'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'kind': kind,
-      if (paymentDetails != null) 'paymentDetails': paymentDetails,
+      if (paymentDetailsHash != null) 'paymentDetailsHash': paymentDetailsHash,
     };
   }
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:json_schema/json_schema.dart';
 import 'package:path/path.dart' as p;
+import 'package:tbdex/src/protocol/exceptions.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
@@ -31,9 +32,13 @@ class Validator {
     _instance._validateResource(resource);
   }
 
+  static void validate(Map<String, dynamic> json, String schemaName) {
+    return _instance._validate(json, schemaName);
+  }
+
   void _validate(Map<String, dynamic> json, String schemaName) {
     final schema = _schemaMap[schemaName] ??
-        (throw Exception('no schema with name $schemaName exists'));
+        (throw TbdexValidatorException(TbdexExceptionCode.validatorNoSchema, 'no schema with name $schemaName exists'));
     final validationResult = schema.validate(json);
 
     if (!validationResult.isValid) {
@@ -45,34 +50,34 @@ class Validator {
     final matchedKind = MessageKind.values.firstWhere(
       (kind) => kind == message.metadata.kind,
       orElse: () =>
-          throw Exception('unknown message kind: ${message.metadata.kind}'),
+          throw TbdexValidatorException(TbdexExceptionCode.validatorUnknownMessageKind, 'unknown message kind: ${message.metadata.kind}'),
     );
 
     switch (matchedKind) {
       case MessageKind.rfq:
         final rfq = message as Rfq;
-        _validate(rfq.toJson(), 'message');
-        _validate(rfq.data.toJson(), rfq.metadata.kind.name);
+        _instance._validate(rfq.toJson(), 'message');
+        _instance._validate(rfq.data.toJson(), rfq.metadata.kind.name);
         break;
       case MessageKind.quote:
         final quote = message as Quote;
-        _validate(quote.toJson(), 'message');
-        _validate(quote.data.toJson(), quote.metadata.kind.name);
+        _instance._validate(quote.toJson(), 'message');
+        _instance._validate(quote.data.toJson(), quote.metadata.kind.name);
         break;
       case MessageKind.close:
         final close = message as Close;
-        _validate(close.toJson(), 'message');
-        _validate(close.data.toJson(), close.metadata.kind.name);
+        _instance._validate(close.toJson(), 'message');
+        _instance._validate(close.data.toJson(), close.metadata.kind.name);
         break;
       case MessageKind.order:
         final order = message as Order;
-        _validate(order.toJson(), 'message');
-        _validate(order.data.toJson(), order.metadata.kind.name);
+        _instance._validate(order.toJson(), 'message');
+        _instance._validate(order.data.toJson(), order.metadata.kind.name);
         break;
       case MessageKind.orderstatus:
         final orderStatus = message as OrderStatus;
-        _validate(orderStatus.toJson(), 'message');
-        _validate(
+        _instance._validate(orderStatus.toJson(), 'message');
+        _instance._validate(
           orderStatus.data.toJson(),
           orderStatus.metadata.kind.name,
         );
@@ -84,14 +89,14 @@ class Validator {
     final matchedKind = ResourceKind.values.firstWhere(
       (kind) => kind == resource.metadata.kind,
       orElse: () =>
-          throw Exception('unknown resource kind: ${resource.metadata.kind}'),
+          throw TbdexValidatorException(TbdexExceptionCode.validatorUnknownResourceKind, 'unknown resource kind: ${resource.metadata.kind}'),
     );
 
     switch (matchedKind) {
       case ResourceKind.offering:
         final offering = resource as Offering;
-        _validate(offering.toJson(), 'resource');
-        _validate(offering.data.toJson(), offering.metadata.kind.name);
+        validate(offering.toJson(), 'resource');
+        validate(offering.data.toJson(), offering.metadata.kind.name);
         break;
       case ResourceKind.balance:
       case ResourceKind.reputation:
@@ -101,7 +106,7 @@ class Validator {
 
   void _handleValidationError(List<ValidationError> errors) {
     if (errors.isNotEmpty) {
-      throw Exception(errors.join(', '));
+      throw TbdexValidatorException(TbdexExceptionCode.validatorJsonSchemaError, errors.join(', '));
     }
   }
 
@@ -119,6 +124,7 @@ class Validator {
       'quote': 'quote.schema.json',
       'resource': 'resource.schema.json',
       'rfq': 'rfq.schema.json',
+      'rfqPrivate': 'rfq-private.schema.json',
     };
 
     for (final entry in schemaFiles.entries) {

@@ -13,7 +13,9 @@ void main() async {
   group('Parser', () {
     test('can parse a list of messages', () async {
       final rfq = TestData.getRfq();
+      await rfq.sign(TestData.aliceDid);
       final order = TestData.getOrder();
+      await order.sign(TestData.aliceDid);
 
       final messages = await Future.wait(
         [

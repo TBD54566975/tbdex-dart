@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crypto/crypto.dart';
+import 'package:tbdex/src/protocol/exceptions.dart';
 import 'package:tbdex/src/protocol/models/resource_data.dart';
 import 'package:tbdex/src/protocol/validator.dart';
 import 'package:typeid/typeid.dart';
@@ -36,7 +37,7 @@ class ResourceMetadata extends Metadata {
     return ResourceMetadata(
       kind: ResourceKind.values.firstWhere(
         (kind) => kind.name == json['kind'],
-        orElse: () => throw Exception('unknown resource kind: ${json['kind']}'),
+        orElse: () => throw TbdexParseException(TbdexExceptionCode.resourceUnknownKind, 'unknown resource kind: ${json['kind']}'),
       ),
       from: json['from'],
       id: json['id'],
@@ -81,7 +82,8 @@ abstract class Resource {
 
   Future<void> verify() async {
     if (signature == null) {
-      throw Exception(
+      throw TbdexSignatureVerificationException(
+        TbdexExceptionCode.resourceSignatureMissing,
         'signature verification failed: expected signature property to exist',
       );
     }
@@ -92,7 +94,8 @@ abstract class Resource {
     final signingDid = parsedDidUrl.uri;
 
     if (signingDid != metadata.from) {
-      throw Exception(
+      throw TbdexSignatureVerificationException(
+        TbdexExceptionCode.resourceSignatureMissing,
         'signature verification failed: was not signed by the expected DID',
       );
     }

@@ -69,14 +69,26 @@ class TestData {
     return Rfq.create(
       pfiDid.uri,
       aliceDid.uri,
-      RfqData(
+      CreateRfqData(
         offeringId: offeringId ?? TypeId.generate(ResourceKind.offering.name),
-        payin: SelectedPayinMethod(
+        payin: CreateSelectedPayinMethod(
           amount: amount ?? '100',
           kind: payinKind ?? 'DEBIT_CARD',
+          paymentDetails: Map.of({
+            'cardNumber': '0123456789012345',
+            'expiryDate': '01/21',
+            'cardHolderName': 'John Meme',
+            'cvv': '123',
+          }),
         ),
-        payout: SelectedPayoutMethod(
+        payout: CreateSelectedPayoutMethod(
           kind: payoutKind ?? 'DEBIT_CARD',
+          paymentDetails: Map.of({
+            'cardNumber': '0123456789012345',
+            'expiryDate': '01/21',
+            'cardHolderName': 'John Meme',
+            'cvv': '123',
+          }),
         ),
         claims: [],
       ),

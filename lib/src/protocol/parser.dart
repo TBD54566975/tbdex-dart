@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:tbdex/src/protocol/exceptions.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
@@ -8,27 +9,33 @@ import 'package:tbdex/src/protocol/models/order_status.dart';
 import 'package:tbdex/src/protocol/models/quote.dart';
 import 'package:tbdex/src/protocol/models/resource.dart';
 import 'package:tbdex/src/protocol/models/rfq.dart';
+import 'package:tbdex/src/protocol/validator.dart';
 
 abstract class Parser {
   static Message parseMessage(String rawMessage) {
     final jsonObject = jsonDecode(rawMessage) as Map<String, dynamic>?;
+    if (jsonObject == null) {
+      throw Exception('ugh');
+    }
+    Validator.validate(jsonObject, 'message');
+
     final messageKind = _getKindFromJson(jsonObject);
     final matchedKind = MessageKind.values.firstWhere(
       (kind) => kind.name == messageKind,
-      orElse: () => throw Exception('unknown message kind: $messageKind'),
+      orElse: () => throw TbdexParseException(TbdexExceptionCode.parserUnknownMessageKind, 'unknown message kind: $messageKind'),
     );
 
     switch (matchedKind) {
       case MessageKind.rfq:
-        return Rfq.fromJson(jsonObject ?? {});
+        return Rfq.fromJson(jsonObject);
       case MessageKind.quote:
-        return Quote.fromJson(jsonObject ?? {});
+        return Quote.fromJson(jsonObject);
       case MessageKind.close:
-        return Close.fromJson(jsonObject ?? {});
+        return Close.fromJson(jsonObject);
       case MessageKind.order:
-        return Order.fromJson(jsonObject ?? {});
+        return Order.fromJson(jsonObject);
       case MessageKind.orderstatus:
-        return OrderStatus.fromJson(jsonObject ?? {});
+        return OrderStatus.fromJson(jsonObject);
     }
   }
 
@@ -37,7 +44,7 @@ abstract class Parser {
     final resourceKind = _getKindFromJson(jsonObject);
     final matchedKind = ResourceKind.values.firstWhere(
       (kind) => kind.name == resourceKind,
-      orElse: () => throw Exception('unknown resource kind: $resourceKind'),
+      orElse: () => throw TbdexParseException(TbdexExceptionCode.parserUnknownResourceKind, 'unknown resource kind: $resourceKind'),
     );
 
     switch (matchedKind) {
@@ -51,16 +58,16 @@ abstract class Parser {
 
   static String _getKindFromJson(Map<String, dynamic>? jsonObject) {
     if (jsonObject == null) {
-      throw Exception('string is not a valid json object');
+      throw TbdexParseException(TbdexExceptionCode.parserInvalidJson, 'string is not a valid json object');
     }
 
     final metadata = jsonObject['metadata'] as Map<String, dynamic>?;
 
     if (metadata == null) {
-      throw Exception('metadata property is required');
+      throw TbdexParseException(TbdexExceptionCode.parserMetadataRequired, 'metadata property is required');
     }
 
     final kind = metadata['kind'] as String?;
-    return kind ?? (throw Exception('kind property is required in metadata'));
+    return kind ?? (throw TbdexParseException(TbdexExceptionCode.parserKindRequired, 'kind property is required in metadata'));
   }
 }
