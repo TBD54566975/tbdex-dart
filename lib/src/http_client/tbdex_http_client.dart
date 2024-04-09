@@ -14,6 +14,8 @@ import 'package:typeid/typeid.dart';
 import 'package:web5/web5.dart';
 
 class TbdexHttpClient {
+  TbdexHttpClient._();
+
   static const _jsonHeader = 'application/json';
   static const _expirationDuration = Duration(minutes: 5);
 
