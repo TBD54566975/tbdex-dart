@@ -3,7 +3,6 @@
 enum TbdexExceptionCode {
   parserJsonNull,
   parserKindRequired,
-  parserInvalidJson,
   parserMetadataMalformed,
   parserUnknownMessageKind,
   parserUnknownResourceKind,

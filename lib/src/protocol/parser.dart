@@ -146,10 +146,7 @@ abstract class Parser {
     }
   }
 
-  static String _getKindFromJson(Map<String, dynamic>? jsonObject) {
-    if (jsonObject == null) {
-      throw TbdexParseException(TbdexExceptionCode.parserInvalidJson, 'string is not a valid json object');
-    }
+  static String _getKindFromJson(Map<String, dynamic> jsonObject) {
     final metadata = jsonObject['metadata'];
 
     if (metadata is! Map<String, dynamic> || metadata.isEmpty) {
