@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:crypto/crypto.dart';
+import 'package:tbdex/src/protocol/crypto.dart';
+import 'package:tbdex/src/protocol/exceptions.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
 import 'package:tbdex/src/protocol/models/resource.dart';
 import 'package:tbdex/src/protocol/validator.dart';
@@ -41,7 +42,7 @@ class MessageMetadata extends Metadata {
     return MessageMetadata(
       kind: MessageKind.values.firstWhere(
         (kind) => kind.name == json['kind'],
-        orElse: () => throw Exception('unknown message kind: ${json['kind']}'),
+        orElse: () => throw TbdexParseException(TbdexExceptionCode.messageUnknownKind, 'unknown message kind: ${json['kind']}'),
       ),
       to: json['to'],
       from: json['from'],
@@ -91,7 +92,8 @@ abstract class Message {
 
   Future<void> verify() async {
     if (signature == null) {
-      throw Exception(
+      throw TbdexSignatureVerificationException(
+        TbdexExceptionCode.messageSignatureMissing,
         'signature verification failed: expected signature property to exist',
       );
     }
@@ -102,7 +104,8 @@ abstract class Message {
     final signingDid = parsedDidUrl.uri;
 
     if (signingDid != metadata.from) {
-      throw Exception(
+      throw TbdexSignatureVerificationException(
+      TbdexExceptionCode.messageSignatureMismatch,
         'signature verification failed: was not signed by the expected DID',
       );
     }
@@ -111,9 +114,7 @@ abstract class Message {
   }
 
   Uint8List _digest() {
-    final payload = json.encode({'metadata': metadata, 'data': data});
-    final bytes = utf8.encode(payload);
-    return Uint8List.fromList(sha256.convert(bytes).bytes);
+    return CryptoUtils.digest({'metadata': metadata, 'data': data});
   }
 
   @override

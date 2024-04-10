@@ -17,6 +17,8 @@ void main() async {
   group('Parser', () {
     test('can parse a message', () async {
       final rfq = TestData.getRfq();
+      await rfq.sign(TestData.aliceDid);
+
       final json = jsonEncode(rfq.toJson());
       final parsed = Parser.parseMessage(json);
 
