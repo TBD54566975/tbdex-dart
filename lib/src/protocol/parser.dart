@@ -15,7 +15,7 @@ abstract class Parser {
   static Message parseMessage(String rawMessage) {
     final jsonObject = jsonDecode(rawMessage) as Map<String, dynamic>?;
     if (jsonObject == null) {
-      throw Exception('ugh');
+      throw TbdexParseException(TbdexExceptionCode.parserJsonNull, 'Message JSON was null');
     }
     Validator.validate(jsonObject, 'message');
 
