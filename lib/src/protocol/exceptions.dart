@@ -1,8 +1,8 @@
 // Tbdex exception codes are each thrown in exactly one place.
 // Each code is prefixed with the name of the file in which it is thrown.
 enum TbdexExceptionCode {
-  parserJsonNull,
   parserKindRequired,
+  parserMessageJsonNotObject,
   parserMetadataMalformed,
   parserUnknownMessageKind,
   parserUnknownResourceKind,

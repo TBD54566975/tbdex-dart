@@ -16,14 +16,10 @@ abstract class Parser {
   static Message parseMessage(String rawMessage) {
 
     final jsonObject = jsonDecode(rawMessage) as Map<String, dynamic>?;
-    if (jsonObject == null) {
-      throw TbdexParseException(TbdexExceptionCode.parserJsonNull, 'Message JSON was null');
+    if (jsonObject is! Map<String, dynamic>) {
+      throw TbdexParseException(TbdexExceptionCode.parserMessageJsonNotObject, 'Message JSON must be an object');
     }
     Validator.validate(jsonObject, 'message');
-
-    if (jsonObject is! Map<String, dynamic>) {
-      throw Exception('message must be a json object');
-    }
 
     return _parseMessageJson(jsonObject);
   }
