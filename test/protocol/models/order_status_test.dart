@@ -26,7 +26,7 @@ void main() async {
       expect(orderStatus.data.orderStatus, equals('my status'));
     });
 
-    test('can parse order status from a json string', () async {
+    test('can parse and verify order status from a json string', () async {
       final orderStatus = TestData.getOrderStatus();
       await orderStatus.sign(TestData.pfiDid);
       final json = jsonEncode(orderStatus.toJson());

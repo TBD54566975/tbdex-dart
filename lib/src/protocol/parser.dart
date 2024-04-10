@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:tbdex/src/http_client/models/exchange.dart';
 import 'package:tbdex/src/protocol/exceptions.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
@@ -13,12 +14,102 @@ import 'package:tbdex/src/protocol/validator.dart';
 
 abstract class Parser {
   static Message parseMessage(String rawMessage) {
+
     final jsonObject = jsonDecode(rawMessage) as Map<String, dynamic>?;
     if (jsonObject == null) {
       throw TbdexParseException(TbdexExceptionCode.parserJsonNull, 'Message JSON was null');
     }
     Validator.validate(jsonObject, 'message');
 
+    if (jsonObject is! Map<String, dynamic>) {
+      throw Exception('message must be a json object');
+    }
+
+    return _parseMessageJson(jsonObject);
+  }
+
+  static Resource parseResource(String rawResource) {
+    final jsonObject = jsonDecode(rawResource);
+
+    if (jsonObject is! Map<String, dynamic>) {
+      throw Exception('resource must be a json object');
+    }
+
+    return _parseResourceJson(jsonObject);
+  }
+
+  static Exchange parseExchange(String rawExchange) {
+    final jsonObject = jsonDecode(rawExchange);
+
+    if (jsonObject is! Map<String, dynamic>) {
+      throw Exception('exchange must be a json object');
+    }
+
+    final exchange = jsonObject['data'];
+
+    if (exchange is! List<dynamic> || exchange.isEmpty) {
+      throw Exception('exchange data is malformed or empty');
+    }
+
+    final parsedMessages = <Message>[];
+    for (final messageJson in exchange) {
+      final message = _parseMessageJson(messageJson);
+      parsedMessages.add(message);
+    }
+
+    return parsedMessages;
+  }
+
+  static List<Exchange> parseExchanges(String rawExchanges) {
+    final jsonObject = jsonDecode(rawExchanges);
+
+    if (jsonObject is! Map<String, dynamic>) {
+      throw Exception('exchanges must be a json object');
+    }
+
+    final exchanges = jsonObject['data'];
+
+    if (exchanges is! List<dynamic> || exchanges.isEmpty) {
+      throw Exception('exchanges data is malformed or empty');
+    }
+
+    final parsedExchanges = <Exchange>[];
+
+    for (final exchangeJson in exchanges) {
+      final parsedMessages = <Message>[];
+      for (final messageJson in exchangeJson) {
+        final message = _parseMessageJson(messageJson);
+        parsedMessages.add(message);
+      }
+      parsedExchanges.add(parsedMessages);
+    }
+
+    return parsedExchanges;
+  }
+
+  static List<Offering> parseOfferings(String rawOfferings) {
+    final jsonObject = jsonDecode(rawOfferings);
+
+    if (jsonObject is! Map<String, dynamic>) {
+      throw Exception('offerings must be a json object');
+    }
+
+    final offerings = jsonObject['data'];
+
+    if (offerings is! List<dynamic> || offerings.isEmpty) {
+      throw Exception('offerings data is malformed or empty');
+    }
+
+    final parsedOfferings = <Offering>[];
+    for (final offeringJson in offerings) {
+      final offering = _parseResourceJson(offeringJson) as Offering;
+      parsedOfferings.add(offering);
+    }
+
+    return parsedOfferings;
+  }
+
+  static Message _parseMessageJson(Map<String, dynamic> jsonObject) {
     final messageKind = _getKindFromJson(jsonObject);
     final matchedKind = MessageKind.values.firstWhere(
       (kind) => kind.name == messageKind,
@@ -39,8 +130,7 @@ abstract class Parser {
     }
   }
 
-  static Resource parseResource(String rawResource) {
-    final jsonObject = jsonDecode(rawResource) as Map<String, dynamic>?;
+  static Resource _parseResourceJson(Map<String, dynamic> jsonObject) {
     final resourceKind = _getKindFromJson(jsonObject);
     final matchedKind = ResourceKind.values.firstWhere(
       (kind) => kind.name == resourceKind,
@@ -49,7 +139,7 @@ abstract class Parser {
 
     switch (matchedKind) {
       case ResourceKind.offering:
-        return Offering.fromJson(jsonObject ?? {});
+        return Offering.fromJson(jsonObject);
       case ResourceKind.balance:
       case ResourceKind.reputation:
         throw UnimplementedError();
@@ -60,14 +150,20 @@ abstract class Parser {
     if (jsonObject == null) {
       throw TbdexParseException(TbdexExceptionCode.parserInvalidJson, 'string is not a valid json object');
     }
+    final metadata = jsonObject['metadata'];
 
-    final metadata = jsonObject['metadata'] as Map<String, dynamic>?;
-
-    if (metadata == null) {
-      throw TbdexParseException(TbdexExceptionCode.parserMetadataRequired, 'metadata property is required');
+    if (metadata is! Map<String, dynamic> || metadata.isEmpty) {
+      throw TbdexParseException(TbdexExceptionCode.parserMetadataMalformed, 'metadata is malformed or empty');
     }
 
-    final kind = metadata['kind'] as String?;
-    return kind ?? (throw TbdexParseException(TbdexExceptionCode.parserKindRequired, 'kind property is required in metadata'));
+    final kind = metadata['kind'];
+
+    if (kind is! String) {
+      TbdexParseException(
+        TbdexExceptionCode.parserKindRequired,
+        'kind property is required in metadata and must be a string',
+      );
+    }
+    return kind;
   }
 }

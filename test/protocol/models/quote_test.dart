@@ -38,7 +38,7 @@ void main() async {
       expect(quote.data.payin.amount, equals('100'));
     });
 
-    test('can parse quote from a json string', () async {
+    test('can parse and verify quote from a json string', () async {
       final quote = TestData.getQuote();
       await quote.sign(TestData.pfiDid);
       final json = jsonEncode(quote.toJson());

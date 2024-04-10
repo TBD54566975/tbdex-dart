@@ -145,7 +145,9 @@ class PayinMethod {
       name: json['name'],
       description: json['description'],
       group: json['group'],
-      requiredPaymentDetails: JsonSchema.create(json['requiredPaymentDetails']),
+      requiredPaymentDetails: json['requiredPaymentDetails'] != null
+          ? JsonSchema.create(json['requiredPaymentDetails'])
+          : null,
       fee: json['fee'],
       min: json['min'],
       max: json['max'],
@@ -199,7 +201,9 @@ class PayoutMethod {
       name: json['name'],
       description: json['description'],
       group: json['group'],
-      requiredPaymentDetails: JsonSchema.create(json['requiredPaymentDetails']),
+      requiredPaymentDetails: json['requiredPaymentDetails'] != null
+          ? JsonSchema.create(json['requiredPaymentDetails'])
+          : null,
       fee: json['fee'],
       min: json['min'],
       max: json['max'],

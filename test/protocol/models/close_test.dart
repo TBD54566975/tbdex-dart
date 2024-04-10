@@ -26,9 +26,9 @@ void main() async {
       expect(close.data.reason, equals('my reason'));
     });
 
-    test('can parse close from a json string', () async {
+    test('can parse and verify close from a json string', () async {
       final close = TestData.getClose();
-      await close.sign(TestData.pfiDid);
+      await close.sign(TestData.aliceDid);
       final json = jsonEncode(close.toJson());
       final parsed = await Close.parse(json);
 

@@ -4,7 +4,7 @@ enum TbdexExceptionCode {
   parserJsonNull,
   parserKindRequired,
   parserInvalidJson,
-  parserMetadataRequired,
+  parserMetadataMalformed,
   parserUnknownMessageKind,
   parserUnknownResourceKind,
   messageSignatureMissing,
