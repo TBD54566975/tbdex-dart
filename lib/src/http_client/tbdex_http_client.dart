@@ -152,7 +152,12 @@ class TbdexHttpClient {
       orElse: () => throw Exception('did does not have service of type PFI'),
     );
 
-    return service?.serviceEndpoint ?? '';
+    final endpoint = service?.serviceEndpoint ?? [];
+
+    if (endpoint.isEmpty) {
+      throw Exception('no service endpoints found');
+    }
+    return 'http://${endpoint[0]}';
   }
 
   static Future<String> _generateRequestToken(
