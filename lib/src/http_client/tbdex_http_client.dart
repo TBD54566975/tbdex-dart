@@ -1,6 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
 
-import 'package:http/http.dart' as http;
 import 'package:tbdex/src/http_client/models/create_exchange_request.dart';
 import 'package:tbdex/src/http_client/models/exchange.dart';
 import 'package:tbdex/src/http_client/models/get_offerings_filter.dart';
@@ -19,10 +19,10 @@ class TbdexHttpClient {
   static const _jsonHeader = 'application/json';
   static const _expirationDuration = Duration(minutes: 5);
 
-  static http.Client _client = http.Client();
+  static HttpClient _client = HttpClient();
 
   // ignore: avoid_setters_without_getters
-  static set client(http.Client client) {
+  static set client(HttpClient client) {
     _client = client;
   }
 
@@ -35,18 +35,17 @@ class TbdexHttpClient {
     final pfiServiceEndpoint = await _getPfiServiceEndpoint(pfiDid);
     final url = Uri.parse('$pfiServiceEndpoint/exchanges/$exchangeId');
 
-    final response = await _client.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $requestToken',
-      },
-    );
+    final request = await _client.getUrl(url);
+    request.headers.set('Authorization', 'Bearer $requestToken');
+    final response = await request.close();
+
+    final body = await response.transform(utf8.decoder).join();
 
     if (response.statusCode != 200) {
-      throw Exception('failed to fetch exchange: ${response.body}');
+      throw Exception('failed to fetch exchange: $body');
     }
 
-    return Parser.parseExchange(response.body);
+    return Parser.parseExchange(body);
   }
 
   static Future<List<Exchange>> getExchanges(
@@ -57,18 +56,17 @@ class TbdexHttpClient {
     final pfiServiceEndpoint = await _getPfiServiceEndpoint(pfiDid);
     final url = Uri.parse('$pfiServiceEndpoint/exchanges/');
 
-    final response = await _client.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $requestToken',
-      },
-    );
+    final request = await _client.getUrl(url);
+    request.headers.set('Authorization', 'Bearer $requestToken');
+    final response = await request.close();
+
+    final body = await response.transform(utf8.decoder).join();
 
     if (response.statusCode != 200) {
-      throw Exception('failed to fetch exchanges: ${response.body}');
+      throw Exception('failed to fetch exchanges: $body');
     }
 
-    return Parser.parseExchanges(response.body);
+    return Parser.parseExchanges(body);
   }
 
   static Future<List<Offering>> getOfferings(
@@ -80,13 +78,16 @@ class TbdexHttpClient {
       queryParameters: filter?.toJson(),
     );
 
-    final response = await _client.get(url);
+    final request = await _client.getUrl(url);
+    final response = await request.close();
+
+    final body = await response.transform(utf8.decoder).join();
 
     if (response.statusCode != 200) {
       throw Exception(response);
     }
 
-    return Parser.parseOfferings(response.body);
+    return Parser.parseOfferings(body);
   }
 
   static Future<void> createExchange(
@@ -129,11 +130,9 @@ class TbdexHttpClient {
     final path = '/exchanges${exchangeId != null ? '/$exchangeId' : ''}';
     final url = Uri.parse(pfiServiceEndpoint + path);
 
-    final response = await _client.post(
-      url,
-      headers: {'Content-Type': _jsonHeader},
-      body: requestBody,
-    );
+    final request = await _client.postUrl(url);
+    request.headers.set('Content-Type', _jsonHeader);
+    final response = await request.close();
 
     if (response.statusCode != 201) {
       throw Exception(response);
@@ -152,7 +151,12 @@ class TbdexHttpClient {
       orElse: () => throw Exception('did does not have service of type PFI'),
     );
 
-    return service?.serviceEndpoint ?? '';
+    final endpoint = service?.serviceEndpoint ?? [];
+
+    if (endpoint.isEmpty) {
+      throw Exception('no service endpoints found');
+    }
+    return 'http://${endpoint[0]}';
   }
 
   static Future<String> _generateRequestToken(
