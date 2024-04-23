@@ -8,7 +8,7 @@ import '../test_data.dart';
 class MockClient extends Mock implements http.Client {}
 
 void main() async {
-  const pfiDid = 'did:dht:74hg1efatndi8enx3e4z6c4u8ieh1xfkyay4ntg4dg1w6risu35y';
+  const pfiDid = 'did:web:localhost%3A8892:ingress';
   const pfiServiceEndpoint = 'http://localhost:8892/ingress/pfi';
 
   late MockClient mockHttpClient;
