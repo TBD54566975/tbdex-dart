@@ -141,7 +141,7 @@ class TbdexHttpClient {
 
   static Future<String> _getPfiServiceEndpoint(String pfiDid) async {
     final didResolutionResult =
-        await DidResolver.resolve(pfiDid, client: _client);
+        await DidResolver.resolve(pfiDid, options: _client);
 
     if (didResolutionResult.didDocument == null) {
       throw Exception('did resolution failed');
