@@ -8,7 +8,7 @@ import 'package:tbdex/src/protocol/models/rfq.dart';
 import 'package:test/test.dart';
 import 'package:typeid/typeid.dart';
 
-import '../../test_data.dart';
+import '../../helpers/test_data.dart';
 
 void main() async {
   await TestData.initializeDids();
@@ -56,7 +56,9 @@ void main() async {
           expect(parsed.toString(), equals(json));
         });
 
-        test('throws if private data is missing but hashed fields are present in Rfq.data', () async {
+        test(
+            'throws if private data is missing but hashed fields are present in Rfq.data',
+            () async {
           final rfq = TestData.getRfq();
           await rfq.sign(TestData.aliceDid);
 
@@ -65,12 +67,16 @@ void main() async {
           final json = jsonEncode(jsonObject);
 
           expect(
-            () async => Rfq.parse(json, requireAllPrivateData: true), 
-            throwsA(predicate((e) => e is TbdexParseException && e.code == TbdexExceptionCode.rfqPrivateDataMissing)),
+            () async => Rfq.parse(json, requireAllPrivateData: true),
+            throwsA(predicate((e) =>
+                e is TbdexParseException &&
+                e.code == TbdexExceptionCode.rfqPrivateDataMissing)),
           );
         });
 
-        test('throws if salt is missing but hashed fields are present in Rfq.data', () async {
+        test(
+            'throws if salt is missing but hashed fields are present in Rfq.data',
+            () async {
           final rfq = TestData.getRfq();
           await rfq.sign(TestData.aliceDid);
 
@@ -80,11 +86,15 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) => e is TbdexValidatorException && e.code == TbdexExceptionCode.validatorJsonSchemaError)),
+            throwsA(predicate((e) =>
+                e is TbdexValidatorException &&
+                e.code == TbdexExceptionCode.validatorJsonSchemaError)),
           );
         });
 
-        test('throws if Rfq.privateData.payin.paymentDetails is incorrect but Rfq.data.payin.paymentDetailsHash is present', () async {
+        test(
+            'throws if Rfq.privateData.payin.paymentDetails is incorrect but Rfq.data.payin.paymentDetailsHash is present',
+            () async {
           var rfq = TestData.getRfq();
 
           var jsonObject = rfq.toJson();
@@ -97,11 +107,15 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) => e is TbdexParseException && e.code == TbdexExceptionCode.rfqPayinDetailsHashMismatch)),
+            throwsA(predicate((e) =>
+                e is TbdexParseException &&
+                e.code == TbdexExceptionCode.rfqPayinDetailsHashMismatch)),
           );
         });
 
-        test('throws if Rfq.privateData.payout.paymentDetails is incorrect but Rfq.data.payout.paymentDetailsHash is present', () async {
+        test(
+            'throws if Rfq.privateData.payout.paymentDetails is incorrect but Rfq.data.payout.paymentDetailsHash is present',
+            () async {
           var rfq = TestData.getRfq();
 
           var jsonObject = rfq.toJson();
@@ -114,11 +128,15 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) => e is TbdexParseException && e.code == TbdexExceptionCode.rfqPayoutDetailsHashMismatch)),
+            throwsA(predicate((e) =>
+                e is TbdexParseException &&
+                e.code == TbdexExceptionCode.rfqPayoutDetailsHashMismatch)),
           );
         });
 
-        test('throws if Rfq.privateData.claims is incorrect but Rfq.data.claimsHash is present', () async {
+        test(
+            'throws if Rfq.privateData.claims is incorrect but Rfq.data.claimsHash is present',
+            () async {
           var rfq = TestData.getRfq();
 
           var jsonObject = rfq.toJson();
@@ -131,11 +149,15 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) => e is TbdexParseException && e.code == TbdexExceptionCode.rfqClaimsHashMismatch)),
+            throwsA(predicate((e) =>
+                e is TbdexParseException &&
+                e.code == TbdexExceptionCode.rfqClaimsHashMismatch)),
           );
         });
 
-        test('throws if Rfq.privateData.payin.paymentDetails is missing but Rfq.data.payin.paymentDetailsHash is present', () async {
+        test(
+            'throws if Rfq.privateData.payin.paymentDetails is missing but Rfq.data.payin.paymentDetailsHash is present',
+            () async {
           var rfq = TestData.getRfq();
           await rfq.sign(TestData.aliceDid);
 
@@ -147,11 +169,15 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) => e is TbdexParseException && e.code == TbdexExceptionCode.rfqPayinDetailsMissing)),
+            throwsA(predicate((e) =>
+                e is TbdexParseException &&
+                e.code == TbdexExceptionCode.rfqPayinDetailsMissing)),
           );
         });
 
-        test('throws if Rfq.privateData.payout.paymentDetails is missing but Rfq.data.payout.paymentDetailsHash is present', () async {
+        test(
+            'throws if Rfq.privateData.payout.paymentDetails is missing but Rfq.data.payout.paymentDetailsHash is present',
+            () async {
           var rfq = TestData.getRfq();
           await rfq.sign(TestData.aliceDid);
 
@@ -163,11 +189,15 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) => e is TbdexParseException && e.code == TbdexExceptionCode.rfqPayoutDetailsMissing)),
+            throwsA(predicate((e) =>
+                e is TbdexParseException &&
+                e.code == TbdexExceptionCode.rfqPayoutDetailsMissing)),
           );
         });
 
-        test('throws if Rfq.privateData.claims is missing but Rfq.data.claimsHash is present', () async {
+        test(
+            'throws if Rfq.privateData.claims is missing but Rfq.data.claimsHash is present',
+            () async {
           var rfq = TestData.getRfq();
           await rfq.sign(TestData.aliceDid);
 
@@ -179,13 +209,17 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) => e is TbdexParseException && e.code == TbdexExceptionCode.rfqClaimsMissing)),
+            throwsA(predicate((e) =>
+                e is TbdexParseException &&
+                e.code == TbdexExceptionCode.rfqClaimsMissing)),
           );
         });
       });
 
       group('requireAllPrivateData = false', () {
-        test('throws if salt is missing but private fields are present in privateData', () async {
+        test(
+            'throws if salt is missing but private fields are present in privateData',
+            () async {
           final rfq = TestData.getRfq();
           await rfq.sign(TestData.aliceDid);
 
@@ -194,12 +228,17 @@ void main() async {
           final json = jsonEncode(jsonObject);
 
           expect(
-            () async => Rfq.parse(json), // requireAllPrivateData = false by default
-            throwsA(predicate((e) => e is TbdexValidatorException && e.code == TbdexExceptionCode.validatorJsonSchemaError)),
+            () async =>
+                Rfq.parse(json), // requireAllPrivateData = false by default
+            throwsA(predicate((e) =>
+                e is TbdexValidatorException &&
+                e.code == TbdexExceptionCode.validatorJsonSchemaError)),
           );
         });
 
-        test('throws if Rfq.privateData.payin.paymentDetails is incorrect but Rfq.data.payin.paymentDetailsHash is present', () async {
+        test(
+            'throws if Rfq.privateData.payin.paymentDetails is incorrect but Rfq.data.payin.paymentDetailsHash is present',
+            () async {
           var rfq = TestData.getRfq();
 
           var jsonObject = rfq.toJson();
@@ -211,12 +250,17 @@ void main() async {
           final json = jsonEncode(rfqWithGarbageHash.toJson());
 
           expect(
-            () async => Rfq.parse(json), // requireAllPrivateData = false by default
-            throwsA(predicate((e) => e is TbdexParseException && e.code == TbdexExceptionCode.rfqPayinDetailsHashMismatch)),
+            () async =>
+                Rfq.parse(json), // requireAllPrivateData = false by default
+            throwsA(predicate((e) =>
+                e is TbdexParseException &&
+                e.code == TbdexExceptionCode.rfqPayinDetailsHashMismatch)),
           );
         });
 
-        test('throws if Rfq.privateData.payout.paymentDetails is incorrect but Rfq.data.payout.paymentDetailsHash is present', () async {
+        test(
+            'throws if Rfq.privateData.payout.paymentDetails is incorrect but Rfq.data.payout.paymentDetailsHash is present',
+            () async {
           var rfq = TestData.getRfq();
 
           var jsonObject = rfq.toJson();
@@ -228,12 +272,17 @@ void main() async {
           final json = jsonEncode(rfqWithGarbageHash.toJson());
 
           expect(
-            () async => Rfq.parse(json), // requireAllPrivateData = false by default
-            throwsA(predicate((e) => e is TbdexParseException && e.code == TbdexExceptionCode.rfqPayoutDetailsHashMismatch)),
+            () async =>
+                Rfq.parse(json), // requireAllPrivateData = false by default
+            throwsA(predicate((e) =>
+                e is TbdexParseException &&
+                e.code == TbdexExceptionCode.rfqPayoutDetailsHashMismatch)),
           );
         });
 
-        test('throws if Rfq.privateData.claims is incorrect but Rfq.data.claimsHash is present', () async {
+        test(
+            'throws if Rfq.privateData.claims is incorrect but Rfq.data.claimsHash is present',
+            () async {
           var rfq = TestData.getRfq();
 
           var jsonObject = rfq.toJson();
@@ -245,8 +294,11 @@ void main() async {
           final json = jsonEncode(rfqWithGarbageHash.toJson());
 
           expect(
-            () async => Rfq.parse(json), // requireAllPrivateData = false by default
-            throwsA(predicate((e) => e is TbdexParseException && e.code == TbdexExceptionCode.rfqClaimsHashMismatch)),
+            () async =>
+                Rfq.parse(json), // requireAllPrivateData = false by default
+            throwsA(predicate((e) =>
+                e is TbdexParseException &&
+                e.code == TbdexExceptionCode.rfqClaimsHashMismatch)),
           );
         });
       });

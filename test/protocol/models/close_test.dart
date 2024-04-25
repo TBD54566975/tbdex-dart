@@ -6,7 +6,7 @@ import 'package:tbdex/src/protocol/models/message_data.dart';
 import 'package:test/test.dart';
 import 'package:typeid/typeid.dart';
 
-import '../../test_data.dart';
+import '../../helpers/test_data.dart';
 
 void main() async {
   await TestData.initializeDids();
