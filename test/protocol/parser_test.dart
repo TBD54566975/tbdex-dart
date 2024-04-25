@@ -9,7 +9,7 @@ import 'package:tbdex/src/protocol/models/rfq.dart';
 import 'package:tbdex/src/protocol/parser.dart';
 import 'package:test/test.dart';
 
-import '../test_data.dart';
+import '../helpers/test_data.dart';
 
 void main() async {
   await TestData.initializeDids();

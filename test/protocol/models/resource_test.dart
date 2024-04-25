@@ -2,7 +2,7 @@ import 'package:tbdex/src/protocol/models/resource.dart';
 import 'package:test/test.dart';
 import 'package:web5/web5.dart';
 
-import '../../test_data.dart';
+import '../../helpers/test_data.dart';
 
 void main() async {
   await TestData.initializeDids();
