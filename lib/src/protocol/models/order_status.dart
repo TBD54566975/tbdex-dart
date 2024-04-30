@@ -28,7 +28,7 @@ class OrderStatus extends Message {
     String? externalId,
     String protocol = '1.0',
   }) {
-    final now = DateTime.now().toIso8601String();
+    final now = DateTime.now().toUtc().toIso8601String();
     final metadata = MessageMetadata(
       kind: MessageKind.orderstatus,
       to: to,
