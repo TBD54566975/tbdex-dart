@@ -42,7 +42,10 @@ class MessageMetadata extends Metadata {
     return MessageMetadata(
       kind: MessageKind.values.firstWhere(
         (kind) => kind.name == json['kind'],
-        orElse: () => throw TbdexParseException(TbdexExceptionCode.messageUnknownKind, 'unknown message kind: ${json['kind']}'),
+        orElse: () => throw TbdexParseException(
+          TbdexExceptionCode.messageUnknownKind,
+          'unknown message kind: ${json['kind']}',
+        ),
       ),
       to: json['to'],
       from: json['from'],
@@ -105,7 +108,7 @@ abstract class Message {
 
     if (signingDid != metadata.from) {
       throw TbdexSignatureVerificationException(
-      TbdexExceptionCode.messageSignatureMismatch,
+        TbdexExceptionCode.messageSignatureMismatch,
         'signature verification failed: was not signed by the expected DID',
       );
     }
@@ -114,7 +117,10 @@ abstract class Message {
   }
 
   Uint8List _digest() {
-    return CryptoUtils.digest({'metadata': metadata, 'data': data});
+    return CryptoUtils.digest({
+      'metadata': metadata.toJson(),
+      'data': data.toJson(),
+    });
   }
 
   @override

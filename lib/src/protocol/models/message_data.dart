@@ -107,6 +107,7 @@ class RfqData extends MessageData {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'offeringId': offeringId,
@@ -185,6 +186,7 @@ class QuoteData extends MessageData {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'expiresAt': expiresAt,
@@ -269,6 +271,7 @@ class CloseData extends MessageData {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       if (success != null) 'success': success,
@@ -278,6 +281,7 @@ class CloseData extends MessageData {
 }
 
 class OrderData extends MessageData {
+  @override
   Map<String, dynamic> toJson() {
     return {};
   }
@@ -294,6 +298,7 @@ class OrderStatusData extends MessageData {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'orderStatus': orderStatus,
