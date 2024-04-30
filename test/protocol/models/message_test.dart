@@ -29,6 +29,11 @@ void main() async {
       await rfq.sign(TestData.pfiDid);
 
       expect(rfq.signature, isNotNull);
+
+      final order = TestData.getOrder();
+      await order.sign(TestData.aliceDid);
+
+      print(order);
     });
 
     test('messages must be signed by the sender', () async {

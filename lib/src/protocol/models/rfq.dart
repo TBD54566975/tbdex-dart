@@ -36,7 +36,7 @@ class Rfq extends Message {
     String protocol = '1.0',
   }) {
     final id = Message.generateId(MessageKind.rfq);
-    final now = DateTime.now().toIso8601String();
+    final now = DateTime.now().toUtc().toIso8601String();
     final metadata = MessageMetadata(
       kind: MessageKind.rfq,
       to: to,
@@ -72,14 +72,17 @@ class Rfq extends Message {
     String? claimsHash;
 
     if (unhashedRfqData.payin.paymentDetails != null) {
-      privatePayin = PrivatePaymentDetails(paymentDetails: unhashedRfqData.payin.paymentDetails!);
-      payinDetailsHash = digestPrivateData(salt, unhashedRfqData.payin.paymentDetails! as Object);
+      privatePayin = PrivatePaymentDetails(
+          paymentDetails: unhashedRfqData.payin.paymentDetails!);
+      payinDetailsHash = digestPrivateData(
+          salt, unhashedRfqData.payin.paymentDetails! as Object);
     }
 
     if (unhashedRfqData.payout.paymentDetails != null) {
-      privatePayout = PrivatePaymentDetails(paymentDetails: unhashedRfqData.payout.paymentDetails!);
-      payoutDetailsHash = digestPrivateData(salt, unhashedRfqData.payout.paymentDetails! as Object);
-
+      privatePayout = PrivatePaymentDetails(
+          paymentDetails: unhashedRfqData.payout.paymentDetails!);
+      payoutDetailsHash = digestPrivateData(
+          salt, unhashedRfqData.payout.paymentDetails! as Object);
     }
 
     if (unhashedRfqData.claims != null && unhashedRfqData.claims != null) {
@@ -100,7 +103,6 @@ class Rfq extends Message {
       claimsHash: claimsHash,
     );
 
-
     var privateData = RfqPrivateData(
       salt: salt,
       claims: unhashedRfqData.claims,
@@ -114,7 +116,8 @@ class Rfq extends Message {
     };
   }
 
-  static Future<Rfq> parse(String rawMessage, { requireAllPrivateData = false }) async {
+  static Future<Rfq> parse(String rawMessage,
+      {requireAllPrivateData = false}) async {
     final jsonObject = jsonDecode(rawMessage) as Map<String, dynamic>;
     Validator.validate(jsonObject, 'message');
     Validator.validate(jsonObject['data'], 'rfq');
@@ -136,7 +139,8 @@ class Rfq extends Message {
 
   void verifyAllPrivateData() {
     if (privateData == null) {
-      throw TbdexParseException(TbdexExceptionCode.rfqPrivateDataMissing, 'Could not verify all privateData because privateData property is missing');
+      throw TbdexParseException(TbdexExceptionCode.rfqPrivateDataMissing,
+          'Could not verify all privateData because privateData property is missing');
     }
 
     // Verify payin details
@@ -157,12 +161,14 @@ class Rfq extends Message {
 
   void verifyPresentPrivateData() {
     // Verify payin details
-    if (data.payin.paymentDetailsHash != null && privateData?.payin?.paymentDetails != null) {
+    if (data.payin.paymentDetailsHash != null &&
+        privateData?.payin?.paymentDetails != null) {
       verifyPayinDetailsHash();
     }
 
     // Verify payout details
-    if (data.payout.paymentDetailsHash != null && privateData?.payout?.paymentDetails != null) {
+    if (data.payout.paymentDetailsHash != null &&
+        privateData?.payout?.paymentDetails != null) {
       verifyPayoutDetailsHash();
     }
 
@@ -184,10 +190,12 @@ class Rfq extends Message {
       );
     }
 
-    var digest = Rfq.digestPrivateData(privateData!.salt, privateData!.payin!.paymentDetails);
+    var digest = Rfq.digestPrivateData(
+        privateData!.salt, privateData!.payin!.paymentDetails);
 
     if (digest != data.payin.paymentDetailsHash) {
-      throw TbdexParseException(TbdexExceptionCode.rfqPayinDetailsHashMismatch, 'Private data integrity check failed: privateData.payin.paymentDetails is missing');
+      throw TbdexParseException(TbdexExceptionCode.rfqPayinDetailsHashMismatch,
+          'Private data integrity check failed: privateData.payin.paymentDetails is missing');
     }
   }
 
@@ -203,10 +211,12 @@ class Rfq extends Message {
       );
     }
 
-    var digest = Rfq.digestPrivateData(privateData!.salt, privateData!.payout!.paymentDetails);
+    var digest = Rfq.digestPrivateData(
+        privateData!.salt, privateData!.payout!.paymentDetails);
 
     if (digest != data.payout.paymentDetailsHash) {
-      throw TbdexParseException(TbdexExceptionCode.rfqPayoutDetailsHashMismatch, 'Private data integrity check failed: data.payout.paymentDetailsHash does not match digest of privateData.payout.paymentDetails');
+      throw TbdexParseException(TbdexExceptionCode.rfqPayoutDetailsHashMismatch,
+          'Private data integrity check failed: data.payout.paymentDetailsHash does not match digest of privateData.payout.paymentDetails');
     }
   }
 
@@ -226,7 +236,8 @@ class Rfq extends Message {
     var digest = Rfq.digestPrivateData(privateData!.salt, claims);
 
     if (digest != data.claimsHash) {
-      throw TbdexParseException(TbdexExceptionCode.rfqClaimsHashMismatch, 'Private data integrity check failed: data.claimsHash does not match digest of privateData.claims');
+      throw TbdexParseException(TbdexExceptionCode.rfqClaimsHashMismatch,
+          'Private data integrity check failed: data.claimsHash does not match digest of privateData.claims');
     }
   }
 
@@ -267,13 +278,15 @@ class Rfq extends Message {
 
     final payinMethod = offering.data.payin.methods.firstWhere(
       (method) => method.kind == data.payin.kind,
-      orElse: () =>
-          throw TbdexVerifyOfferingRequirementsException(TbdexExceptionCode.rfqUnknownPayinKind, 'unknown payin kind: ${data.payin.kind}'),
+      orElse: () => throw TbdexVerifyOfferingRequirementsException(
+          TbdexExceptionCode.rfqUnknownPayinKind,
+          'unknown payin kind: ${data.payin.kind}'),
     );
 
     final payinSchema = payinMethod.getRequiredPaymentDetailsSchema();
     if (payinSchema != null) {
-      final validationResult = payinSchema.validate(privateData?.payin?.paymentDetails);
+      final validationResult =
+          payinSchema.validate(privateData?.payin?.paymentDetails);
       if (!validationResult.isValid) {
         throw TbdexVerifyOfferingRequirementsException(
           TbdexExceptionCode.rfqPayinDetailsNotValid,
@@ -284,13 +297,15 @@ class Rfq extends Message {
 
     final payoutMethod = offering.data.payout.methods.firstWhere(
       (method) => method.kind == data.payout.kind,
-      orElse: () =>
-          throw TbdexVerifyOfferingRequirementsException(TbdexExceptionCode.rfqUnknownPayoutKind, 'unknown payout kind: ${data.payout.kind}'),
+      orElse: () => throw TbdexVerifyOfferingRequirementsException(
+          TbdexExceptionCode.rfqUnknownPayoutKind,
+          'unknown payout kind: ${data.payout.kind}'),
     );
 
     final payoutSchema = payoutMethod.getRequiredPaymentDetailsSchema();
     if (payoutSchema != null) {
-      final validationResult = payoutSchema.validate(privateData?.payout?.paymentDetails);
+      final validationResult =
+          payoutSchema.validate(privateData?.payout?.paymentDetails);
       if (!validationResult.isValid) {
         throw TbdexVerifyOfferingRequirementsException(
           TbdexExceptionCode.rfqPayoutDetailsNotValid,
@@ -307,7 +322,9 @@ class Rfq extends Message {
     return Rfq._(
       metadata: MessageMetadata.fromJson(json['metadata']),
       data: RfqData.fromJson(json['data']),
-      privateData: json['privateData'] != null ? RfqPrivateData.fromJson(json['privateData']) : null,
+      privateData: json['privateData'] != null
+          ? RfqPrivateData.fromJson(json['privateData'])
+          : null,
       signature: json['signature'],
     );
   }
