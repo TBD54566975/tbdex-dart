@@ -33,7 +33,7 @@ void main() async {
       final order = TestData.getOrder();
       await order.sign(TestData.aliceDid);
 
-      print(order);
+      expect(order.signature, isNotNull);
     });
 
     test('messages must be signed by the sender', () async {
