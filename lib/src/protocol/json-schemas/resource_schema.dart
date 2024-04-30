@@ -1,4 +1,6 @@
-{
+class ResourceSchema {
+  static const String json = r'''
+  {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://tbdex.dev/resource.schema.json",
   "type": "object",
@@ -47,4 +49,6 @@
   },
   "required": ["metadata", "data", "signature"],
   "description": "ResourceModel"
+}
+''';
 }

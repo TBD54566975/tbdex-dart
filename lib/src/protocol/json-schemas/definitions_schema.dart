@@ -1,4 +1,6 @@
-{
+class DefinitionsSchema {
+  static const String json = r'''
+  {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://tbdex.dev/definitions.json",
   "type": "object",
@@ -12,4 +14,5 @@
       "pattern": "^([0-9]+(?:[.][0-9]+)?)$"
     }
   }
+}''';
 }

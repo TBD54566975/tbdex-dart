@@ -1,4 +1,6 @@
-{
+class BalanceSchema {
+  static const String json = r'''
+  {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://tbdex.dev/balance.schema.json",
   "type": "object",
@@ -17,4 +19,6 @@
     "currencyCode",
     "available"
   ]
+}
+''';
 }

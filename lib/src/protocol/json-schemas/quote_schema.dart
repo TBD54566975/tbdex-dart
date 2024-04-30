@@ -1,4 +1,6 @@
-{
+class QuoteSchema {
+  static const String json = r'''
+  {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://tbdex.dev/quote.schema.json",
   "definitions": {
@@ -54,4 +56,6 @@
     }
   },
   "required": ["expiresAt", "payin", "payout"]
+}
+''';
 }

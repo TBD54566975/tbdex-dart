@@ -1,4 +1,6 @@
-{
+class MessageSchema {
+  static const String json = r'''
+  {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://tbdex.dev/message.schema.json",
   "definitions": {
@@ -63,4 +65,6 @@
   },
   "additionalProperties": false,
   "required": ["metadata", "data", "signature"]
+}
+''';
 }
