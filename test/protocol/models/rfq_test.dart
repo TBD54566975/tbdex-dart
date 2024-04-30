@@ -68,9 +68,13 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) =>
-                e is TbdexParseException &&
-                e.code == TbdexExceptionCode.rfqPrivateDataMissing)),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is TbdexParseException &&
+                    e.code == TbdexExceptionCode.rfqPrivateDataMissing,
+              ),
+            ),
           );
         });
 
@@ -86,9 +90,13 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) =>
-                e is TbdexValidatorException &&
-                e.code == TbdexExceptionCode.validatorJsonSchemaError)),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is TbdexValidatorException &&
+                    e.code == TbdexExceptionCode.validatorJsonSchemaError,
+              ),
+            ),
           );
         });
 
@@ -107,9 +115,13 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) =>
-                e is TbdexParseException &&
-                e.code == TbdexExceptionCode.rfqPayinDetailsHashMismatch)),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is TbdexParseException &&
+                    e.code == TbdexExceptionCode.rfqPayinDetailsHashMismatch,
+              ),
+            ),
           );
         });
 
@@ -128,9 +140,13 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) =>
-                e is TbdexParseException &&
-                e.code == TbdexExceptionCode.rfqPayoutDetailsHashMismatch)),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is TbdexParseException &&
+                    e.code == TbdexExceptionCode.rfqPayoutDetailsHashMismatch,
+              ),
+            ),
           );
         });
 
@@ -149,9 +165,13 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) =>
-                e is TbdexParseException &&
-                e.code == TbdexExceptionCode.rfqClaimsHashMismatch)),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is TbdexParseException &&
+                    e.code == TbdexExceptionCode.rfqClaimsHashMismatch,
+              ),
+            ),
           );
         });
 
@@ -169,9 +189,13 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) =>
-                e is TbdexParseException &&
-                e.code == TbdexExceptionCode.rfqPayinDetailsMissing)),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is TbdexParseException &&
+                    e.code == TbdexExceptionCode.rfqPayinDetailsMissing,
+              ),
+            ),
           );
         });
 
@@ -189,9 +213,13 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) =>
-                e is TbdexParseException &&
-                e.code == TbdexExceptionCode.rfqPayoutDetailsMissing)),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is TbdexParseException &&
+                    e.code == TbdexExceptionCode.rfqPayoutDetailsMissing,
+              ),
+            ),
           );
         });
 
@@ -209,9 +237,13 @@ void main() async {
 
           expect(
             () async => Rfq.parse(json, requireAllPrivateData: true),
-            throwsA(predicate((e) =>
-                e is TbdexParseException &&
-                e.code == TbdexExceptionCode.rfqClaimsMissing)),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is TbdexParseException &&
+                    e.code == TbdexExceptionCode.rfqClaimsMissing,
+              ),
+            ),
           );
         });
       });
@@ -230,9 +262,13 @@ void main() async {
           expect(
             () async =>
                 Rfq.parse(json), // requireAllPrivateData = false by default
-            throwsA(predicate((e) =>
-                e is TbdexValidatorException &&
-                e.code == TbdexExceptionCode.validatorJsonSchemaError)),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is TbdexValidatorException &&
+                    e.code == TbdexExceptionCode.validatorJsonSchemaError,
+              ),
+            ),
           );
         });
 
@@ -252,9 +288,13 @@ void main() async {
           expect(
             () async =>
                 Rfq.parse(json), // requireAllPrivateData = false by default
-            throwsA(predicate((e) =>
-                e is TbdexParseException &&
-                e.code == TbdexExceptionCode.rfqPayinDetailsHashMismatch)),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is TbdexParseException &&
+                    e.code == TbdexExceptionCode.rfqPayinDetailsHashMismatch,
+              ),
+            ),
           );
         });
 
@@ -274,9 +314,13 @@ void main() async {
           expect(
             () async =>
                 Rfq.parse(json), // requireAllPrivateData = false by default
-            throwsA(predicate((e) =>
-                e is TbdexParseException &&
-                e.code == TbdexExceptionCode.rfqPayoutDetailsHashMismatch)),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is TbdexParseException &&
+                    e.code == TbdexExceptionCode.rfqPayoutDetailsHashMismatch,
+              ),
+            ),
           );
         });
 
@@ -296,9 +340,13 @@ void main() async {
           expect(
             () async =>
                 Rfq.parse(json), // requireAllPrivateData = false by default
-            throwsA(predicate((e) =>
-                e is TbdexParseException &&
-                e.code == TbdexExceptionCode.rfqClaimsHashMismatch)),
+            throwsA(
+              predicate(
+                (e) =>
+                    e is TbdexParseException &&
+                    e.code == TbdexExceptionCode.rfqClaimsHashMismatch,
+              ),
+            ),
           );
         });
       });
