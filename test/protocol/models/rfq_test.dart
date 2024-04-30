@@ -14,10 +14,10 @@ void main() async {
   await TestData.initializeDids();
 
   group('Rfq', () {
-    test('can create a new rfq', () {
+    test('can create a new rfq', () async {
       final rfq = Rfq.create(
-        TestData.pfi,
-        TestData.alice,
+        TestData.pfiDid.uri,
+        TestData.aliceDid.uri,
         CreateRfqData(
           offeringId: TypeId.generate(ResourceKind.offering.name),
           payin: CreateSelectedPayinMethod(amount: '100', kind: 'BTC_ADDRESS'),

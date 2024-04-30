@@ -1,6 +1,10 @@
 import 'package:json_schema/json_schema.dart';
 
-abstract class Data {}
+abstract class Data {
+  Map<String, dynamic> toJson() {
+    throw UnimplementedError();
+  }
+}
 
 abstract class ResourceData extends Data {}
 
@@ -29,6 +33,7 @@ class OfferingData extends ResourceData {
     );
   }
 
+  @override
   Map<String, dynamic> toJson() {
     return {
       'description': description,
