@@ -1,9 +1,18 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:json_schema/json_schema.dart';
 import 'package:path/path.dart' as p;
 import 'package:tbdex/src/protocol/exceptions.dart';
+import 'package:tbdex/src/protocol/json-schemas/close_schema.dart';
+import 'package:tbdex/src/protocol/json-schemas/definitions_schema.dart';
+import 'package:tbdex/src/protocol/json-schemas/message_schema.dart';
+import 'package:tbdex/src/protocol/json-schemas/offering_schema.dart';
+import 'package:tbdex/src/protocol/json-schemas/order_schema.dart';
+import 'package:tbdex/src/protocol/json-schemas/orderstatus_schema.dart';
+import 'package:tbdex/src/protocol/json-schemas/quote_schema.dart';
+import 'package:tbdex/src/protocol/json-schemas/resource_schema.dart';
+import 'package:tbdex/src/protocol/json-schemas/rfq_private_schema.dart';
+import 'package:tbdex/src/protocol/json-schemas/rfq_schema.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
@@ -38,7 +47,10 @@ class Validator {
 
   void _validate(Map<String, dynamic> json, String schemaName) {
     final schema = _schemaMap[schemaName] ??
-        (throw TbdexValidatorException(TbdexExceptionCode.validatorNoSchema, 'no schema with name $schemaName exists'));
+        (throw TbdexValidatorException(
+          TbdexExceptionCode.validatorNoSchema,
+          'no schema with name $schemaName exists',
+        ));
     final validationResult = schema.validate(json);
 
     if (!validationResult.isValid) {
@@ -49,8 +61,10 @@ class Validator {
   void _validateMessage(Message message) {
     final matchedKind = MessageKind.values.firstWhere(
       (kind) => kind == message.metadata.kind,
-      orElse: () =>
-          throw TbdexValidatorException(TbdexExceptionCode.validatorUnknownMessageKind, 'unknown message kind: ${message.metadata.kind}'),
+      orElse: () => throw TbdexValidatorException(
+        TbdexExceptionCode.validatorUnknownMessageKind,
+        'unknown message kind: ${message.metadata.kind}',
+      ),
     );
 
     switch (matchedKind) {
@@ -88,8 +102,10 @@ class Validator {
   void _validateResource(Resource resource) {
     final matchedKind = ResourceKind.values.firstWhere(
       (kind) => kind == resource.metadata.kind,
-      orElse: () =>
-          throw TbdexValidatorException(TbdexExceptionCode.validatorUnknownResourceKind, 'unknown resource kind: ${resource.metadata.kind}'),
+      orElse: () => throw TbdexValidatorException(
+        TbdexExceptionCode.validatorUnknownResourceKind,
+        'unknown resource kind: ${resource.metadata.kind}',
+      ),
     );
 
     switch (matchedKind) {
@@ -106,7 +122,10 @@ class Validator {
 
   void _handleValidationError(List<ValidationError> errors) {
     if (errors.isNotEmpty) {
-      throw TbdexValidatorException(TbdexExceptionCode.validatorJsonSchemaError, errors.join(', '));
+      throw TbdexValidatorException(
+        TbdexExceptionCode.validatorJsonSchemaError,
+        errors.join(', '),
+      );
     }
   }
 
@@ -114,33 +133,30 @@ class Validator {
     final schemasPath = p.join('lib', 'src', 'protocol', 'json-schemas');
     final refProvider = _createRefProvider(schemasPath);
 
-    final schemaFiles = {
-      'close': 'close.schema.json',
-      'definitions': 'definitions.json',
-      'offering': 'offering.schema.json',
-      'message': 'message.schema.json',
-      'order': 'order.schema.json',
-      'orderstatus': 'orderstatus.schema.json',
-      'quote': 'quote.schema.json',
-      'resource': 'resource.schema.json',
-      'rfq': 'rfq.schema.json',
-      'rfqPrivate': 'rfq-private.schema.json',
-    };
-
-    for (final entry in schemaFiles.entries) {
-      final filePath = p.join(schemasPath, entry.value);
-      final schemaJsonString = File(filePath).readAsStringSync();
-      final schemaJson = json.decode(schemaJsonString);
-
-      _schemaMap[entry.key] =
-          JsonSchema.create(schemaJson, refProvider: refProvider);
-    }
+    _schemaMap['close'] =
+        JsonSchema.create(CloseSchema.json, refProvider: refProvider);
+    _schemaMap['definitions'] =
+        JsonSchema.create(DefinitionsSchema.json, refProvider: refProvider);
+    _schemaMap['offering'] =
+        JsonSchema.create(OfferingSchema.json, refProvider: refProvider);
+    _schemaMap['message'] =
+        JsonSchema.create(MessageSchema.json, refProvider: refProvider);
+    _schemaMap['order'] =
+        JsonSchema.create(OrderSchema.json, refProvider: refProvider);
+    _schemaMap['orderstatus'] =
+        JsonSchema.create(OrderstatusSchema.json, refProvider: refProvider);
+    _schemaMap['quote'] =
+        JsonSchema.create(QuoteSchema.json, refProvider: refProvider);
+    _schemaMap['resource'] =
+        JsonSchema.create(ResourceSchema.json, refProvider: refProvider);
+    _schemaMap['rfq'] =
+        JsonSchema.create(RfqSchema.json, refProvider: refProvider);
+    _schemaMap['rfqPrivate'] =
+        JsonSchema.create(RfqPrivateSchema.json, refProvider: refProvider);
   }
 
   static RefProvider _createRefProvider(String schemasPath) {
-    final schemaJson = json.decode(
-      File(p.join(schemasPath, 'definitions.json')).readAsStringSync(),
-    );
+    final schemaJson = json.decode(DefinitionsSchema.json);
 
     return RefProvider.sync(
       (ref) => ref == 'https://tbdex.dev/definitions.json' ? schemaJson : null,
