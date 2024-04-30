@@ -1,4 +1,6 @@
-{
+class OfferingSchema {
+  static const String json = r'''
+  {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://tbdex.dev/offering.schema.json",
   "type": "object",
@@ -150,4 +152,6 @@
     "payout",
     "payoutUnitsPerPayinUnit"
   ]
+}
+''';
 }

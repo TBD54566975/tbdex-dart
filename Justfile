@@ -1,6 +1,6 @@
 schemas:
-  @git submodule update --init --recursive
-  @cp -r tbdex/hosted/json-schemas lib/src/protocol
+  #!/bin/bash
+  dart run generate_schemas.dart
 
 get:
   @dart pub get

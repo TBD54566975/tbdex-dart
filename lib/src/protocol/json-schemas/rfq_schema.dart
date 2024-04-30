@@ -1,4 +1,6 @@
-{
+class RfqSchema {
+  static const String json = r'''
+  {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://tbdex.dev/rfq.schema.json",
   "type": "object",
@@ -45,4 +47,6 @@
     }
   },
   "required": ["offeringId", "payin", "payout"]
+}
+''';
 }

@@ -1,4 +1,6 @@
-{
+class RfqPrivateSchema {
+  static const String json = r'''
+  {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://tbdex.dev/rfq-private.schema.json",
   "type": "object",
@@ -37,4 +39,6 @@
     }
   },
   "required": ["salt"]
+}
+''';
 }

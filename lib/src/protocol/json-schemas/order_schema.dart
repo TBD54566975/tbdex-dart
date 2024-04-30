@@ -1,7 +1,10 @@
-{
+class OrderSchema {
+  static const String json = r'''
+  {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://tbdex.dev/order.schema.json",
   "type": "object",
   "additionalProperties": false,
   "properties": {}
+}''';
 }
