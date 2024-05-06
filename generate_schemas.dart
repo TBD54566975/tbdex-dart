@@ -3,7 +3,7 @@ import 'package:path/path.dart' as p;
 
 void main() {
   final schemasPath = p.join('tbdex', 'hosted', 'json-schemas');
-  final outputDir = Directory('lib/src/protocol/json-schemas')
+  final outputDir = Directory('lib/src/protocol/json_schemas')
     ..createSync(recursive: true);
 
   Directory(schemasPath)
