@@ -49,7 +49,7 @@ class TbdexHttpClient {
     return Parser.parseExchange(response.body);
   }
 
-  static Future<List<Exchange>> getExchanges(
+  static Future<List<String>> listExchanges(
     BearerDid did,
     String pfiDid,
   ) async {
@@ -71,7 +71,7 @@ class TbdexHttpClient {
     return Parser.parseExchanges(response.body);
   }
 
-  static Future<List<Offering>> getOfferings(
+  static Future<List<Offering>> listOfferings(
     String pfiDid, {
     GetOfferingsFilter? filter,
   }) async {
