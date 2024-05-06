@@ -16,7 +16,7 @@ class OfferingSchema {
       "properties": {
         "currencyCode": {
           "type": "string",
-          "description": "ISO 3166 currency code string"
+          "description": "ISO 4217 currency code string"
         },
         "min": {
           "$ref": "definitions.json#/definitions/decimalString",
@@ -49,7 +49,7 @@ class OfferingSchema {
                 "description": "Value that can be used to group specific payment methods together (e.g. Mobile Money vs. Direct Bank Deposit)."
               },
               "requiredPaymentDetails": {
-                "$ref": "http://json-schema.org/draft-07/schema",
+                "$ref": "http://json-schema.org/draft-07/schema#",
                 "description": "A JSON Schema containing the fields that need to be collected in order to use this payment method"
               },
               "min": {
@@ -77,7 +77,7 @@ class OfferingSchema {
       "properties": {
         "currencyCode": {
           "type": "string",
-          "description": "ISO 3166 currency code string"
+          "description": "ISO 4217 currency code string"
         },
         "min": {
           "$ref": "definitions.json#/definitions/decimalString",
@@ -110,7 +110,7 @@ class OfferingSchema {
                 "description": "Value that can be used to group specific payment methods together (e.g. Mobile Money vs. Direct Bank Deposit)."
               },
               "requiredPaymentDetails": {
-                "$ref": "http://json-schema.org/draft-07/schema",
+                "$ref": "http://json-schema.org/draft-07/schema#",
                 "description": "A JSON Schema containing the fields that need to be collected in order to use this payment method"
               },
               "min": {

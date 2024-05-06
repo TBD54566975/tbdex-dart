@@ -10,7 +10,7 @@ class QuoteSchema {
       "properties": {
         "currencyCode": {
           "type": "string",
-          "description": "ISO 3166 currency code string"
+          "description": "ISO 4217 currency code string"
         },
         "amount": {
           "$ref": "definitions.json#/definitions/decimalString",

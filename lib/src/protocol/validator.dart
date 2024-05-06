@@ -3,16 +3,16 @@ import 'dart:convert';
 import 'package:json_schema/json_schema.dart';
 import 'package:path/path.dart' as p;
 import 'package:tbdex/src/protocol/exceptions.dart';
-import 'package:tbdex/src/protocol/json-schemas/close_schema.dart';
-import 'package:tbdex/src/protocol/json-schemas/definitions_schema.dart';
-import 'package:tbdex/src/protocol/json-schemas/message_schema.dart';
-import 'package:tbdex/src/protocol/json-schemas/offering_schema.dart';
-import 'package:tbdex/src/protocol/json-schemas/order_schema.dart';
-import 'package:tbdex/src/protocol/json-schemas/orderstatus_schema.dart';
-import 'package:tbdex/src/protocol/json-schemas/quote_schema.dart';
-import 'package:tbdex/src/protocol/json-schemas/resource_schema.dart';
-import 'package:tbdex/src/protocol/json-schemas/rfq_private_schema.dart';
-import 'package:tbdex/src/protocol/json-schemas/rfq_schema.dart';
+import 'package:tbdex/src/protocol/json_schemas/close_schema.dart';
+import 'package:tbdex/src/protocol/json_schemas/definitions_schema.dart';
+import 'package:tbdex/src/protocol/json_schemas/message_schema.dart';
+import 'package:tbdex/src/protocol/json_schemas/offering_schema.dart';
+import 'package:tbdex/src/protocol/json_schemas/order_schema.dart';
+import 'package:tbdex/src/protocol/json_schemas/orderstatus_schema.dart';
+import 'package:tbdex/src/protocol/json_schemas/quote_schema.dart';
+import 'package:tbdex/src/protocol/json_schemas/resource_schema.dart';
+import 'package:tbdex/src/protocol/json_schemas/rfq_private_schema.dart';
+import 'package:tbdex/src/protocol/json_schemas/rfq_schema.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
@@ -130,7 +130,7 @@ class Validator {
   }
 
   static void _initialize() {
-    final schemasPath = p.join('lib', 'src', 'protocol', 'json-schemas');
+    final schemasPath = p.join('lib', 'src', 'protocol', 'json_schemas');
     final refProvider = _createRefProvider(schemasPath);
 
     _schemaMap['close'] =
