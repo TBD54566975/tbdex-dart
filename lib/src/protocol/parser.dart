@@ -14,10 +14,12 @@ import 'package:tbdex/src/protocol/validator.dart';
 
 abstract class Parser {
   static Message parseMessage(String rawMessage) {
-
     final jsonObject = jsonDecode(rawMessage) as Map<String, dynamic>?;
     if (jsonObject is! Map<String, dynamic>) {
-      throw TbdexParseException(TbdexExceptionCode.parserMessageJsonNotObject, 'Message JSON must be an object');
+      throw TbdexParseException(
+        TbdexExceptionCode.parserMessageJsonNotObject,
+        'Message JSON must be an object',
+      );
     }
     Validator.validate(jsonObject, 'message');
 
@@ -56,7 +58,7 @@ abstract class Parser {
     return parsedMessages;
   }
 
-  static List<Exchange> parseExchanges(String rawExchanges) {
+  static List<String> parseExchanges(String rawExchanges) {
     final jsonObject = jsonDecode(rawExchanges);
 
     if (jsonObject is! Map<String, dynamic>) {
@@ -69,18 +71,11 @@ abstract class Parser {
       throw Exception('exchanges data is malformed or empty');
     }
 
-    final parsedExchanges = <Exchange>[];
-
-    for (final exchangeJson in exchanges) {
-      final parsedMessages = <Message>[];
-      for (final messageJson in exchangeJson) {
-        final message = _parseMessageJson(messageJson);
-        parsedMessages.add(message);
-      }
-      parsedExchanges.add(parsedMessages);
+    if (exchanges.any((element) => element is! String)) {
+      throw Exception('all exchange ids should be strings');
     }
 
-    return parsedExchanges;
+    return List<String>.from(exchanges);
   }
 
   static List<Offering> parseOfferings(String rawOfferings) {
@@ -109,7 +104,10 @@ abstract class Parser {
     final messageKind = _getKindFromJson(jsonObject);
     final matchedKind = MessageKind.values.firstWhere(
       (kind) => kind.name == messageKind,
-      orElse: () => throw TbdexParseException(TbdexExceptionCode.parserUnknownMessageKind, 'unknown message kind: $messageKind'),
+      orElse: () => throw TbdexParseException(
+        TbdexExceptionCode.parserUnknownMessageKind,
+        'unknown message kind: $messageKind',
+      ),
     );
 
     switch (matchedKind) {
@@ -130,7 +128,10 @@ abstract class Parser {
     final resourceKind = _getKindFromJson(jsonObject);
     final matchedKind = ResourceKind.values.firstWhere(
       (kind) => kind.name == resourceKind,
-      orElse: () => throw TbdexParseException(TbdexExceptionCode.parserUnknownResourceKind, 'unknown resource kind: $resourceKind'),
+      orElse: () => throw TbdexParseException(
+        TbdexExceptionCode.parserUnknownResourceKind,
+        'unknown resource kind: $resourceKind',
+      ),
     );
 
     switch (matchedKind) {
@@ -146,7 +147,10 @@ abstract class Parser {
     final metadata = jsonObject['metadata'];
 
     if (metadata is! Map<String, dynamic> || metadata.isEmpty) {
-      throw TbdexParseException(TbdexExceptionCode.parserMetadataMalformed, 'metadata is malformed or empty');
+      throw TbdexParseException(
+        TbdexExceptionCode.parserMetadataMalformed,
+        'metadata is malformed or empty',
+      );
     }
 
     final kind = metadata['kind'];
