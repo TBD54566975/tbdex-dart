@@ -175,28 +175,10 @@ class TestData {
     return jsonEncode({'data': jsonData});
   }
 
-  static String getExchangesResponse() {
-    final offering = TestData.getOffering();
-    final rfq = TestData.getRfq(offeringId: offering.metadata.id);
-    final quote = TestData.getQuote();
-
-    final mockExchanges = [
-      [rfq, quote],
-    ];
-
-    final jsonData = mockExchanges
-        .map(
-          (exchangeList) => exchangeList.map((message) {
-            if (message is Rfq) {
-              return message.toJson();
-            } else if (message is Quote) {
-              return message.toJson();
-            }
-          }).toList(),
-        )
-        .toList();
-
-    return jsonEncode({'data': jsonData});
+  static String listExchangesResponse() {
+    return jsonEncode({
+      'data': ['123', '456', '789'],
+    });
   }
 
   static String getCreateExchangeRequest(Rfq rfq, {String? replyTo}) =>
