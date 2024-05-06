@@ -55,22 +55,22 @@ void main() async {
       ).called(1);
     });
 
-    test('can get exchanges', () async {
+    test('can list exchanges', () async {
       when(
         () => mockHttpClient.get(
           Uri.parse('$pfiServiceEndpoint/exchanges/'),
           headers: any(named: 'headers'),
         ),
       ).thenAnswer(
-        (_) async => http.Response(TestData.getExchangesResponse(), 200),
+        (_) async => http.Response(TestData.listExchangesResponse(), 200),
       );
 
-      final exchanges = await TbdexHttpClient.getExchanges(
+      final exchanges = await TbdexHttpClient.listExchanges(
         TestData.aliceDid,
         pfiDid,
       );
 
-      expect(exchanges.length, 1);
+      expect(exchanges.length, 3);
 
       verify(
         () => mockHttpClient.get(
@@ -80,14 +80,14 @@ void main() async {
       ).called(1);
     });
 
-    test('can get offerings', () async {
+    test('can list offerings', () async {
       when(
         () => mockHttpClient.get(Uri.parse('$pfiServiceEndpoint/offerings/')),
       ).thenAnswer(
         (_) async => http.Response(TestData.getOfferingResponse(), 200),
       );
 
-      final offerings = await TbdexHttpClient.getOfferings(pfiDid);
+      final offerings = await TbdexHttpClient.listOfferings(pfiDid);
 
       expect(offerings.length, 1);
 
@@ -107,7 +107,7 @@ void main() async {
           body: TestData.getCreateExchangeRequest(rfq, replyTo: 'reply_to'),
         ),
       ).thenAnswer(
-        (_) async => http.Response('', 201),
+        (_) async => http.Response('', 202),
       );
 
       await TbdexHttpClient.createExchange(rfq, replyTo: 'reply_to');
@@ -127,19 +127,19 @@ void main() async {
       await order.sign(TestData.aliceDid);
 
       when(
-        () => mockHttpClient.post(
+        () => mockHttpClient.put(
           Uri.parse('$pfiServiceEndpoint/exchanges/$exchangeId'),
           headers: any(named: 'headers'),
           body: TestData.getSubmitOrderRequest(order),
         ),
       ).thenAnswer(
-        (_) async => http.Response('', 201),
+        (_) async => http.Response('', 202),
       );
 
       await TbdexHttpClient.submitOrder(order);
 
       verify(
-        () => mockHttpClient.post(
+        () => mockHttpClient.put(
           Uri.parse('$pfiServiceEndpoint/exchanges/$exchangeId'),
           headers: any(named: 'headers'),
           body: TestData.getSubmitOrderRequest(order),
@@ -153,19 +153,19 @@ void main() async {
       await close.sign(TestData.aliceDid);
 
       when(
-        () => mockHttpClient.post(
+        () => mockHttpClient.put(
           Uri.parse('$pfiServiceEndpoint/exchanges/$exchangeId'),
           headers: any(named: 'headers'),
           body: TestData.getSubmitCloseRequest(close),
         ),
       ).thenAnswer(
-        (_) async => http.Response('', 201),
+        (_) async => http.Response('', 202),
       );
 
       await TbdexHttpClient.submitClose(close);
 
       verify(
-        () => mockHttpClient.post(
+        () => mockHttpClient.put(
           Uri.parse('$pfiServiceEndpoint/exchanges/$exchangeId'),
           headers: any(named: 'headers'),
           body: TestData.getSubmitCloseRequest(close),
