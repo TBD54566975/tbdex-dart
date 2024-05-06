@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:tbdex/src/http_client/models/exchange.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
 import 'package:tbdex/src/protocol/models/quote.dart';
@@ -55,27 +54,16 @@ void main() async {
       expect(exchange.last.toString(), equals(quoteJson));
     });
 
-    test('can parse a list of exchanges', () async {
-      final rfq = TestData.getRfq();
-      final quote = TestData.getQuote();
-      final rfqJson = jsonEncode(rfq.toJson());
-      final quoteJson = jsonEncode(quote.toJson());
-
+    test('can parse a list of exchange ids', () async {
       final exchanges = Parser.parseExchanges(
         jsonEncode({
-          'data': [
-            [rfq, quote],
-            [rfq, quote],
-          ],
+          'data': ['123', '456'],
         }),
       );
 
-      expect(exchanges, isA<List<Exchange>>());
-      expect(exchanges.first, isA<Exchange>());
-      expect(exchanges.first.first, isA<Rfq>());
-      expect(exchanges[1].last, isA<Quote>());
-      expect(exchanges.first.first.toString(), equals(rfqJson));
-      expect(exchanges[1].last.toString(), equals(quoteJson));
+      expect(exchanges, isA<List<String>>());
+      expect(exchanges.first, equals('123'));
+      expect(exchanges.last, equals('456'));
     });
 
     test('can parse a list of offerings', () async {
