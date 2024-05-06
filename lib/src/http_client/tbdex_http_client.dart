@@ -128,16 +128,13 @@ class TbdexHttpClient {
     final pfiServiceEndpoint = await _getPfiServiceEndpoint(pfiDid);
     final path = '/exchanges${exchangeId != null ? '/$exchangeId' : ''}';
     final url = Uri.parse(pfiServiceEndpoint + path);
+    final headers = {'Content-Type': _jsonHeader};
 
-    final response = await _client.post(
-      url,
-      headers: {
-        'Content-Type': _jsonHeader,
-      },
-      body: requestBody,
-    );
+    final response = await (exchangeId == null
+        ? _client.post(url, headers: headers, body: requestBody)
+        : _client.put(url, headers: headers, body: requestBody));
 
-    if (response.statusCode != 201) {
+    if (response.statusCode != 202) {
       throw Exception(response);
     }
   }
