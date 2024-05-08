@@ -26,7 +26,7 @@ class TbdexHttpClient {
     _client = client;
   }
 
-  static Future<Exchange> getExchange(
+  static Future<TbdexResponse<Exchange?>> getExchange(
     BearerDid did,
     String pfiDid,
     String exchangeId,
@@ -46,10 +46,15 @@ class TbdexHttpClient {
       throw Exception('failed to fetch exchange: ${response.body}');
     }
 
-    return Parser.parseExchange(response.body);
+    return response.statusCode == 200
+        ? TbdexResponse(
+            data: Parser.parseExchange(response.body),
+            statusCode: response.statusCode,
+          )
+        : TbdexResponse(statusCode: response.statusCode);
   }
 
-  static Future<List<String>> listExchanges(
+  static Future<TbdexResponse<List<String>?>> listExchanges(
     BearerDid did,
     String pfiDid,
   ) async {
@@ -64,14 +69,15 @@ class TbdexHttpClient {
       },
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('failed to fetch exchanges: ${response.body}');
-    }
-
-    return Parser.parseExchanges(response.body);
+    return response.statusCode == 200
+        ? TbdexResponse(
+            data: Parser.parseExchanges(response.body),
+            statusCode: response.statusCode,
+          )
+        : TbdexResponse(statusCode: response.statusCode);
   }
 
-  static Future<List<Offering>> listOfferings(
+  static Future<TbdexResponse<List<Offering>?>> listOfferings(
     String pfiDid, {
     GetOfferingsFilter? filter,
   }) async {
@@ -82,14 +88,15 @@ class TbdexHttpClient {
 
     final response = await _client.get(url);
 
-    if (response.statusCode != 200) {
-      throw Exception(response);
-    }
-
-    return Parser.parseOfferings(response.body);
+    return response.statusCode == 200
+        ? TbdexResponse(
+            data: Parser.parseOfferings(response.body),
+            statusCode: response.statusCode,
+          )
+        : TbdexResponse(statusCode: response.statusCode);
   }
 
-  static Future<void> createExchange(
+  static Future<TbdexResponse<void>> createExchange(
     Rfq rfq, {
     String? replyTo,
   }) async {
@@ -99,28 +106,28 @@ class TbdexHttpClient {
       CreateExchangeRequest(rfq: rfq, replyTo: replyTo),
     );
 
-    await _submitMessage(pfiDid, body);
+    return _submitMessage(pfiDid, body);
   }
 
-  static Future<void> submitOrder(Order order) async {
+  static Future<TbdexResponse<void>> submitOrder(Order order) async {
     Validator.validateMessage(order);
     final pfiDid = order.metadata.to;
     final exchangeId = order.metadata.exchangeId;
     final body = jsonEncode(order.toJson());
 
-    await _submitMessage(pfiDid, body, exchangeId: exchangeId);
+    return _submitMessage(pfiDid, body, exchangeId: exchangeId);
   }
 
-  static Future<void> submitClose(Close close) async {
+  static Future<TbdexResponse<void>> submitClose(Close close) async {
     Validator.validateMessage(close);
     final pfiDid = close.metadata.to;
     final exchangeId = close.metadata.exchangeId;
     final body = jsonEncode(close.toJson());
 
-    await _submitMessage(pfiDid, body, exchangeId: exchangeId);
+    return _submitMessage(pfiDid, body, exchangeId: exchangeId);
   }
 
-  static Future<void> _submitMessage(
+  static Future<TbdexResponse<void>> _submitMessage(
     String pfiDid,
     String requestBody, {
     String? exchangeId,
@@ -134,9 +141,7 @@ class TbdexHttpClient {
         ? _client.post(url, headers: headers, body: requestBody)
         : _client.put(url, headers: headers, body: requestBody));
 
-    if (response.statusCode != 202) {
-      throw Exception(response);
-    }
+    return TbdexResponse(statusCode: response.statusCode);
   }
 
   static Future<String> _getPfiServiceEndpoint(String pfiDid) async {
@@ -178,4 +183,11 @@ class TbdexHttpClient {
       ),
     );
   }
+}
+
+class TbdexResponse<T> {
+  final T? data;
+  final int statusCode;
+
+  TbdexResponse({required this.statusCode, this.data});
 }
