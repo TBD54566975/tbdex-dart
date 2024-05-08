@@ -162,7 +162,7 @@ class TbdexHttpClient {
     if (endpoint.isEmpty) {
       throw Exception('no service endpoints found');
     }
-    return 'http://${endpoint[0]}';
+    return endpoint[0];
   }
 
   static Future<String> _generateRequestToken(
