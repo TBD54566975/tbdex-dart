@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:json_schema/json_schema.dart';
 import 'package:tbdex/src/http_client/models/create_exchange_request.dart';
+import 'package:tbdex/src/http_client/models/submit_close_request.dart';
+import 'package:tbdex/src/http_client/models/submit_order_request.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
@@ -185,10 +187,10 @@ class TestData {
       jsonEncode(CreateExchangeRequest(rfq: rfq, replyTo: replyTo));
 
   static String getSubmitOrderRequest(Order order) =>
-      jsonEncode(order.toJson());
+      jsonEncode(SubmitOrderRequest(order: order));
 
   static String getSubmitCloseRequest(Close close) =>
-      jsonEncode(close.toJson());
+      jsonEncode(SubmitCloseRequest(close: close));
 
   static JsonSchema requiredPaymentDetailsSchema() {
     return JsonSchema.create(

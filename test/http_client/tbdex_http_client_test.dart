@@ -13,7 +13,7 @@ void main() async {
   const pfiServiceEndpoint = 'http://localhost:8892/ingress/pfi';
 
   const didDoc =
-      '''{"id":"did:web:localhost%3A8892:ingress","verificationMethod":[{"id":"#0","type":"JsonWebKey","controller":"did:web:localhost%3A8892:ingress","publicKeyJwk":{"kty":"OKP","crv":"Ed25519","x":"oQ6Nl6pZjDa0I2MIsPV7q7aXX7moneoIC0XprR6ull8"}}],"service":[{"id":"#pfi","type":"PFI","serviceEndpoint":["localhost:8892/ingress/pfi"]}]}''';
+      '''{"id":"did:web:localhost%3A8892:ingress","verificationMethod":[{"id":"#0","type":"JsonWebKey","controller":"did:web:localhost%3A8892:ingress","publicKeyJwk":{"kty":"OKP","crv":"Ed25519","x":"oQ6Nl6pZjDa0I2MIsPV7q7aXX7moneoIC0XprR6ull8"}}],"service":[{"id":"#pfi","type":"PFI","serviceEndpoint":["http://localhost:8892/ingress/pfi"]}]}''';
 
   late MockHttpClient mockHttpClient;
 
