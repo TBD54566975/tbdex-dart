@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'package:tbdex/src/http_client/models/create_exchange_request.dart';
 import 'package:tbdex/src/http_client/models/exchange.dart';
 import 'package:tbdex/src/http_client/models/get_offerings_filter.dart';
+import 'package:tbdex/src/http_client/models/submit_close_request.dart';
+import 'package:tbdex/src/http_client/models/submit_order_request.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
 import 'package:tbdex/src/protocol/models/order.dart';
@@ -102,9 +104,7 @@ class TbdexHttpClient {
   }) async {
     Validator.validateMessage(rfq);
     final pfiDid = rfq.metadata.to;
-    final body = jsonEncode(
-      CreateExchangeRequest(rfq: rfq, replyTo: replyTo),
-    );
+    final body = jsonEncode(CreateExchangeRequest(rfq: rfq, replyTo: replyTo));
 
     return _submitMessage(pfiDid, body);
   }
@@ -113,7 +113,7 @@ class TbdexHttpClient {
     Validator.validateMessage(order);
     final pfiDid = order.metadata.to;
     final exchangeId = order.metadata.exchangeId;
-    final body = jsonEncode(order.toJson());
+    final body = jsonEncode(SubmitOrderRequest(order: order));
 
     return _submitMessage(pfiDid, body, exchangeId: exchangeId);
   }
@@ -122,7 +122,7 @@ class TbdexHttpClient {
     Validator.validateMessage(close);
     final pfiDid = close.metadata.to;
     final exchangeId = close.metadata.exchangeId;
-    final body = jsonEncode(close.toJson());
+    final body = jsonEncode(SubmitCloseRequest(close: close));
 
     return _submitMessage(pfiDid, body, exchangeId: exchangeId);
   }
