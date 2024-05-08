@@ -44,10 +44,6 @@ class TbdexHttpClient {
       },
     );
 
-    if (response.statusCode != 200) {
-      throw Exception('failed to fetch exchange: ${response.body}');
-    }
-
     return response.statusCode == 200
         ? TbdexResponse(
             data: Parser.parseExchange(response.body),
