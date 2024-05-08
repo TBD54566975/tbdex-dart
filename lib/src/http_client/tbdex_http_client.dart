@@ -44,12 +44,12 @@ class TbdexHttpClient {
       },
     );
 
-    return response.statusCode == 200
-        ? TbdexResponse(
+    return response.statusCode >= 400
+        ? TbdexResponse(statusCode: response.statusCode)
+        : TbdexResponse(
             data: Parser.parseExchange(response.body),
             statusCode: response.statusCode,
-          )
-        : TbdexResponse(statusCode: response.statusCode);
+          );
   }
 
   static Future<TbdexResponse<List<String>?>> listExchanges(
@@ -67,12 +67,12 @@ class TbdexHttpClient {
       },
     );
 
-    return response.statusCode == 200
-        ? TbdexResponse(
+    return response.statusCode >= 400
+        ? TbdexResponse(statusCode: response.statusCode)
+        : TbdexResponse(
             data: Parser.parseExchanges(response.body),
             statusCode: response.statusCode,
-          )
-        : TbdexResponse(statusCode: response.statusCode);
+          );
   }
 
   static Future<TbdexResponse<List<Offering>?>> listOfferings(
@@ -86,12 +86,12 @@ class TbdexHttpClient {
 
     final response = await _client.get(url);
 
-    return response.statusCode == 200
-        ? TbdexResponse(
+    return response.statusCode >= 400
+        ? TbdexResponse(statusCode: response.statusCode)
+        : TbdexResponse(
             data: Parser.parseOfferings(response.body),
             statusCode: response.statusCode,
-          )
-        : TbdexResponse(statusCode: response.statusCode);
+          );
   }
 
   static Future<TbdexResponse<void>> createExchange(
