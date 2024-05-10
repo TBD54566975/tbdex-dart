@@ -1,0 +1,23 @@
+class ParseOrderstatus {
+  static const String vector = r'''
+  {
+  "description": "Order Status parses from string",
+  "input": "{\"metadata\":{\"from\":\"did:dht:3whftgpbdjihx9ze9tdn575zqzm4qwccetnf1ybiibuzad7rrmyy\",\"to\":\"did:dht:qyac4pru9ykcxbrutpaaxkmususxh4wtc4ctt19813zrie8uyy5y\",\"exchangeId\":\"rfq_01hw25hn39ermsmftw3a3rb1ph\",\"protocol\":\"1.0\",\"kind\":\"orderstatus\",\"id\":\"orderstatus_01hw25hn39ermsmftw3d1efc2f\",\"createdAt\":\"2024-04-22T05:48:01.513Z\"},\"data\":{\"orderStatus\":\"wee\"},\"signature\":\"eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6M3doZnRncGJkamloeDl6ZTl0ZG41NzV6cXptNHF3Y2NldG5mMXliaWlidXphZDdycm15eSMwIn0..alR9hfgjKSbSEmuXi1fpA7Puh5JNp22uDqk2b5zGcbvbgUsDCkChBQ47SWjAV5BchmfZ0yaDLPQPTxiH918jBQ\"}",
+  "output": {
+    "metadata": {
+      "from": "did:dht:3whftgpbdjihx9ze9tdn575zqzm4qwccetnf1ybiibuzad7rrmyy",
+      "to": "did:dht:qyac4pru9ykcxbrutpaaxkmususxh4wtc4ctt19813zrie8uyy5y",
+      "exchangeId": "rfq_01hw25hn39ermsmftw3a3rb1ph",
+      "protocol": "1.0",
+      "kind": "orderstatus",
+      "id": "orderstatus_01hw25hn39ermsmftw3d1efc2f",
+      "createdAt": "2024-04-22T05:48:01.513Z"
+    },
+    "data": {
+      "orderStatus": "wee"
+    },
+    "signature": "eyJhbGciOiJFZERTQSIsImtpZCI6ImRpZDpkaHQ6M3doZnRncGJkamloeDl6ZTl0ZG41NzV6cXptNHF3Y2NldG5mMXliaWlidXphZDdycm15eSMwIn0..alR9hfgjKSbSEmuXi1fpA7Puh5JNp22uDqk2b5zGcbvbgUsDCkChBQ47SWjAV5BchmfZ0yaDLPQPTxiH918jBQ"
+  },
+  "error": false
+}''';
+}
