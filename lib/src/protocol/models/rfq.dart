@@ -7,6 +7,7 @@ import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
 import 'package:tbdex/src/protocol/validator.dart';
+import 'package:tbdex/tbdex.dart';
 import 'package:web5/web5.dart';
 
 class Rfq extends Message {
@@ -336,8 +337,28 @@ class Rfq extends Message {
       }
     }
 
-    // TODO(ethan-tbd): verify claims
-    // offering.data.requiredClaims?.forEach(verifyClaims);
+    verifyClaims(offering);
+  }
+
+  void verifyClaims(Offering offering) {
+    if (offering.data.requiredClaims == null) {
+      return;
+    }
+    final presentationDefinition = offering.data.requiredClaims!;
+
+    final credentials =
+        presentationDefinition.selectCredentials(privateData?.claims ?? []);
+
+    if (credentials.isEmpty) {
+      throw TbdexVerifyOfferingRequirementsException(
+        TbdexExceptionCode.rfqClaimsInsufficient,
+        "Rfq claims were insufficient to satisfy Offering's required claims",
+      );
+    }
+
+    for (final credential in credentials) {
+      DecodedVcJwt.decode(credential).verify();
+    }
   }
 
   factory Rfq.fromJson(Map<String, dynamic> json) {

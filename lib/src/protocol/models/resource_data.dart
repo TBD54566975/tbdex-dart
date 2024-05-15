@@ -1,4 +1,5 @@
 import 'package:json_schema/json_schema.dart';
+import 'package:web5/web5.dart';
 
 abstract class Data {
   Map<String, dynamic> toJson() {
@@ -13,14 +14,14 @@ class OfferingData extends ResourceData {
   final String payoutUnitsPerPayinUnit;
   final PayinDetails payin;
   final PayoutDetails payout;
-  // final PresentationDefinitionV2? requiredClaims;
+  final PresentationDefinition? requiredClaims;
 
   OfferingData({
     required this.description,
     required this.payoutUnitsPerPayinUnit,
     required this.payin,
     required this.payout,
-    // this.requiredClaims,
+    this.requiredClaims,
   });
 
   factory OfferingData.fromJson(Map<String, dynamic> json) {
@@ -29,7 +30,7 @@ class OfferingData extends ResourceData {
       payoutUnitsPerPayinUnit: json['payoutUnitsPerPayinUnit'],
       payin: PayinDetails.fromJson(json['payin']),
       payout: PayoutDetails.fromJson(json['payout']),
-      // requiredClaims: json['requiredClaims'] != null ? PresentationDefinitionV2.fromJson(json['requiredClaims']) : null,
+      requiredClaims: json['requiredClaims'] != null ? PresentationDefinition.fromJson(json['requiredClaims']) : null,
     );
   }
 

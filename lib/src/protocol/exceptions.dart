@@ -12,6 +12,7 @@ enum TbdexExceptionCode {
   resourceSignatureMissing,
   resourceSignatureMismatch,
   resourceUnknownKind,
+  rfqClaimsInsufficient,
   rfqClaimsHashMismatch,
   rfqClaimsMissing,
   rfqOfferingIdMismatch,
