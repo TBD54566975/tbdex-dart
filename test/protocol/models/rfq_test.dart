@@ -7,6 +7,7 @@ import 'package:tbdex/src/protocol/models/resource.dart';
 import 'package:tbdex/src/protocol/models/rfq.dart';
 import 'package:test/test.dart';
 import 'package:typeid/typeid.dart';
+import 'package:web5/web5.dart';
 
 import '../../helpers/test_data.dart';
 
@@ -352,10 +353,52 @@ void main() async {
       });
     });
 
-    test('can verify offering requirements', () {
-      final offering = TestData.getOffering();
-      final rfq = TestData.getRfq(offeringId: offering.metadata.id);
-      expect(() => rfq.verifyOfferingRequirements(offering), returnsNormally);
+    group('verifyOfferingRequirements', () {
+      test('can verify offering requirements', () {
+        final offering = TestData.getOffering();
+        final rfq = TestData.getRfq(offeringId: offering.metadata.id);
+        expect(() => rfq.verifyOfferingRequirements(offering), returnsNormally);
+      });
+
+      test('succeeds if claims satisfy offering required claims', () async {
+        final vc = VerifiableCredential.create(
+          // this credential fulfills the offering's required claims
+          type: ['YoloCredential', 'VerifiableCredential',],
+          issuer: TestData.aliceDid.uri,
+          subject: TestData.aliceDid.uri,
+          data: {
+            'beep': 'boop',
+          },
+        );
+        final vcJwt = await vc.sign(TestData.aliceDid);
+
+        final offering =
+            TestData.getOffering(requiredClaims: TestData.getRequiredClaims());
+        final rfq =
+            TestData.getRfq(offeringId: offering.metadata.id, claims: [vcJwt]);
+
+        expect(() => rfq.verifyOfferingRequirements(offering), returnsNormally);
+      });
+
+      test('fails if offering has no required claims', () async {
+        final vc = VerifiableCredential.create(
+          // this credential fulfills the offering's required claims
+          type: ['NotYoloCredential', 'VerifiableCredential',],
+          issuer: TestData.aliceDid.uri,
+          subject: TestData.aliceDid.uri,
+          data: {
+            'beep': 'boop',
+          },
+        );
+        final vcJwt = await vc.sign(TestData.aliceDid);
+
+        final offering =
+            TestData.getOffering(requiredClaims: TestData.getRequiredClaims());
+        final rfq =
+            TestData.getRfq(offeringId: offering.metadata.id, claims: [vcJwt]);
+
+        expect(() => rfq.verifyOfferingRequirements(offering), throwsException);
+      });
     });
 
     test('should throw exception if rfq offeringId differs from offering id',

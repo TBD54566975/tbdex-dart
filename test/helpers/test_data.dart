@@ -30,7 +30,9 @@ class TestData {
     pfiDid = await DidJwk.create(keyManager: _pfiKeyManager);
   }
 
-  static Offering getOffering() {
+  static Offering getOffering({
+    PresentationDefinition? requiredClaims,
+  }) {
     return Offering.create(
       pfiDid.uri,
       OfferingData(
@@ -57,8 +59,36 @@ class TestData {
             ),
           ],
         ),
+        requiredClaims: requiredClaims,
       ),
     );
+  }
+
+  static PresentationDefinition getRequiredClaims() {
+    // From web5-spec test vectors
+    const json = r'''
+      {
+        "id": "7ce4004c-3c38-4853-968b-e411bafcd945",
+        "input_descriptors": [
+          {
+            "id": "bbdb9b7c-5754-4f46-b63b-590bada959e0",
+            "constraints": {
+              "fields": [
+                {
+                  "path": ["$.vc.type[*]"],
+                  "filter": {
+                    "type": "string",
+                    "pattern": "^YoloCredential$"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ''';
+
+    return PresentationDefinition.fromJson(jsonDecode(json));
   }
 
   static Rfq getRfq({
@@ -67,7 +97,9 @@ class TestData {
     String? payinKind,
     String? payoutKind,
     String? to,
+    List<String>? claims,
   }) {
+    claims ??= [];
     return Rfq.create(
       to ?? pfiDid.uri,
       aliceDid.uri,
@@ -92,7 +124,7 @@ class TestData {
             'cvv': '123',
           }),
         ),
-        claims: [],
+        claims: claims,
       ),
     );
   }
