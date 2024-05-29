@@ -30,7 +30,9 @@ class OfferingData extends ResourceData {
       payoutUnitsPerPayinUnit: json['payoutUnitsPerPayinUnit'],
       payin: PayinDetails.fromJson(json['payin']),
       payout: PayoutDetails.fromJson(json['payout']),
-      requiredClaims: json['requiredClaims'] != null ? PresentationDefinition.fromJson(json['requiredClaims']) : null,
+      requiredClaims: json['requiredClaims'] != null
+          ? PresentationDefinition.fromJson(json['requiredClaims'])
+          : null,
     );
   }
 
@@ -41,7 +43,7 @@ class OfferingData extends ResourceData {
       'payoutUnitsPerPayinUnit': payoutUnitsPerPayinUnit,
       'payin': payin.toJson(),
       'payout': payout.toJson(),
-      // 'requiredClaims': requiredClaims?.toJson(),
+      'requiredClaims': requiredClaims?.toJson(),
     };
   }
 }
