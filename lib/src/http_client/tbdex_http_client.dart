@@ -30,7 +30,7 @@ class TbdexHttpClient {
     _client = client;
   }
 
-  static Future<Exchange?> getExchange(
+  static Future<Exchange> getExchange(
     BearerDid did,
     String pfiDid,
     String exchangeId,
@@ -73,7 +73,7 @@ class TbdexHttpClient {
     return exchange;
   }
 
-  static Future<List<String>?> listExchanges(
+  static Future<List<String>> listExchanges(
     BearerDid did,
     String pfiDid,
   ) async {
@@ -115,7 +115,7 @@ class TbdexHttpClient {
     return exchanges;
   }
 
-  static Future<List<Offering>?> listOfferings(
+  static Future<List<Offering>> listOfferings(
     String pfiDid, {
     GetOfferingsFilter? filter,
   }) async {
