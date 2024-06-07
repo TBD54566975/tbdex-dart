@@ -41,8 +41,7 @@ void main() async {
 
       final response =
           await TbdexHttpClient.getExchange(TestData.aliceDid, pfiDid, '1234');
-      expect(response.data?.length, 2);
-      expect(response.statusCode, 200);
+      expect(response?.length, 2);
 
       verify(
         () => mockHttpClient.get(
@@ -64,8 +63,7 @@ void main() async {
 
       final response =
           await TbdexHttpClient.listExchanges(TestData.aliceDid, pfiDid);
-      expect(response.data?.length, 3);
-      expect(response.statusCode, 200);
+      expect(response?.length, 3);
 
       verify(
         () => mockHttpClient.get(
@@ -83,8 +81,7 @@ void main() async {
       );
 
       final response = await TbdexHttpClient.listOfferings(pfiDid);
-      expect(response.data?.length, 1);
-      expect(response.statusCode, 200);
+      expect(response?.length, 1);
 
       verify(
         () => mockHttpClient.get(Uri.parse('$pfiServiceEndpoint/offerings/')),
@@ -105,9 +102,7 @@ void main() async {
         (_) async => http.Response('', 202),
       );
 
-      final response =
-          await TbdexHttpClient.createExchange(rfq, replyTo: 'reply_to');
-      expect(response.statusCode, 202);
+      await TbdexHttpClient.createExchange(rfq, replyTo: 'reply_to');
 
       verify(
         () => mockHttpClient.post(
@@ -133,8 +128,7 @@ void main() async {
         (_) async => http.Response('', 202),
       );
 
-      final response = await TbdexHttpClient.submitOrder(order);
-      expect(response.statusCode, 202);
+      await TbdexHttpClient.submitOrder(order);
 
       verify(
         () => mockHttpClient.put(
@@ -160,8 +154,7 @@ void main() async {
         (_) async => http.Response('', 202),
       );
 
-      final response = await TbdexHttpClient.submitClose(close);
-      expect(response.statusCode, 202);
+      await TbdexHttpClient.submitClose(close);
 
       verify(
         () => mockHttpClient.put(

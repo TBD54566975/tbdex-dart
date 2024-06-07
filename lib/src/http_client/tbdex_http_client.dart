@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-
+import 'package:tbdex/src/http_client/exceptions/http_exceptions.dart';
+import 'package:tbdex/src/http_client/exceptions/token_exceptions.dart';
+import 'package:tbdex/src/http_client/exceptions/validation_exceptions.dart';
 import 'package:tbdex/src/http_client/models/create_exchange_request.dart';
 import 'package:tbdex/src/http_client/models/exchange.dart';
 import 'package:tbdex/src/http_client/models/get_offerings_filter.dart';
@@ -28,54 +30,92 @@ class TbdexHttpClient {
     _client = client;
   }
 
-  static Future<TbdexResponse<Exchange?>> getExchange(
+  static Future<Exchange?> getExchange(
     BearerDid did,
     String pfiDid,
     String exchangeId,
   ) async {
     final requestToken = await _generateRequestToken(did, pfiDid);
+    final headers = {'Authorization': 'Bearer $requestToken'};
+
     final pfiServiceEndpoint = await _getPfiServiceEndpoint(pfiDid);
     final url = Uri.parse('$pfiServiceEndpoint/exchanges/$exchangeId');
 
-    final response = await _client.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $requestToken',
-      },
-    );
+    http.Response response;
+    try {
+      response = await _client.get(url, headers: headers);
 
-    return response.statusCode >= 400
-        ? TbdexResponse(statusCode: response.statusCode)
-        : TbdexResponse(
-            data: Parser.parseExchange(response.body),
-            statusCode: response.statusCode,
-          );
+      if (response.statusCode != 200) {
+        throw ResponseError(
+          message: 'failed to get exchange',
+          status: response.statusCode,
+          body: response.body,
+        );
+      }
+    } on Exception catch (e) {
+      throw RequestError(
+        message: 'failed to send get exchange request',
+        url: url.toString(),
+        cause: e,
+      );
+    }
+
+    Exchange exchange;
+    try {
+      exchange = Parser.parseExchange(response.body);
+    } on Exception catch (e) {
+      throw ValidationError(
+        message: 'failed to parse exchange',
+        cause: e,
+      );
+    }
+
+    return exchange;
   }
 
-  static Future<TbdexResponse<List<String>?>> listExchanges(
+  static Future<List<String>?> listExchanges(
     BearerDid did,
     String pfiDid,
   ) async {
     final requestToken = await _generateRequestToken(did, pfiDid);
+    final headers = {'Authorization': 'Bearer $requestToken'};
+
     final pfiServiceEndpoint = await _getPfiServiceEndpoint(pfiDid);
     final url = Uri.parse('$pfiServiceEndpoint/exchanges/');
 
-    final response = await _client.get(
-      url,
-      headers: {
-        'Authorization': 'Bearer $requestToken',
-      },
-    );
+    http.Response response;
+    try {
+      response = await _client.get(url, headers: headers);
 
-    return response.statusCode >= 400
-        ? TbdexResponse(statusCode: response.statusCode)
-        : TbdexResponse(
-            data: Parser.parseExchanges(response.body),
-            statusCode: response.statusCode,
-          );
+      if (response.statusCode != 200) {
+        throw ResponseError(
+          message: 'failed to list exchange',
+          status: response.statusCode,
+          body: response.body,
+        );
+      }
+    } on Exception catch (e) {
+      throw RequestError(
+        message: 'failed to send list exchange request',
+        url: url.toString(),
+        cause: e,
+      );
+    }
+
+    List<String> exchanges;
+    try {
+      exchanges = Parser.parseExchanges(response.body);
+    } on Exception catch (e) {
+      throw ValidationError(
+        message: 'failed to parse exchange ids',
+        cause: e,
+      );
+    }
+
+    return exchanges;
   }
 
-  static Future<TbdexResponse<List<Offering>?>> listOfferings(
+  static Future<List<Offering>?> listOfferings(
     String pfiDid, {
     GetOfferingsFilter? filter,
   }) async {
@@ -84,81 +124,155 @@ class TbdexHttpClient {
       queryParameters: filter?.toJson(),
     );
 
-    final response = await _client.get(url);
+    http.Response response;
+    try {
+      response = await _client.get(url);
 
-    return response.statusCode >= 400
-        ? TbdexResponse(statusCode: response.statusCode)
-        : TbdexResponse(
-            data: Parser.parseOfferings(response.body),
-            statusCode: response.statusCode,
-          );
+      if (response.statusCode != 200) {
+        throw ResponseError(
+          message: 'failed to list offerings',
+          status: response.statusCode,
+          body: response.body,
+        );
+      }
+    } on Exception catch (e) {
+      throw RequestError(
+        message: 'failed to send list offerings request',
+        url: url.toString(),
+        cause: e,
+      );
+    }
+
+    List<Offering> offerings;
+    try {
+      offerings = Parser.parseOfferings(response.body);
+    } on Exception catch (e) {
+      throw ValidationError(
+        message: 'failed to parse offerings',
+        cause: e,
+      );
+    }
+
+    return offerings;
   }
 
-  static Future<TbdexResponse<void>> createExchange(
+  static Future<void> createExchange(
     Rfq rfq, {
     String? replyTo,
   }) async {
-    Validator.validateMessage(rfq);
+    try {
+      Validator.validateMessage(rfq);
+    } on Exception catch (e) {
+      throw ValidationError(message: 'invalid rfq message', cause: e);
+    }
+
     final pfiDid = rfq.metadata.to;
     final body = jsonEncode(CreateExchangeRequest(rfq: rfq, replyTo: replyTo));
 
-    return _submitMessage(pfiDid, body);
+    await _submitMessage(pfiDid, body);
   }
 
-  static Future<TbdexResponse<void>> submitOrder(Order order) async {
-    Validator.validateMessage(order);
+  static Future<void> submitOrder(Order order) async {
+    try {
+      Validator.validateMessage(order);
+    } on Exception catch (e) {
+      throw ValidationError(message: 'invalid order message', cause: e);
+    }
+
     final pfiDid = order.metadata.to;
     final exchangeId = order.metadata.exchangeId;
     final body = jsonEncode(SubmitOrderRequest(order: order));
 
-    return _submitMessage(pfiDid, body, exchangeId: exchangeId);
+    await _submitMessage(pfiDid, body, exchangeId: exchangeId);
   }
 
-  static Future<TbdexResponse<void>> submitClose(Close close) async {
-    Validator.validateMessage(close);
+  static Future<void> submitClose(Close close) async {
+    try {
+      Validator.validateMessage(close);
+    } on Exception catch (e) {
+      throw ValidationError(message: 'invalid close message', cause: e);
+    }
+
     final pfiDid = close.metadata.to;
     final exchangeId = close.metadata.exchangeId;
     final body = jsonEncode(SubmitCloseRequest(close: close));
 
-    return _submitMessage(pfiDid, body, exchangeId: exchangeId);
+    await _submitMessage(pfiDid, body, exchangeId: exchangeId);
   }
 
-  static Future<TbdexResponse<void>> _submitMessage(
+  static Future<void> _submitMessage(
     String pfiDid,
     String requestBody, {
     String? exchangeId,
   }) async {
+    final headers = {'Content-Type': _jsonHeader};
+
     final pfiServiceEndpoint = await _getPfiServiceEndpoint(pfiDid);
     final path = '/exchanges${exchangeId != null ? '/$exchangeId' : ''}';
     final url = Uri.parse(pfiServiceEndpoint + path);
-    final headers = {'Content-Type': _jsonHeader};
 
-    final response = await (exchangeId == null
-        ? _client.post(url, headers: headers, body: requestBody)
-        : _client.put(url, headers: headers, body: requestBody));
+    http.Response response;
+    try {
+      response = await (exchangeId == null
+          ? _client.post(url, headers: headers, body: requestBody)
+          : _client.put(url, headers: headers, body: requestBody));
 
-    return TbdexResponse(statusCode: response.statusCode);
+      if (response.statusCode != 202) {
+        throw ResponseError(
+          message: exchangeId != null
+              ? 'failed to create exchange'
+              : 'failed to submit message',
+          status: response.statusCode,
+          body: response.body,
+        );
+      }
+    } on Exception catch (e) {
+      throw RequestError(
+        message: exchangeId != null
+            ? 'failed to send create exchange request'
+            : 'failed to send submit message request',
+        url: url.toString(),
+        cause: e,
+      );
+    }
   }
 
   static Future<String> _getPfiServiceEndpoint(String pfiDid) async {
-    final didResolutionResult =
-        await DidResolver.resolve(pfiDid, options: _client);
+    DidResolutionResult didResolutionResult;
+    try {
+      didResolutionResult = await DidResolver.resolve(pfiDid, options: _client);
 
-    if (didResolutionResult.didDocument == null) {
-      throw Exception('did resolution failed');
+      if (didResolutionResult.didDocument == null) {
+        throw Exception(didResolutionResult.didResolutionMetadata.error);
+      }
+    } on Exception catch (e) {
+      throw InvalidDidError(
+        message: 'pfi did resolution failed',
+        cause: e,
+      );
     }
 
-    final service = didResolutionResult.didDocument?.service?.firstWhere(
-      (service) => service.type == 'PFI',
-      orElse: () => throw Exception('did does not have service of type PFI'),
-    );
+    List<String> pfiServiceEndpoints;
+    try {
+      final service = didResolutionResult.didDocument?.service?.firstWhere(
+        (service) => service.type == 'PFI',
+        orElse: () =>
+            throw Exception('pfi did does not have service of type PFI'),
+      );
 
-    final endpoint = service?.serviceEndpoint ?? [];
+      pfiServiceEndpoints = service?.serviceEndpoint ?? [];
 
-    if (endpoint.isEmpty) {
-      throw Exception('no service endpoints found');
+      if (pfiServiceEndpoints.isEmpty) {
+        throw Exception('no PFI service endpoints found');
+      }
+    } on Exception catch (e) {
+      throw MissingServiceEndpointError(
+        message: 'pfi service endpoint missing',
+        cause: e,
+      );
     }
-    return endpoint[0];
+
+    return pfiServiceEndpoints.first;
   }
 
   static Future<String> _generateRequestToken(
@@ -168,16 +282,25 @@ class TbdexHttpClient {
     final nowEpochSeconds = DateTime.now().millisecondsSinceEpoch ~/ 1000;
     final exp = nowEpochSeconds + _expirationDuration.inSeconds;
 
-    return Jwt.sign(
-      did: did,
-      payload: JwtClaims(
-        aud: pfiDid,
-        iss: did.uri,
-        exp: exp,
-        iat: nowEpochSeconds,
-        jti: TypeId.generate(''),
-      ),
-    );
+    String requestToken;
+    try {
+      requestToken = await Jwt.sign(
+        did: did,
+        payload: JwtClaims(
+          aud: pfiDid,
+          iss: did.uri,
+          exp: exp,
+          iat: nowEpochSeconds,
+          jti: TypeId.generate(''),
+        ),
+      );
+    } on Exception catch (e) {
+      throw RequestTokenError(
+        message: 'failed to sign request token',
+        cause: e,
+      );
+    }
+    return requestToken;
   }
 }
 
