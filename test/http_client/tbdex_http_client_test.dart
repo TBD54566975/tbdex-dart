@@ -1,6 +1,6 @@
 import 'package:http/http.dart' as http;
-
 import 'package:mocktail/mocktail.dart';
+import 'package:tbdex/src/http_client/exceptions/http_exceptions.dart';
 import 'package:tbdex/src/http_client/tbdex_http_client.dart';
 import 'package:test/test.dart';
 
@@ -51,6 +51,26 @@ void main() async {
       ).called(1);
     });
 
+    test('get exchange throws ResponseError', () async {
+      when(
+        () => mockHttpClient.get(
+          Uri.parse('$pfiServiceEndpoint/exchanges/1234'),
+          headers: any(named: 'headers'),
+        ),
+      ).thenAnswer(
+        (_) async => http.Response('Error', 400),
+      );
+
+      expect(
+        () async => TbdexHttpClient.getExchange(
+          TestData.aliceDid,
+          pfiDid,
+          '1234',
+        ),
+        throwsA(isA<ResponseError>()),
+      );
+    });
+
     test('can list exchanges', () async {
       when(
         () => mockHttpClient.get(
@@ -73,6 +93,22 @@ void main() async {
       ).called(1);
     });
 
+    test('list exchanges throws ResponseError', () async {
+      when(
+        () => mockHttpClient.get(
+          Uri.parse('$pfiServiceEndpoint/exchanges/'),
+          headers: any(named: 'headers'),
+        ),
+      ).thenAnswer(
+        (_) async => http.Response('Error', 400),
+      );
+
+      expect(
+        () async => TbdexHttpClient.listExchanges(TestData.aliceDid, pfiDid),
+        throwsA(isA<ResponseError>()),
+      );
+    });
+
     test('can list offerings', () async {
       when(
         () => mockHttpClient.get(Uri.parse('$pfiServiceEndpoint/offerings/')),
@@ -86,6 +122,19 @@ void main() async {
       verify(
         () => mockHttpClient.get(Uri.parse('$pfiServiceEndpoint/offerings/')),
       ).called(1);
+    });
+
+    test('list offerings throws ResponseError', () async {
+      when(
+        () => mockHttpClient.get(Uri.parse('$pfiServiceEndpoint/offerings/')),
+      ).thenAnswer(
+        (_) async => http.Response('Error', 400),
+      );
+
+      expect(
+        () async => await TbdexHttpClient.listOfferings(pfiDid),
+        throwsA(isA<ResponseError>()),
+      );
     });
 
     test('can create exchange', () async {
@@ -111,6 +160,26 @@ void main() async {
           body: TestData.getCreateExchangeRequest(rfq, replyTo: 'reply_to'),
         ),
       ).called(1);
+    });
+
+    test('create exchange throws ResponseError', () async {
+      final rfq = TestData.getRfq(to: pfiDid);
+      await rfq.sign(TestData.aliceDid);
+
+      when(
+        () => mockHttpClient.post(
+          Uri.parse('$pfiServiceEndpoint/exchanges'),
+          headers: any(named: 'headers'),
+          body: TestData.getCreateExchangeRequest(rfq, replyTo: 'reply_to'),
+        ),
+      ).thenAnswer(
+        (_) async => http.Response('Error', 400),
+      );
+
+      expect(
+        () async => TbdexHttpClient.createExchange(rfq, replyTo: 'reply_to'),
+        throwsA(isA<ResponseError>()),
+      );
     });
 
     test('can submit order', () async {
@@ -139,6 +208,27 @@ void main() async {
       ).called(1);
     });
 
+    test('submit order throws ResponseError', () async {
+      final order = TestData.getOrder(to: pfiDid);
+      final exchangeId = order.metadata.exchangeId;
+      await order.sign(TestData.aliceDid);
+
+      when(
+        () => mockHttpClient.put(
+          Uri.parse('$pfiServiceEndpoint/exchanges/$exchangeId'),
+          headers: any(named: 'headers'),
+          body: TestData.getSubmitOrderRequest(order),
+        ),
+      ).thenAnswer(
+        (_) async => http.Response('Error', 400),
+      );
+
+      expect(
+        () async => TbdexHttpClient.submitOrder(order),
+        throwsA(isA<ResponseError>()),
+      );
+    });
+
     test('can submit close', () async {
       final close = TestData.getClose(to: pfiDid);
       final exchangeId = close.metadata.exchangeId;
@@ -163,6 +253,27 @@ void main() async {
           body: TestData.getSubmitCloseRequest(close),
         ),
       ).called(1);
+    });
+
+    test('submit close throws ResponseError', () async {
+      final close = TestData.getClose(to: pfiDid);
+      final exchangeId = close.metadata.exchangeId;
+      await close.sign(TestData.aliceDid);
+
+      when(
+        () => mockHttpClient.put(
+          Uri.parse('$pfiServiceEndpoint/exchanges/$exchangeId'),
+          headers: any(named: 'headers'),
+          body: TestData.getSubmitCloseRequest(close),
+        ),
+      ).thenAnswer(
+        (_) async => http.Response('Error', 400),
+      );
+
+      expect(
+        () async => TbdexHttpClient.submitClose(close),
+        throwsA(isA<ResponseError>()),
+      );
     });
   });
 }
