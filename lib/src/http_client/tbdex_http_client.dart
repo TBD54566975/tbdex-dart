@@ -53,6 +53,8 @@ class TbdexHttpClient {
         );
       }
     } on Exception catch (e) {
+      if (e is ResponseError) rethrow;
+
       throw RequestError(
         message: 'failed to send get exchange request',
         url: url.toString(),
@@ -95,6 +97,8 @@ class TbdexHttpClient {
         );
       }
     } on Exception catch (e) {
+      if (e is ResponseError) rethrow;
+
       throw RequestError(
         message: 'failed to send list exchange request',
         url: url.toString(),
@@ -136,6 +140,8 @@ class TbdexHttpClient {
         );
       }
     } on Exception catch (e) {
+      if (e is ResponseError) rethrow;
+
       throw RequestError(
         message: 'failed to send list offerings request',
         url: url.toString(),
@@ -227,6 +233,8 @@ class TbdexHttpClient {
         );
       }
     } on Exception catch (e) {
+      if (e is ResponseError) rethrow;
+
       throw RequestError(
         message: exchangeId != null
             ? 'failed to send create exchange request'
