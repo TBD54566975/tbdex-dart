@@ -41,7 +41,7 @@ void main() async {
 
       final response =
           await TbdexHttpClient.getExchange(TestData.aliceDid, pfiDid, '1234');
-      expect(response?.length, 2);
+      expect(response.length, 2);
 
       verify(
         () => mockHttpClient.get(
@@ -63,7 +63,7 @@ void main() async {
 
       final response =
           await TbdexHttpClient.listExchanges(TestData.aliceDid, pfiDid);
-      expect(response?.length, 3);
+      expect(response.length, 3);
 
       verify(
         () => mockHttpClient.get(
@@ -81,7 +81,7 @@ void main() async {
       );
 
       final response = await TbdexHttpClient.listOfferings(pfiDid);
-      expect(response?.length, 1);
+      expect(response.length, 1);
 
       verify(
         () => mockHttpClient.get(Uri.parse('$pfiServiceEndpoint/offerings/')),
