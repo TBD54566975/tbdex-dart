@@ -9,6 +9,31 @@ abstract class Data {
 
 abstract class ResourceData extends Data {}
 
+class BalanceData extends ResourceData {
+  final String currencyCode;
+  final String available;
+
+  BalanceData({
+    required this.currencyCode,
+    required this.available,
+  });
+
+  factory BalanceData.fromJson(Map<String, dynamic> json) {
+    return BalanceData(
+      currencyCode: json['currencyCode'],
+      available: json['available'],
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'currencyCode': currencyCode,
+      'available': available,
+    };
+  }
+}
+
 class OfferingData extends ResourceData {
   final String description;
   final String payoutUnitsPerPayinUnit;

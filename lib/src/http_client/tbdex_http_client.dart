@@ -8,6 +8,7 @@ import 'package:tbdex/src/http_client/models/exchange.dart';
 import 'package:tbdex/src/http_client/models/get_offerings_filter.dart';
 import 'package:tbdex/src/http_client/models/submit_close_request.dart';
 import 'package:tbdex/src/http_client/models/submit_order_request.dart';
+import 'package:tbdex/src/protocol/models/balance.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
 import 'package:tbdex/src/protocol/models/order.dart';
@@ -160,6 +161,46 @@ class TbdexHttpClient {
     }
 
     return offerings;
+  }
+
+  static Future<List<Balance>> listBalances(
+    String pfiDid,
+  ) async {
+    final pfiServiceEndpoint = await _getPfiServiceEndpoint(pfiDid);
+    final url = Uri.parse('$pfiServiceEndpoint/balances/');
+
+    http.Response response;
+    try {
+      response = await _client.get(url);
+
+      if (response.statusCode != 200) {
+        throw ResponseError(
+          message: 'failed to list balances',
+          status: response.statusCode,
+          body: response.body,
+        );
+      }
+    } on Exception catch (e) {
+      if (e is ResponseError) rethrow;
+
+      throw RequestError(
+        message: 'failed to send list balances request',
+        url: url.toString(),
+        cause: e,
+      );
+    }
+
+    List<Balance> balances;
+    try {
+      balances = Parser.parseBalances(response.body);
+    } on Exception catch (e) {
+      throw ValidationError(
+        message: 'failed to parse balances',
+        cause: e,
+      );
+    }
+
+    return balances;
   }
 
   static Future<void> createExchange(

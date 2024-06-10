@@ -132,7 +132,35 @@ void main() async {
       );
 
       expect(
-        () async => await TbdexHttpClient.listOfferings(pfiDid),
+        () async => TbdexHttpClient.listOfferings(pfiDid),
+        throwsA(isA<ResponseError>()),
+      );
+    });
+
+    test('can list balances', () async {
+      when(
+        () => mockHttpClient.get(Uri.parse('$pfiServiceEndpoint/balances/')),
+      ).thenAnswer(
+        (_) async => http.Response(TestData.listBalancesResponse(), 200),
+      );
+
+      final response = await TbdexHttpClient.listBalances(pfiDid);
+      expect(response.length, 1);
+
+      verify(
+        () => mockHttpClient.get(Uri.parse('$pfiServiceEndpoint/balances/')),
+      ).called(1);
+    });
+
+    test('list balances throws ResponseError', () async {
+      when(
+        () => mockHttpClient.get(Uri.parse('$pfiServiceEndpoint/balances/')),
+      ).thenAnswer(
+        (_) async => http.Response('Error', 400),
+      );
+
+      expect(
+        () async => TbdexHttpClient.listBalances(pfiDid),
         throwsA(isA<ResponseError>()),
       );
     });

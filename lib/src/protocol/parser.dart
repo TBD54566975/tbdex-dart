@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:tbdex/src/http_client/models/exchange.dart';
 import 'package:tbdex/src/protocol/exceptions.dart';
+import 'package:tbdex/src/protocol/models/balance.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
@@ -100,6 +101,28 @@ abstract class Parser {
     return parsedOfferings;
   }
 
+  static List<Balance> parseBalances(String rawBalances) {
+    final jsonObject = jsonDecode(rawBalances);
+
+    if (jsonObject is! Map<String, dynamic>) {
+      throw Exception('balances must be a json object');
+    }
+
+    final balances = jsonObject['data'];
+
+    if (balances is! List<dynamic> || balances.isEmpty) {
+      throw Exception('balances data is malformed or empty');
+    }
+
+    final parsedBalances = <Balance>[];
+    for (final balanceJson in balances) {
+      final balance = _parseResourceJson(balanceJson) as Balance;
+      parsedBalances.add(balance);
+    }
+
+    return parsedBalances;
+  }
+
   static Message _parseMessageJson(Map<String, dynamic> jsonObject) {
     final messageKind = _getKindFromJson(jsonObject);
     final matchedKind = MessageKind.values.firstWhere(
@@ -138,6 +161,7 @@ abstract class Parser {
       case ResourceKind.offering:
         return Offering.fromJson(jsonObject);
       case ResourceKind.balance:
+        return Balance.fromJson(jsonObject);
       case ResourceKind.reputation:
         throw UnimplementedError();
     }
