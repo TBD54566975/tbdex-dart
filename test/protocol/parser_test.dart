@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:tbdex/src/protocol/models/balance.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
 import 'package:tbdex/src/protocol/models/quote.dart';
@@ -80,6 +81,22 @@ void main() async {
       expect(offerings.last, isA<Offering>());
       expect(offerings.first.toString(), equals(offeringJson));
       expect(offerings.last.toString(), equals(offeringJson));
+    });
+
+    test('can parse a list of balances', () async {
+      final balance = TestData.getBalance();
+      final balanceJson = jsonEncode(balance.toJson());
+
+      final balances = Parser.parseBalances(
+        jsonEncode({
+          'data': [balance, balance],
+        }),
+      );
+
+      expect(balances.first, isA<Balance>());
+      expect(balances.last, isA<Balance>());
+      expect(balances.first.toString(), equals(balanceJson));
+      expect(balances.last.toString(), equals(balanceJson));
     });
 
     test('parse throws error if json is null', () {
