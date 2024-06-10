@@ -4,6 +4,7 @@ import 'package:json_schema/json_schema.dart';
 import 'package:tbdex/src/http_client/models/create_exchange_request.dart';
 import 'package:tbdex/src/http_client/models/submit_close_request.dart';
 import 'package:tbdex/src/http_client/models/submit_order_request.dart';
+import 'package:tbdex/src/protocol/models/balance.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
@@ -62,6 +63,16 @@ class TestData {
           ],
         ),
         requiredClaims: requiredClaims,
+      ),
+    );
+  }
+
+  static Balance getBalance() {
+    return Balance.create(
+      pfiDid.uri,
+      BalanceData(
+        currencyCode: 'USD',
+        available: '100.00',
       ),
     );
   }
@@ -190,6 +201,12 @@ class TestData {
     final offering = TestData.getOffering();
     final mockOfferings = [offering];
     return jsonEncode({'data': mockOfferings.map((e) => e.toJson()).toList()});
+  }
+
+  static String listBalancesResponse() {
+    final balance = TestData.getBalance();
+    final mockBalances = [balance];
+    return jsonEncode({'data': mockBalances.map((e) => e.toJson()).toList()});
   }
 
   static String getExchangeResponse() {
