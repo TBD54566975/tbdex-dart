@@ -1,3 +1,4 @@
+export './protocol/models/balance.dart';
 export './protocol/models/close.dart';
 export './protocol/models/message.dart';
 export './protocol/models/message_data.dart';
