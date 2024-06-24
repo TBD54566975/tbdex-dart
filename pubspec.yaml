@@ -16,11 +16,7 @@ dependencies:
   mocktail: ^1.0.3
   path: ^1.8.3
   typeid: ^1.0.1
-  web5:
-    git:
-      url: https://github.com/TBD54566975/web5-dart.git
-      path: packages/web5
-      ref: main
+  web5: ^0.2.0
 
 dev_dependencies:
   lints: ^2.1.0
