@@ -11,7 +11,7 @@ class CreateExchangeRequest {
 
   Map<String, dynamic> toJson() {
     return {
-      'rfq': rfq.toJson(),
+      'message': rfq.toJson(),
       if (replyTo != null) 'replyTo': replyTo,
     };
   }
