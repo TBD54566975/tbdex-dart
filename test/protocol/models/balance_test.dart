@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:tbdex/src/protocol/models/balance.dart';
 import 'package:tbdex/tbdex.dart';
 import 'package:test/test.dart';
 

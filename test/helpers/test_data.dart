@@ -149,9 +149,11 @@ class TestData {
       TypeId.generate(MessageKind.rfq.name),
       QuoteData(
         expiresAt: '2022-01-01T00:00:00Z',
+        payoutUnitsPerPayinUnit: '1',
         payin: QuoteDetails(
           currencyCode: 'AUD',
-          amount: '100',
+          subtotal: '100',
+          total: '100.01',
           fee: '0.01',
           paymentInstruction: PaymentInstruction(
             link: 'https://block.xyz',
@@ -160,7 +162,8 @@ class TestData {
         ),
         payout: QuoteDetails(
           currencyCode: 'BTC',
-          amount: '0.12',
+          subtotal: '0.10',
+          total: '0.12',
           fee: '0.02',
           paymentInstruction: PaymentInstruction(
             link: 'https://block.xyz',
