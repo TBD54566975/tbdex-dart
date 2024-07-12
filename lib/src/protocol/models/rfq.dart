@@ -3,10 +3,6 @@ import 'dart:convert';
 import 'package:decimal/decimal.dart';
 import 'package:tbdex/src/protocol/crypto.dart';
 import 'package:tbdex/src/protocol/exceptions.dart';
-import 'package:tbdex/src/protocol/models/message.dart';
-import 'package:tbdex/src/protocol/models/message_data.dart';
-import 'package:tbdex/src/protocol/models/offering.dart';
-import 'package:tbdex/src/protocol/validator.dart';
 import 'package:tbdex/tbdex.dart';
 import 'package:web5/web5.dart';
 
