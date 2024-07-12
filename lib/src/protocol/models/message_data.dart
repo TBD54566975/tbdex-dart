@@ -31,11 +31,15 @@ class RfqPrivateData {
   factory RfqPrivateData.fromJson(Map<String, dynamic> json) {
     return RfqPrivateData(
       salt: json['salt'],
-      payin: json['payin'] != null ? PrivatePaymentDetails.fromJson(json['payin']) : null,
-      payout: json['payout'] != null ? PrivatePaymentDetails.fromJson(json['payout']) : null,
-      claims: json['claims'] != null ?
-        (json['claims'] as List).map((claim) => claim as String).toList() :
-        null,
+      payin: json['payin'] != null
+          ? PrivatePaymentDetails.fromJson(json['payin'])
+          : null,
+      payout: json['payout'] != null
+          ? PrivatePaymentDetails.fromJson(json['payout'])
+          : null,
+      claims: json['claims'] != null
+          ? (json['claims'] as List).map((claim) => claim as String).toList()
+          : null,
     );
   }
 
@@ -169,11 +173,13 @@ class SelectedPayoutMethod {
 
 class QuoteData extends MessageData {
   final String expiresAt;
+  final String payoutUnitsPerPayinUnit;
   final QuoteDetails payin;
   final QuoteDetails payout;
 
   QuoteData({
     required this.expiresAt,
+    required this.payoutUnitsPerPayinUnit,
     required this.payin,
     required this.payout,
   });
@@ -181,6 +187,7 @@ class QuoteData extends MessageData {
   factory QuoteData.fromJson(Map<String, dynamic> json) {
     return QuoteData(
       expiresAt: json['expiresAt'],
+      payoutUnitsPerPayinUnit: json['payoutUnitsPerPayinUnit'],
       payin: QuoteDetails.fromJson(json['payin']),
       payout: QuoteDetails.fromJson(json['payout']),
     );
@@ -190,6 +197,7 @@ class QuoteData extends MessageData {
   Map<String, dynamic> toJson() {
     return {
       'expiresAt': expiresAt,
+      'payoutUnitsPerPayinUnit': payoutUnitsPerPayinUnit,
       'payin': payin.toJson(),
       'payout': payout.toJson(),
     };
@@ -198,13 +206,15 @@ class QuoteData extends MessageData {
 
 class QuoteDetails {
   final String currencyCode;
-  final String amount;
+  final String subtotal;
+  final String total;
   final String? fee;
   final PaymentInstruction? paymentInstruction;
 
   QuoteDetails({
     required this.currencyCode,
-    required this.amount,
+    required this.subtotal,
+    required this.total,
     this.fee,
     this.paymentInstruction,
   });
@@ -212,7 +222,8 @@ class QuoteDetails {
   factory QuoteDetails.fromJson(Map<String, dynamic> json) {
     return QuoteDetails(
       currencyCode: json['currencyCode'],
-      amount: json['amount'],
+      subtotal: json['subtotal'],
+      total: json['total'],
       fee: json['fee'],
       paymentInstruction: json['paymentInstruction'] != null
           ? PaymentInstruction.fromJson(json['paymentInstruction'])
@@ -223,7 +234,8 @@ class QuoteDetails {
   Map<String, dynamic> toJson() {
     return {
       'currencyCode': currencyCode,
-      'amount': amount,
+      'subtotal': subtotal,
+      'total': total,
       if (fee != null) 'fee': fee,
       if (paymentInstruction != null)
         'paymentInstruction': paymentInstruction?.toJson(),
