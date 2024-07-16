@@ -5,6 +5,7 @@ import 'package:tbdex/src/http_client/models/create_exchange_request.dart';
 import 'package:tbdex/src/http_client/models/submit_close_request.dart';
 import 'package:tbdex/src/http_client/models/submit_order_request.dart';
 import 'package:tbdex/src/protocol/models/balance.dart';
+import 'package:tbdex/src/protocol/models/cancel.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
@@ -197,6 +198,15 @@ class TestData {
       aliceDid.uri,
       TypeId.generate(MessageKind.rfq.name),
       CloseData(reason: 'reason'),
+    );
+  }
+
+  static Cancel getCancel({String? to}) {
+    return Cancel.create(
+      to ?? pfiDid.uri,
+      aliceDid.uri,
+      TypeId.generate(MessageKind.cancel.name),
+      CancelData(reason: 'reason'),
     );
   }
 

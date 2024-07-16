@@ -292,6 +292,27 @@ class CloseData extends MessageData {
   }
 }
 
+class CancelData extends MessageData {
+  final String? reason;
+
+  CancelData({
+    this.reason,
+  });
+
+  factory CancelData.fromJson(Map<String, dynamic> json) {
+    return CancelData(
+      reason: json['reason'],
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      if (reason != null) 'reason': reason,
+    };
+  }
+}
+
 class OrderData extends MessageData {
   @override
   Map<String, dynamic> toJson() {

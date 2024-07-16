@@ -13,6 +13,7 @@ enum MessageKind {
   rfq,
   quote,
   close,
+  cancel,
   order,
   orderstatus,
 }

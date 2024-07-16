@@ -13,6 +13,7 @@ import 'package:tbdex/src/protocol/json_schemas/quote_schema.dart';
 import 'package:tbdex/src/protocol/json_schemas/resource_schema.dart';
 import 'package:tbdex/src/protocol/json_schemas/rfq_private_schema.dart';
 import 'package:tbdex/src/protocol/json_schemas/rfq_schema.dart';
+import 'package:tbdex/src/protocol/models/cancel.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
@@ -82,6 +83,11 @@ class Validator {
         final close = message as Close;
         _instance._validate(close.toJson(), 'message');
         _instance._validate(close.data.toJson(), close.metadata.kind.name);
+        break;
+      case MessageKind.cancel:
+        final cancel = message as Cancel;
+        _instance._validate(cancel.toJson(), 'message');
+        _instance._validate(cancel.data.toJson(), cancel.metadata.kind.name);
         break;
       case MessageKind.order:
         final order = message as Order;

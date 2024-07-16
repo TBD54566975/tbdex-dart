@@ -12,19 +12,23 @@ class QuoteSchema {
           "type": "string",
           "description": "ISO 4217 currency code string"
         },
-        "amount": {
+        "subtotal": {
           "$ref": "definitions.json#/definitions/decimalString",
-          "description": "The amount of currency expressed in the smallest respective unit"
+          "description": "The amount of currency paid for the exchange, excluding fees"
         },
         "fee": {
           "$ref": "definitions.json#/definitions/decimalString",
-          "description": "The amount paid in fees"
+          "description": "The amount of currency paid in fees"
+        },
+        "total": {
+          "$ref": "definitions.json#/definitions/decimalString",
+          "description": "The total amount of currency to be paid in or paid out. It is always a sum of subtotal and fee"
         },
         "paymentInstruction": {
           "$ref": "#/definitions/PaymentInstruction"
         }
       },
-      "required": ["currencyCode", "amount"]
+      "required": ["currencyCode", "subtotal", "total"]
     },
     "PaymentInstruction": {
       "type": "object",
@@ -48,6 +52,10 @@ class QuoteSchema {
       "type": "string",
       "description": "When this quote expires. Expressed as ISO8601"
     },
+    "payoutUnitsPerPayinUnit": {
+      "type": "string",
+      "description": "The exchange rate to convert from payin currency to payout currency. Expressed as an unrounded decimal string."
+    },
     "payin": {
       "$ref": "#/definitions/QuoteDetails"
     },
@@ -55,7 +63,7 @@ class QuoteSchema {
       "$ref": "#/definitions/QuoteDetails"
     }
   },
-  "required": ["expiresAt", "payin", "payout"]
+  "required": ["expiresAt", "payoutUnitsPerPayinUnit", "payin", "payout"]
 }
 ''';
 }
