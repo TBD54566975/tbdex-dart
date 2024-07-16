@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:json_schema/json_schema.dart';
 import 'package:path/path.dart' as p;
 import 'package:tbdex/src/protocol/exceptions.dart';
+import 'package:tbdex/src/protocol/json_schemas/cancel_schema.dart';
 import 'package:tbdex/src/protocol/json_schemas/close_schema.dart';
 import 'package:tbdex/src/protocol/json_schemas/definitions_schema.dart';
 import 'package:tbdex/src/protocol/json_schemas/message_schema.dart';
@@ -139,6 +140,8 @@ class Validator {
     final schemasPath = p.join('lib', 'src', 'protocol', 'json_schemas');
     final refProvider = _createRefProvider(schemasPath);
 
+    _schemaMap['cancel'] =
+        JsonSchema.create(CancelSchema.json, refProvider: refProvider);
     _schemaMap['close'] =
         JsonSchema.create(CloseSchema.json, refProvider: refProvider);
     _schemaMap['definitions'] =
