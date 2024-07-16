@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:tbdex/src/http_client/models/exchange.dart';
 import 'package:tbdex/src/protocol/exceptions.dart';
 import 'package:tbdex/src/protocol/models/balance.dart';
+import 'package:tbdex/src/protocol/models/cancel.dart';
 import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
@@ -140,6 +141,8 @@ abstract class Parser {
         return Quote.fromJson(jsonObject);
       case MessageKind.close:
         return Close.fromJson(jsonObject);
+      case MessageKind.cancel:
+        return Cancel.fromJson(jsonObject);
       case MessageKind.order:
         return Order.fromJson(jsonObject);
       case MessageKind.orderstatus:
