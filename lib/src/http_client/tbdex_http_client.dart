@@ -6,6 +6,7 @@ import 'package:tbdex/src/http_client/exceptions/validation_exceptions.dart';
 import 'package:tbdex/src/http_client/models/create_exchange_request.dart';
 import 'package:tbdex/src/http_client/models/exchange.dart';
 import 'package:tbdex/src/http_client/models/get_offerings_filter.dart';
+import 'package:tbdex/src/http_client/models/submit_cancel_request.dart';
 import 'package:tbdex/src/http_client/models/submit_close_request.dart';
 import 'package:tbdex/src/http_client/models/submit_order_request.dart';
 import 'package:tbdex/src/protocol/models/balance.dart';
@@ -15,6 +16,7 @@ import 'package:tbdex/src/protocol/models/order.dart';
 import 'package:tbdex/src/protocol/models/rfq.dart';
 import 'package:tbdex/src/protocol/parser.dart';
 import 'package:tbdex/src/protocol/validator.dart';
+import 'package:tbdex/tbdex.dart';
 import 'package:typeid/typeid.dart';
 import 'package:web5/web5.dart';
 
@@ -243,6 +245,20 @@ class TbdexHttpClient {
     final pfiDid = close.metadata.to;
     final exchangeId = close.metadata.exchangeId;
     final body = jsonEncode(SubmitCloseRequest(close: close));
+
+    await _submitMessage(pfiDid, body, exchangeId: exchangeId);
+  }
+
+  static Future<void> submitCancel(Cancel cancel) async {
+    try {
+      Validator.validateMessage(cancel);
+    } on Exception catch (e) {
+      throw ValidationError(message: 'invalid cancel message', cause: e);
+    }
+
+    final pfiDid = cancel.metadata.to;
+    final exchangeId = cancel.metadata.exchangeId;
+    final body = jsonEncode(SubmitCancelRequest(cancel: cancel));
 
     await _submitMessage(pfiDid, body, exchangeId: exchangeId);
   }
