@@ -1,8 +1,5 @@
 import 'dart:convert';
 
-import 'package:tbdex/src/protocol/models/cancel.dart';
-import 'package:tbdex/src/protocol/models/message.dart';
-import 'package:tbdex/src/protocol/models/message_data.dart';
 import 'package:tbdex/tbdex.dart';
 import 'package:test/test.dart';
 import 'package:typeid/typeid.dart';
