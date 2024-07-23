@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-// TODO: turn into standalone lib
+// TODO(ethan-tbd): turn into standalone lib
 
 /// Implements the JSON Canonicalization Scheme specified in
 /// [RFC8785](https://www.rfc-editor.org/rfc/rfc8785)
