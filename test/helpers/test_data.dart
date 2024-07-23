@@ -1,21 +1,10 @@
 import 'dart:convert';
 
 import 'package:json_schema/json_schema.dart';
-import 'package:tbdex/src/http_client/models/create_exchange_request.dart';
 import 'package:tbdex/src/http_client/models/submit_close_request.dart';
 import 'package:tbdex/src/http_client/models/submit_order_request.dart';
-import 'package:tbdex/src/protocol/models/balance.dart';
-import 'package:tbdex/src/protocol/models/cancel.dart';
-import 'package:tbdex/src/protocol/models/close.dart';
-import 'package:tbdex/src/protocol/models/message.dart';
-import 'package:tbdex/src/protocol/models/message_data.dart';
-import 'package:tbdex/src/protocol/models/offering.dart';
-import 'package:tbdex/src/protocol/models/order.dart';
-import 'package:tbdex/src/protocol/models/order_status.dart';
-import 'package:tbdex/src/protocol/models/quote.dart';
-import 'package:tbdex/src/protocol/models/resource.dart';
-import 'package:tbdex/src/protocol/models/resource_data.dart';
-import 'package:tbdex/src/protocol/models/rfq.dart';
+import 'package:tbdex/src/protocol/models/order_instructions.dart';
+import 'package:tbdex/tbdex.dart';
 import 'package:typeid/typeid.dart';
 import 'package:web5/web5.dart';
 
@@ -156,20 +145,12 @@ class TestData {
           subtotal: '100',
           total: '100.01',
           fee: '0.01',
-          paymentInstruction: PaymentInstruction(
-            link: 'https://block.xyz',
-            instruction: 'payin instruction',
-          ),
         ),
         payout: QuoteDetails(
           currencyCode: 'BTC',
           subtotal: '0.10',
           total: '0.12',
           fee: '0.02',
-          paymentInstruction: PaymentInstruction(
-            link: 'https://block.xyz',
-            instruction: 'payout instruction',
-          ),
         ),
       ),
     );
@@ -189,6 +170,18 @@ class TestData {
       pfiDid.uri,
       TypeId.generate(MessageKind.rfq.name),
       OrderStatusData(orderStatus: 'order status'),
+    );
+  }
+
+  static OrderInstructions getOrderInstructions() {
+    return OrderInstructions.create(
+      aliceDid.uri,
+      pfiDid.uri,
+      TypeId.generate(MessageKind.rfq.name),
+      OrderInstructionsData(
+        payin: PaymentInstruction(instruction: 'payin'),
+        payout: PaymentInstruction(instruction: 'payout'),
+      ),
     );
   }
 
