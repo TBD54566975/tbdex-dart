@@ -16,6 +16,7 @@ enum MessageKind {
   cancel,
   order,
   orderstatus,
+  orderinstructions,
 }
 
 class MessageMetadata extends Metadata {
