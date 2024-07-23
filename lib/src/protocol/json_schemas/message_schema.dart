@@ -18,7 +18,7 @@ class MessageSchema {
         },
         "kind": {
           "type": "string",
-          "enum": ["rfq", "quote", "order", "orderstatus", "close", "cancel"],
+          "enum": ["rfq", "quote", "order", "orderstatus", "close", "cancel", "orderinstructions"],
           "description": "The message kind (e.g. rfq, quote)"
         },
         "id": {
