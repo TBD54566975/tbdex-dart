@@ -8,6 +8,7 @@ import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
 import 'package:tbdex/src/protocol/models/order.dart';
+import 'package:tbdex/src/protocol/models/order_instructions.dart';
 import 'package:tbdex/src/protocol/models/order_status.dart';
 import 'package:tbdex/src/protocol/models/quote.dart';
 import 'package:tbdex/src/protocol/models/resource.dart';
@@ -147,6 +148,8 @@ abstract class Parser {
         return Order.fromJson(jsonObject);
       case MessageKind.orderstatus:
         return OrderStatus.fromJson(jsonObject);
+      case MessageKind.orderinstructions:
+        return OrderInstructions.fromJson(jsonObject);
     }
   }
 
