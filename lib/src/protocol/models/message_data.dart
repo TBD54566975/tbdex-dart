@@ -209,14 +209,12 @@ class QuoteDetails {
   final String subtotal;
   final String total;
   final String? fee;
-  final PaymentInstruction? paymentInstruction;
 
   QuoteDetails({
     required this.currencyCode,
     required this.subtotal,
     required this.total,
     this.fee,
-    this.paymentInstruction,
   });
 
   factory QuoteDetails.fromJson(Map<String, dynamic> json) {
@@ -225,9 +223,6 @@ class QuoteDetails {
       subtotal: json['subtotal'],
       total: json['total'],
       fee: json['fee'],
-      paymentInstruction: json['paymentInstruction'] != null
-          ? PaymentInstruction.fromJson(json['paymentInstruction'])
-          : null,
     );
   }
 
@@ -237,8 +232,6 @@ class QuoteDetails {
       'subtotal': subtotal,
       'total': total,
       if (fee != null) 'fee': fee,
-      if (paymentInstruction != null)
-        'paymentInstruction': paymentInstruction?.toJson(),
     };
   }
 }
@@ -335,6 +328,28 @@ class OrderStatusData extends MessageData {
   Map<String, dynamic> toJson() {
     return {
       'orderStatus': orderStatus,
+    };
+  }
+}
+
+class OrderInstructionsData extends MessageData {
+  final PaymentInstruction payin;
+  final PaymentInstruction payout;
+
+  OrderInstructionsData({required this.payin, required this.payout});
+
+  factory OrderInstructionsData.fromJson(Map<String, dynamic> json) {
+    return OrderInstructionsData(
+      payin: PaymentInstruction.fromJson(json['payin']),
+      payout: PaymentInstruction.fromJson(json['payout']),
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    return {
+      'payin': payin.toJson(),
+      'payout': payout.toJson(),
     };
   }
 }
