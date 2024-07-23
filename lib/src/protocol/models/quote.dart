@@ -9,7 +9,8 @@ class Quote extends Message {
   final QuoteData data;
 
   @override
-  Set<MessageKind> get validNext => {MessageKind.order, MessageKind.close};
+  Set<MessageKind> get validNext =>
+      {MessageKind.order, MessageKind.close, MessageKind.cancel};
 
   Quote._({
     required this.metadata,

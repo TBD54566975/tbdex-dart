@@ -10,7 +10,7 @@ class OrderStatus extends Message {
 
   @override
   Set<MessageKind> get validNext =>
-      {MessageKind.orderstatus, MessageKind.close};
+      {MessageKind.orderstatus, MessageKind.close, MessageKind.cancel};
 
   OrderStatus._({
     required this.metadata,
