@@ -26,7 +26,7 @@ void main() {
 
     test('object in array', () {
       final result = JsonCanonicalizer.canonicalize([
-        {'b': 123, 'a': 'string'}
+        {'b': 123, 'a': 'string'},
       ]);
       expect(utf8.decode(result), equals('[{"a":"string","b":123}]'));
     });

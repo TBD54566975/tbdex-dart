@@ -14,7 +14,8 @@ class Rfq extends Message {
   final RfqPrivateData? privateData;
 
   @override
-  Set<MessageKind> get validNext => {MessageKind.quote, MessageKind.close};
+  Set<MessageKind> get validNext =>
+      {MessageKind.quote, MessageKind.close, MessageKind.cancel};
 
   Rfq._({
     required this.metadata,

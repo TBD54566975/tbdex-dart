@@ -9,6 +9,7 @@ import 'package:tbdex/src/protocol/json_schemas/definitions_schema.dart';
 import 'package:tbdex/src/protocol/json_schemas/message_schema.dart';
 import 'package:tbdex/src/protocol/json_schemas/offering_schema.dart';
 import 'package:tbdex/src/protocol/json_schemas/order_schema.dart';
+import 'package:tbdex/src/protocol/json_schemas/orderinstructions_schema.dart';
 import 'package:tbdex/src/protocol/json_schemas/orderstatus_schema.dart';
 import 'package:tbdex/src/protocol/json_schemas/quote_schema.dart';
 import 'package:tbdex/src/protocol/json_schemas/resource_schema.dart';
@@ -19,6 +20,7 @@ import 'package:tbdex/src/protocol/models/close.dart';
 import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/offering.dart';
 import 'package:tbdex/src/protocol/models/order.dart';
+import 'package:tbdex/src/protocol/models/order_instructions.dart';
 import 'package:tbdex/src/protocol/models/order_status.dart';
 import 'package:tbdex/src/protocol/models/quote.dart';
 import 'package:tbdex/src/protocol/models/resource.dart';
@@ -103,6 +105,13 @@ class Validator {
           orderStatus.metadata.kind.name,
         );
         break;
+      case MessageKind.orderinstructions:
+        final orderInstructions = message as OrderInstructions;
+        _instance._validate(orderInstructions.toJson(), 'message');
+        _instance._validate(
+          orderInstructions.data.toJson(),
+          orderInstructions.metadata.kind.name,
+        );
     }
   }
 
@@ -152,6 +161,10 @@ class Validator {
         JsonSchema.create(MessageSchema.json, refProvider: refProvider);
     _schemaMap['order'] =
         JsonSchema.create(OrderSchema.json, refProvider: refProvider);
+    _schemaMap['orderinstructions'] = JsonSchema.create(
+      OrderinstructionsSchema.json,
+      refProvider: refProvider,
+    );
     _schemaMap['orderstatus'] =
         JsonSchema.create(OrderstatusSchema.json, refProvider: refProvider);
     _schemaMap['quote'] =

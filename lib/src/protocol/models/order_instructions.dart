@@ -2,17 +2,17 @@ import 'package:tbdex/src/protocol/models/message.dart';
 import 'package:tbdex/src/protocol/models/message_data.dart';
 import 'package:tbdex/src/protocol/parser.dart';
 
-class OrderStatus extends Message {
+class OrderInstructions extends Message {
   @override
   final MessageMetadata metadata;
   @override
-  final OrderStatusData data;
+  final OrderInstructionsData data;
 
   @override
   Set<MessageKind> get validNext =>
       {MessageKind.orderstatus, MessageKind.close, MessageKind.cancel};
 
-  OrderStatus._({
+  OrderInstructions._({
     required this.metadata,
     required this.data,
     String? signature,
@@ -20,42 +20,42 @@ class OrderStatus extends Message {
     this.signature = signature;
   }
 
-  static OrderStatus create(
+  static OrderInstructions create(
     String to,
     String from,
     String exchangeId,
-    OrderStatusData data, {
+    OrderInstructionsData data, {
     String? externalId,
     String protocol = '1.0',
   }) {
     final now = DateTime.now().toUtc().toIso8601String();
     final metadata = MessageMetadata(
-      kind: MessageKind.orderstatus,
+      kind: MessageKind.orderinstructions,
       to: to,
       from: from,
-      id: Message.generateId(MessageKind.orderstatus),
+      id: Message.generateId(MessageKind.orderinstructions),
       exchangeId: exchangeId,
       createdAt: now,
       protocol: protocol,
       externalId: externalId,
     );
 
-    return OrderStatus._(
+    return OrderInstructions._(
       metadata: metadata,
       data: data,
     );
   }
 
-  static Future<OrderStatus> parse(String rawMessage) async {
-    final orderStatus = Parser.parseMessage(rawMessage) as OrderStatus;
+  static Future<OrderInstructions> parse(String rawMessage) async {
+    final orderStatus = Parser.parseMessage(rawMessage) as OrderInstructions;
     await orderStatus.verify();
     return orderStatus;
   }
 
-  factory OrderStatus.fromJson(Map<String, dynamic> json) {
-    return OrderStatus._(
+  factory OrderInstructions.fromJson(Map<String, dynamic> json) {
+    return OrderInstructions._(
       metadata: MessageMetadata.fromJson(json['metadata']),
-      data: OrderStatusData.fromJson(json['data']),
+      data: OrderInstructionsData.fromJson(json['data']),
       signature: json['signature'],
     );
   }
