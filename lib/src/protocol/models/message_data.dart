@@ -209,12 +209,14 @@ class QuoteDetails {
   final String subtotal;
   final String total;
   final String? fee;
+  final PaymentInstruction? paymentInstruction;
 
   QuoteDetails({
     required this.currencyCode,
     required this.subtotal,
     required this.total,
     this.fee,
+    this.paymentInstruction,
   });
 
   factory QuoteDetails.fromJson(Map<String, dynamic> json) {
@@ -223,6 +225,9 @@ class QuoteDetails {
       subtotal: json['subtotal'],
       total: json['total'],
       fee: json['fee'],
+      paymentInstruction: json['paymentInstruction'] != null
+          ? PaymentInstruction.fromJson(json['paymentInstruction'])
+          : null,
     );
   }
 
@@ -232,6 +237,8 @@ class QuoteDetails {
       'subtotal': subtotal,
       'total': total,
       if (fee != null) 'fee': fee,
+      if (paymentInstruction != null)
+        'paymentInstruction': paymentInstruction?.toJson(),
     };
   }
 }
