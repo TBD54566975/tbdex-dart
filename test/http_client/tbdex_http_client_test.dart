@@ -139,28 +139,37 @@ void main() async {
 
     test('can list balances', () async {
       when(
-        () => mockHttpClient.get(Uri.parse('$pfiServiceEndpoint/balances/')),
+        () => mockHttpClient.get(
+          Uri.parse('$pfiServiceEndpoint/balances/'),
+          headers: any(named: 'headers'),
+        ),
       ).thenAnswer(
         (_) async => http.Response(TestData.listBalancesResponse(), 200),
       );
 
-      final response = await TbdexHttpClient.listBalances(pfiDid);
+      final response = await TbdexHttpClient.listBalances(TestData.aliceDid, pfiDid);
       expect(response.length, 1);
 
       verify(
-        () => mockHttpClient.get(Uri.parse('$pfiServiceEndpoint/balances/')),
+        () => mockHttpClient.get(
+          Uri.parse('$pfiServiceEndpoint/balances/'),
+          headers: any(named: 'headers'),
+        ),
       ).called(1);
     });
 
     test('list balances throws ResponseError', () async {
       when(
-        () => mockHttpClient.get(Uri.parse('$pfiServiceEndpoint/balances/')),
+        () => mockHttpClient.get(
+          Uri.parse('$pfiServiceEndpoint/balances/'),
+          headers: any(named: 'headers'),
+        ),
       ).thenAnswer(
         (_) async => http.Response('Error', 400),
       );
 
       expect(
-        () async => TbdexHttpClient.listBalances(pfiDid),
+        () async => TbdexHttpClient.listBalances(TestData.aliceDid, pfiDid),
         throwsA(isA<ResponseError>()),
       );
     });
