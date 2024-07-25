@@ -153,14 +153,17 @@ class TbdexHttpClient {
   }
 
   static Future<List<Balance>> listBalances(
+    BearerDid did,
     String pfiDid,
   ) async {
+    final requestToken = await _generateRequestToken(did, pfiDid);
+    final headers = {'Authorization': 'Bearer $requestToken'};
     final pfiServiceEndpoint = await _getPfiServiceEndpoint(pfiDid);
     final url = Uri.parse('$pfiServiceEndpoint/balances/');
 
     http.Response response;
     try {
-      response = await _client.get(url);
+      response = await _client.get(url, headers: headers);
 
       if (response.statusCode != 200) {
         throw ResponseError(
