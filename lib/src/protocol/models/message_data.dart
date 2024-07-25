@@ -314,21 +314,101 @@ class OrderData extends MessageData {
 }
 
 class OrderStatusData extends MessageData {
-  final String orderStatus;
+  final Status status;
 
-  OrderStatusData({required this.orderStatus});
+  OrderStatusData({required this.status});
 
   factory OrderStatusData.fromJson(Map<String, dynamic> json) {
     return OrderStatusData(
-      orderStatus: json['orderStatus'],
+      status: Status.fromJson(json['status']),
     );
   }
 
   @override
   Map<String, dynamic> toJson() {
     return {
-      'orderStatus': orderStatus,
+      'status': status.toJson(),
     };
+  }
+}
+
+enum Status {
+  payinPending,
+  payinInitiated,
+  payinSettled,
+  payinFailed,
+  payinExpired,
+  payoutPending,
+  payoutInitiated,
+  payoutSettled,
+  payoutFailed,
+  refundPending,
+  refundInitiated,
+  refundFailed,
+  refundSettled;
+
+  static Status fromJson(String json) {
+    switch (json) {
+      case 'PAYIN_PENDING':
+        return Status.payinPending;
+      case 'PAYIN_INITIATED':
+        return Status.payinInitiated;
+      case 'PAYIN_SETTLED':
+        return Status.payinSettled;
+      case 'PAYIN_FAILED':
+        return Status.payinFailed;
+      case 'PAYIN_EXPIRED':
+        return Status.payinExpired;
+      case 'PAYOUT_PENDING':
+        return Status.payoutPending;
+      case 'PAYOUT_INITIATED':
+        return Status.payoutInitiated;
+      case 'PAYOUT_SETTLED':
+        return Status.payoutSettled;
+      case 'PAYOUT_FAILED':
+        return Status.payoutFailed;
+      case 'REFUND_PENDING':
+        return Status.refundPending;
+      case 'REFUND_INITIATED':
+        return Status.refundInitiated;
+      case 'REFUND_FAILED':
+        return Status.refundFailed;
+      case 'REFUND_SETTLED':
+        return Status.refundSettled;
+      default:
+        throw Exception('Unknown status: $json');
+    }
+  }
+
+  String toJson() {
+    switch (this) {
+      case Status.payinPending:
+        return 'PAYIN_PENDING';
+      case Status.payinInitiated:
+        return 'PAYIN_INITIATED';
+      case Status.payinSettled:
+        return 'PAYIN_SETTLED';
+      case Status.payinFailed:
+        return 'PAYIN_FAILED';
+      case Status.payinExpired:
+        return 'PAYIN_EXPIRED';
+      case Status.payoutPending:
+        return 'PAYOUT_PENDING';
+      case Status.payoutInitiated:
+        return 'PAYOUT_INITIATED';
+      case Status.payoutSettled:
+        return 'PAYOUT_SETTLED';
+      case Status.payoutFailed:
+        return 'PAYOUT_FAILED';
+      case Status.refundPending:
+        return 'REFUND_PENDING';
+      case Status.refundInitiated:
+        return 'REFUND_INITIATED';
+      case Status.refundFailed:
+        return 'REFUND_FAILED';
+      case Status.refundSettled:
+        return 'REFUND_SETTLED';
+    }
   }
 }
 
