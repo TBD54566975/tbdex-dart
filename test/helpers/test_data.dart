@@ -169,7 +169,7 @@ class TestData {
       aliceDid.uri,
       pfiDid.uri,
       TypeId.generate(MessageKind.rfq.name),
-      OrderStatusData(orderStatus: 'order status'),
+      OrderStatusData(status: Status.payinInitiated),
     );
   }
 

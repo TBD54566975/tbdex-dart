@@ -17,13 +17,13 @@ void main() async {
         TestData.pfi,
         TestData.alice,
         TypeId.generate(MessageKind.rfq.name),
-        OrderStatusData(orderStatus: 'my status'),
+        OrderStatusData(status: Status.payinInitiated),
       );
 
       expect(orderStatus.metadata.id, startsWith(MessageKind.orderstatus.name));
       expect(orderStatus.metadata.kind, equals(MessageKind.orderstatus));
       expect(orderStatus.metadata.protocol, equals('1.0'));
-      expect(orderStatus.data.orderStatus, equals('my status'));
+      expect(orderStatus.data.status, equals(Status.payinInitiated));
     });
 
     test('can parse and verify order status from a json string', () async {
