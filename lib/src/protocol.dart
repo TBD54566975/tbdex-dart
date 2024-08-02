@@ -5,6 +5,7 @@ export './protocol/models/message.dart';
 export './protocol/models/message_data.dart';
 export './protocol/models/offering.dart';
 export './protocol/models/order.dart';
+export './protocol/models/order_instructions.dart';
 export './protocol/models/order_status.dart';
 export './protocol/models/quote.dart';
 export './protocol/models/resource.dart';
