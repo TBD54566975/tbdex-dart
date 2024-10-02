@@ -16,7 +16,7 @@ dependencies:
   mocktail: ^1.0.3
   path: ^1.8.3
   typeid: ^1.0.1
-  web5: ^0.3.0
+  web5: ^0.4.0
 
 dev_dependencies:
   lints: ^2.1.0
